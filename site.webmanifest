@@ -1,0 +1,10 @@
+{
+  "name": "Abid Workouts",
+  "short_name": "Workouts",
+  "description": "Mt. Baker and Lake Union training plan and progress tracker.",
+  "start_url": "/abid-workouts/",
+  "scope": "/abid-workouts/",
+  "display": "standalone",
+  "background_color": "#f4f7f4",
+  "theme_color": "#116a5c"
+}
