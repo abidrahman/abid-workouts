@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3-Month Training Plan · Baker + Lake Union</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <nav class="topbar" aria-label="Training plan navigation">
+        <a class="is-active" href="#calendar" data-tab-link="calendar">Calendar</a>
+        <a href="#overview" data-tab-link="overview">Overview</a>
+        <a href="#swim-plan" data-tab-link="swim-plan">Swim Plan</a>
+        <a href="#week-one" data-tab-link="week-one">June Workouts</a>
+        <a href="#tracking" data-tab-link="tracking">Tracking</a>
+      </nav>
+
+      <section class="hero__content" id="dashboard">
+        <p class="eyebrow">June 1 → Aug 1 training block</p>
+        <h1>Mt. Baker + Lake Union Training Plan</h1>
+        <p class="hero__lede">
+          A practical 3-month build focused on mountain fitness, swim confidence,
+          strength maintenance, and injury-aware aerobic development.
+        </p>
+
+        <div class="hero__actions">
+          <a class="button button--primary" href="#calendar" data-tab-link="calendar">Open Calendar</a>
+          <a class="button button--ghost" href="#week-one" data-tab-link="week-one">View June Workouts</a>
+        </div>
+      </section>
+    </header>
+
+    <main>
+      <nav class="section section--overlap tab-list" role="tablist" aria-label="Training plan tabs">
+        <a class="tab-button is-active" id="tab-calendar-control" href="#calendar" role="tab" aria-selected="true" data-tab-link="calendar">Calendar</a>
+        <a class="tab-button" id="tab-overview-control" href="#overview" role="tab" aria-selected="false" data-tab-link="overview">Overview</a>
+        <a class="tab-button" id="tab-swim-plan-control" href="#swim-plan" role="tab" aria-selected="false" data-tab-link="swim-plan">Swim Plan</a>
+        <a class="tab-button" id="tab-week-one-control" href="#week-one" role="tab" aria-selected="false" data-tab-link="week-one">June Workouts</a>
+        <a class="tab-button" id="tab-tracking-control" href="#tracking" role="tab" aria-selected="false" data-tab-link="tracking">Tracking</a>
+      </nav>
+      <section class="section tab-panel is-active" aria-label="Goal summary" data-tab-panel="calendar">
+        <div class="stats-grid" id="summary-cards"></div>
+      </section>
+
+      <section class="section calendar-section tab-panel is-active" id="calendar-tracker" data-tab-panel="calendar">
+        <div class="section-heading">
+          <p class="eyebrow">Single-view tracker</p>
+          <h2>3-month workout calendar</h2>
+          <p>
+            Check off each swim, bike, strength, hike, and recovery session from
+            June 1 through August 31. Completion is saved locally in this browser.
+          </p>
+        </div>
+
+        <div class="calendar-progress" id="calendar-progress" aria-label="Calendar completion summary"></div>
+
+        <section class="month-one-goals" aria-labelledby="month-one-goals-title">
+          <div class="month-one-goals__header">
+            <p class="eyebrow">Month 1 intent</p>
+            <h3 id="month-one-goals-title">Weekly goals for June</h3>
+            <p>
+              The first month is planned by week, not just by individual workouts: build rhythm, then capacity,
+              then absorb before the next progression.
+            </p>
+          </div>
+          <div class="month-one-goals__grid" id="month-one-goals"></div>
+        </section>
+
+        <div class="calendar-legend" aria-label="Workout category legend">
+          <span class="tag tag--swim">swim</span>
+          <span class="tag tag--bike">bike</span>
+          <span class="tag tag--strength">strength</span>
+          <span class="tag tag--hike">hike</span>
+          <span class="tag tag--recovery">recovery</span>
+        </div>
+
+        <div class="calendar-toolbar" aria-label="Calendar controls">
+          <div class="calendar-toolbar__group" role="group" aria-label="Filter calendar by workout type">
+            <button class="calendar-control-button is-active" type="button" data-calendar-category-filter="all">All</button>
+            <button class="calendar-control-button" type="button" data-calendar-category-filter="swim">Swim</button>
+            <button class="calendar-control-button" type="button" data-calendar-category-filter="bike">Bike</button>
+            <button class="calendar-control-button" type="button" data-calendar-category-filter="strength">Strength</button>
+            <button class="calendar-control-button" type="button" data-calendar-category-filter="hike">Hike</button>
+            <button class="calendar-control-button" type="button" data-calendar-category-filter="recovery">Recovery</button>
+          </div>
+
+          <div class="calendar-toolbar__group" role="group" aria-label="Filter calendar by completion status">
+            <button class="calendar-control-button is-active" type="button" data-calendar-status-filter="all">Any status</button>
+            <button class="calendar-control-button" type="button" data-calendar-status-filter="incomplete">Incomplete</button>
+            <button class="calendar-control-button" type="button" data-calendar-status-filter="complete">Complete</button>
+          </div>
+
+          <div class="calendar-toolbar__group" role="group" aria-label="Calendar density">
+            <button class="calendar-control-button is-active" type="button" data-calendar-view="compact">Compact</button>
+            <button class="calendar-control-button" type="button" data-calendar-view="detailed">Detailed</button>
+          </div>
+
+          <button class="calendar-control-button calendar-control-button--ghost" type="button" data-calendar-jump-today>
+            Jump to today
+          </button>
+        </div>
+        <p class="calendar-toolbar__hint" id="calendar-filter-summary">
+          Compact view shows each workout discipline and a short descriptor. Click any workout for details.
+        </p>
+
+        <div class="calendar-future-note calendar-coros-status" id="coros-status" aria-live="polite" aria-label="COROS connection status">
+          <strong>COROS connection:</strong>
+          <span>Preparing connector status…</span>
+        </div>
+
+        <div class="calendar-months" id="calendar-months"></div>
+
+        <div class="calendar-dialog" id="calendar-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="calendar-detail-title" hidden>
+          <div class="calendar-dialog__backdrop" data-calendar-dialog-close></div>
+          <section class="calendar-dialog__panel" aria-label="Workout details">
+            <button class="calendar-dialog__close" type="button" data-calendar-dialog-close aria-label="Close workout details">×</button>
+            <div class="calendar-detail" id="calendar-detail-content">
+              <p class="eyebrow">Workout details</p>
+              <h3 id="calendar-detail-title">Select a workout</h3>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="section two-column tab-panel" data-tab-panel="overview">
+        <article class="panel">
+          <div class="section-heading section-heading--compact">
+            <p class="eyebrow">Primary objectives</p>
+            <h2>What we are training for</h2>
+          </div>
+          <ul class="check-list">
+            <li><strong>Aug 1:</strong> guided Mt. Baker summit readiness.</li>
+            <li><strong>Target:</strong> sustain ~1,000 vertical ft/hour with a pack.</li>
+            <li><strong>July 25/26:</strong> 1,600 yd supported Lake Union swim.</li>
+            <li><strong>Ongoing:</strong> 3 short strength sessions/week led by RDLs, weighted pull-ups, and Bulgarian split squats.</li>
+            <li><strong>Constraint:</strong> running paused; avoid shoulder-aggravating push work.</li>
+          </ul>
+        </article>
+
+        <article class="panel panel--accent">
+          <div class="section-heading section-heading--compact">
+            <p class="eyebrow">Month 1 intent</p>
+            <h2>Build rhythm, then capacity</h2>
+          </div>
+          <p>
+            June starts with rhythm and baseline work, then builds swim endurance,
+            mountain-specific durability, and strength consistency while keeping shin and shoulder
+            pain at or below 2/10.
+          </p>
+          <div class="mini-metrics" id="week-targets"></div>
+        </article>
+      </section>
+
+      <section class="section swim-section tab-panel" id="swim-methodology" data-tab-panel="swim-plan">
+        <div class="section-heading">
+          <p class="eyebrow">Swim progression</p>
+          <h2>Technique-first path to a 1,600 yd open-water swim</h2>
+          <p>
+            The swim plan now pairs every endurance session with specific drills,
+            one weekly nonstop checkpoint, and open-water skills so a newer swimmer
+            improves efficiency instead of only adding yards.
+          </p>
+        </div>
+
+        <div class="swim-method-grid" id="swim-methodology-cards"></div>
+
+        <div class="swim-plan-layout">
+          <article class="panel">
+            <div class="section-heading section-heading--compact">
+              <p class="eyebrow">Drill progression</p>
+              <h2>What to practice and why</h2>
+            </div>
+            <div class="drill-progression" id="swim-drill-progression"></div>
+          </article>
+
+          <article class="panel panel--accent">
+            <div class="section-heading section-heading--compact">
+              <p class="eyebrow">Readiness gates</p>
+              <h2>Before Lake Union</h2>
+            </div>
+            <ul class="check-list" id="swim-readiness-checklist"></ul>
+          </article>
+        </div>
+
+        <article class="panel long-swim-panel">
+          <div class="section-heading section-heading--compact">
+            <p class="eyebrow">Weekly long swim</p>
+            <h2>Nonstop distance targets</h2>
+            <p>
+              The long swim is a controlled checkpoint, not a weekly suffer test.
+              Increase distance only when breathing is calm and shoulder pain stays at or below 2/10.
+            </p>
+          </div>
+          <div class="long-swim-table" id="long-swim-targets"></div>
+        </article>
+      </section>
+
+      <section class="section tab-panel" id="phases" data-tab-panel="overview">
+        <div class="section-heading">
+          <p class="eyebrow">Macro plan</p>
+          <h2>Training phase timeline</h2>
+          <p>
+            The block progresses from consistency, to capacity, to specificity, then
+            tapers into the Lake Union swim and Mt. Baker summit.
+          </p>
+        </div>
+        <div class="timeline" id="phase-timeline"></div>
+      </section>
+
+      <section class="section tab-panel" id="week-one" data-tab-panel="week-one">
+        <div class="section-heading">
+          <p class="eyebrow">June 1–30</p>
+          <h2>June detailed workout plan</h2>
+          <p>
+            Filter by modality or review the full month. Each day includes the main
+            purpose, workout details, intensity guidance, and what to track.
+          </p>
+        </div>
+
+        <div class="toolbar" aria-label="Workout filters">
+          <button class="filter-button is-active" type="button" data-filter="all">All</button>
+          <button class="filter-button" type="button" data-filter="swim">Swim</button>
+          <button class="filter-button" type="button" data-filter="bike">Bike</button>
+          <button class="filter-button" type="button" data-filter="strength">Strength</button>
+          <button class="filter-button" type="button" data-filter="hike">Hike / Stairs</button>
+          <button class="filter-button" type="button" data-filter="recovery">Recovery</button>
+        </div>
+
+        <div class="week-grid" id="workout-grid"></div>
+      </section>
+
+      <section class="section two-column tab-panel" id="tracking" data-tab-panel="tracking">
+        <article class="panel">
+          <div class="section-heading section-heading--compact">
+            <p class="eyebrow">Saved locally</p>
+            <h2>June tracking summary</h2>
+          </div>
+          <div class="tracking-summary" id="tracking-summary"></div>
+          <div class="button-row">
+            <button class="button button--primary" id="copy-checkin" type="button">
+              Copy weekly check-in
+            </button>
+            <button class="button button--secondary" id="download-weekly-plan-csv" type="button">
+              June plan CSV
+            </button>
+            <button class="button button--secondary" id="download-strength-log-csv" type="button">
+              Strength log CSV
+            </button>
+            <button class="button button--secondary" id="download-swim-log-csv" type="button">
+              Swim log CSV
+            </button>
+            <button class="button button--secondary" id="download-daily-checkin-csv" type="button">
+              Daily check-in CSV
+            </button>
+            <button class="button button--danger" id="reset-tracking" type="button">
+              Reset tracking
+            </button>
+          </div>
+          <div class="sheets-export-note">
+            <strong>Google Sheets workflow:</strong>
+            Download these CSVs, upload/import each one into Google Sheets as a separate tab, then use the Google Sheets app on your phone for gym/pool logging.
+          </div>
+          <p class="small-note">
+            Your completion status, pain scores, fatigue, exercise set logs, and notes
+            are saved only in this browser via localStorage.
+          </p>
+        </article>
+
+        <article class="panel">
+          <div class="section-heading section-heading--compact">
+            <p class="eyebrow">Guardrails</p>
+            <h2>Adjustment rules</h2>
+          </div>
+          <ul class="rules-list">
+            <li><strong>Shin pain &gt; 2–3/10:</strong> remove weighted stairs/hiking for 48–72 hr; bike/swim only.</li>
+            <li><strong>Shoulder pain during swim:</strong> stop hard sets; switch to easy technique or kicking.</li>
+            <li><strong>Fatigue high 2 days in a row:</strong> drop optional sessions before cutting key workouts.</li>
+            <li><strong>Long hike day:</strong> practice fueling, hydration, pack fit, and downhill control.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="section two-column tab-panel" data-tab-panel="overview">
+        <article class="panel">
+          <div class="section-heading section-heading--compact">
+            <p class="eyebrow">Gear timeline</p>
+            <h2>Near-term purchases / tests</h2>
+          </div>
+          <ul class="check-list">
+            <li>Confirm Mt. Baker guide gear list and estimated pack weights.</li>
+            <li>Get boots early enough to break them in before July.</li>
+            <li>Start wetsuit research in June; acquire by late June / early July.</li>
+            <li>Plan open-water support logistics before July exposures.</li>
+          </ul>
+        </article>
+
+        <article class="panel panel--accent">
+          <div class="section-heading section-heading--compact">
+            <p class="eyebrow">Coming later</p>
+            <h2>COROS workflow</h2>
+          </div>
+          <p>
+            The calendar now has a COROS metrics lane for daily total steps and
+            previous-night sleep. Once the hosted COROS connector is reachable and
+            authorized, those metrics can be imported without hardcoding credentials
+            into this static page.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        Built as a living plan. This is training guidance, not medical advice — adjust
+        around pain, professional recommendations, weather, and real-world logistics.
+      </p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
