@@ -14,13 +14,38 @@
   </head>
   <body>
     <header class="hero">
-      <nav class="topbar" aria-label="Training plan navigation">
-        <a class="is-active" href="#calendar" data-tab-link="calendar">Calendar</a>
-        <a href="#overview" data-tab-link="overview">Overview</a>
-        <a href="#swim-plan" data-tab-link="swim-plan">Swim Plan</a>
-        <a href="#week-one" data-tab-link="week-one">June Workouts</a>
-        <a href="#tracking" data-tab-link="tracking">Tracking</a>
+      <nav class="topbar site-nav" aria-label="Training plan navigation" data-site-nav>
+        <a class="site-nav__brand" href="#dashboard">Baker + Lake Union</a>
+        <button
+          class="site-nav__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-nav-menu"
+          data-site-nav-toggle
+        >
+          <span class="site-nav__hamburger" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span>Menu</span>
+        </button>
+        <div class="site-nav__menu" id="site-nav-menu" data-site-nav-menu>
+          <a class="is-active" href="#calendar" data-tab-link="calendar">Today + Calendar</a>
+          <a href="#overview" data-tab-link="overview">Overview</a>
+          <a href="#swim-plan" data-tab-link="swim-plan">Swim Plan</a>
+          <a href="#week-one" data-tab-link="week-one">June Workouts</a>
+          <a href="#tracking" data-tab-link="tracking">Tracking</a>
+        </div>
       </nav>
+
+      <section class="today-panel today-panel--hero" id="today-panel" aria-labelledby="today-panel-title">
+        <div class="today-panel__header">
+          <div>
+            <p class="eyebrow">On deck today</p>
+            <h2 id="today-panel-title">Today’s workouts</h2>
+            <p id="today-panel-subtitle">Loading today’s plan…</p>
+          </div>
+          <a class="button button--ghost-dark today-panel__calendar-link" href="#calendar" data-tab-link="calendar">Full calendar</a>
+        </div>
+        <div class="today-panel__sessions" id="today-workouts"></div>
+      </section>
 
       <section class="hero__content" id="dashboard">
         <p class="eyebrow">June 1 → Aug 1 training block</p>
@@ -38,13 +63,6 @@
     </header>
 
     <main>
-      <nav class="section section--overlap tab-list" role="tablist" aria-label="Training plan tabs">
-        <a class="tab-button is-active" id="tab-calendar-control" href="#calendar" role="tab" aria-selected="true" data-tab-link="calendar">Calendar</a>
-        <a class="tab-button" id="tab-overview-control" href="#overview" role="tab" aria-selected="false" data-tab-link="overview">Overview</a>
-        <a class="tab-button" id="tab-swim-plan-control" href="#swim-plan" role="tab" aria-selected="false" data-tab-link="swim-plan">Swim Plan</a>
-        <a class="tab-button" id="tab-week-one-control" href="#week-one" role="tab" aria-selected="false" data-tab-link="week-one">June Workouts</a>
-        <a class="tab-button" id="tab-tracking-control" href="#tracking" role="tab" aria-selected="false" data-tab-link="tracking">Tracking</a>
-      </nav>
       <section class="section tab-panel is-active" aria-label="Goal summary" data-tab-panel="calendar">
         <div class="stats-grid" id="summary-cards"></div>
       </section>
@@ -247,25 +265,9 @@
             <button class="button button--primary" id="copy-checkin" type="button">
               Copy weekly check-in
             </button>
-            <button class="button button--secondary" id="download-weekly-plan-csv" type="button">
-              June plan CSV
-            </button>
-            <button class="button button--secondary" id="download-strength-log-csv" type="button">
-              Strength log CSV
-            </button>
-            <button class="button button--secondary" id="download-swim-log-csv" type="button">
-              Swim log CSV
-            </button>
-            <button class="button button--secondary" id="download-daily-checkin-csv" type="button">
-              Daily check-in CSV
-            </button>
             <button class="button button--danger" id="reset-tracking" type="button">
               Reset tracking
             </button>
-          </div>
-          <div class="sheets-export-note">
-            <strong>Google Sheets workflow:</strong>
-            Download these CSVs, upload/import each one into Google Sheets as a separate tab, then use the Google Sheets app on your phone for gym/pool logging.
           </div>
           <p class="small-note">
             Your completion status, pain scores, fatigue, exercise set logs, and notes

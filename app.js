@@ -2503,6 +2503,8 @@ const corosDailyMetrics = {
 const tabIds = ["calendar", "overview", "swim-plan", "week-one", "tracking"];
 const tabAliases = {
   dashboard: "calendar",
+  "today-panel": "calendar",
+  "today-workouts": "calendar",
   "calendar-tracker": "calendar",
   "summary-cards": "calendar",
   phases: "overview",
@@ -2524,6 +2526,8 @@ let calendarTracking = loadCalendarTracking();
 let calendarReschedules = loadCalendarReschedules();
 let calendarDays = buildCalendarDays();
 let calendarEventsAttached = false;
+let todayPanelEventsAttached = false;
+let siteNavEventsAttached = false;
 let lastCalendarDetailTrigger = null;
 let calendarDragState = null;
 let calendarSuppressNextClick = false;
@@ -3698,6 +3702,107 @@ function renderCalendar() {
   }, new Map()).values()];
 
   monthsEl.innerHTML = months.map((month) => renderCalendarMonth(month)).join("");
+  renderTodayPanel();
+}
+
+function getTodayPanelTargetDay() {
+  const todayKey = dateToKey(new Date());
+  const today = getCalendarDayByDateKey(todayKey);
+  if (today) return { day: today, isToday: true };
+
+  const fallbackDateKey = getCalendarJumpTargetDateKey();
+  const fallbackDay = fallbackDateKey ? getCalendarDayByDateKey(fallbackDateKey) : null;
+  return { day: fallbackDay, isToday: false };
+}
+
+function renderTodayPanel() {
+  const panelEl = document.querySelector("#today-panel");
+  const titleEl = document.querySelector("#today-panel-title");
+  const subtitleEl = document.querySelector("#today-panel-subtitle");
+  const workoutsEl = document.querySelector("#today-workouts");
+  if (!panelEl || !titleEl || !subtitleEl || !workoutsEl) return;
+
+  const { day, isToday } = getTodayPanelTargetDay();
+  if (!day) {
+    titleEl.textContent = "Today’s workouts";
+    subtitleEl.textContent = "No calendar workouts are available yet.";
+    panelEl.classList.add("is-empty");
+    workoutsEl.innerHTML = `
+      <article class="today-session today-session--empty">
+        <div class="today-session__body">
+          <h3>No workouts found</h3>
+          <p>Check the calendar once the training block has been added.</p>
+        </div>
+      </article>
+    `;
+    return;
+  }
+
+  const completion = getCalendarDayCompletion(day);
+  const dateLabel = formatCalendarDate(day);
+  const completeCopy = day.sessions.length
+    ? `${completion.completed}/${completion.total} complete`
+    : "No planned workouts";
+
+  titleEl.textContent = isToday ? "Today’s workouts" : "Next workouts";
+  subtitleEl.textContent = isToday
+    ? `${dateLabel} · ${completeCopy}`
+    : `Today is outside the plan, so showing ${dateLabel} · ${completeCopy}`;
+  panelEl.dataset.todayDate = day.dateKey;
+  panelEl.classList.toggle("is-empty", !day.sessions.length);
+  panelEl.classList.toggle("is-complete", completion.isComplete);
+
+  if (!day.sessions.length) {
+    workoutsEl.innerHTML = `
+      <article class="today-session today-session--empty">
+        <div class="today-session__body">
+          <h3>No planned workouts</h3>
+          <p>Use this as a recovery or logistics day unless your coach adjusts the plan.</p>
+        </div>
+      </article>
+    `;
+    return;
+  }
+
+  workoutsEl.innerHTML = day.sessions.map((session) => renderTodaySession(session)).join("");
+}
+
+function renderTodaySession(session) {
+  const completed = getCalendarSessionCompleted(session);
+  const inputId = `today-${session.id}-complete`;
+  const primaryCategory = calendarSessionPrimaryCategory(session);
+  const compactCategory = getCalendarSessionCompactCategory(session);
+  const compactDescriptor = getCalendarSessionCompactDescriptor(session);
+
+  return `
+    <article class="today-session calendar-session--${primaryCategory} calendar-session--compact-${compactCategory} ${completed ? "is-complete" : ""}">
+      <label class="today-session__toggle" for="${inputId}">
+        <input
+          id="${inputId}"
+          type="checkbox"
+          data-calendar-session="${session.id}"
+          data-calendar-date="${session.dateKey}"
+          ${completed ? "checked" : ""}
+        />
+        <span>${completed ? "Done" : "Mark done"}</span>
+      </label>
+      <div class="today-session__body">
+        <div class="today-session__meta">
+          <span class="duration-pill">${escapeHtml(session.duration)}</span>
+          ${session.categories.map((category) => `<span class="${tagClass(category)}">${category}</span>`).join("")}
+          ${renderCalendarSessionMovedBadge(session)}
+        </div>
+        <h3>${escapeHtml(session.title)}</h3>
+        <p>${escapeHtml(session.note)}</p>
+        <div class="today-session__footer">
+          <span>${escapeHtml(getCalendarSessionCompactLabel(session))} · ${escapeHtml(compactDescriptor)}</span>
+          <button class="button button--secondary today-session__detail" type="button" data-calendar-session-open="${session.id}">
+            Details
+          </button>
+        </div>
+      </div>
+    </article>
+  `;
 }
 
 function renderCalendarProgress() {
@@ -3811,6 +3916,7 @@ function renderCalendarDay(day) {
     <section class="${classes.join(" ")}" data-calendar-day="${day.dateKey}">
       <div class="calendar-day__header">
         <span class="calendar-day__number">${day.dayOfMonth}</span>
+        <span class="calendar-day__weekday">${calendarWeekdayNames[day.weekday]}</span>
         <span class="calendar-day__count">${completion.completed}/${completion.total}</span>
       </div>
       ${renderCalendarDayCorosMetrics(day)}
@@ -4604,10 +4710,80 @@ function attachTabEvents() {
 
     event.preventDefault();
     activateTab(tabLink.dataset.tabLink, { focusPanel: true, updateHash: true });
+    closeSiteNav();
   });
 
   window.addEventListener("hashchange", () => {
     activateTab(getTabIdForHash(), { scrollToHash: true });
+  });
+}
+
+function setSiteNavOpen(isOpen) {
+  const nav = document.querySelector("[data-site-nav]");
+  const toggle = document.querySelector("[data-site-nav-toggle]");
+  if (!nav || !toggle) return;
+
+  nav.classList.toggle("is-open", isOpen);
+  toggle.setAttribute("aria-expanded", String(isOpen));
+}
+
+function closeSiteNav() {
+  setSiteNavOpen(false);
+}
+
+function attachSiteNavEvents() {
+  if (siteNavEventsAttached) return;
+
+  const nav = document.querySelector("[data-site-nav]");
+  const toggle = document.querySelector("[data-site-nav-toggle]");
+  if (!nav || !toggle) return;
+
+  siteNavEventsAttached = true;
+
+  toggle.addEventListener("click", () => {
+    const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+    setSiteNavOpen(!isExpanded);
+  });
+
+  nav.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    if (event.target.closest("a")) closeSiteNav();
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    if (!nav.classList.contains("is-open") || nav.contains(event.target)) return;
+    closeSiteNav();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeSiteNav();
+  });
+}
+
+function attachTodayPanelEvents() {
+  if (todayPanelEventsAttached) return;
+
+  const todayPanel = document.querySelector("#today-panel");
+  if (!todayPanel) return;
+
+  todayPanelEventsAttached = true;
+
+  todayPanel.addEventListener("change", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const checkbox = event.target.closest("[data-calendar-session]");
+    if (!checkbox) return;
+
+    updateCalendarSessionCompletion(checkbox);
+  });
+
+  todayPanel.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const openTrigger = event.target.closest("[data-calendar-session-open]");
+    if (!openTrigger) return;
+
+    activateTab("calendar", { updateHash: true });
+    openCalendarDetail(openTrigger.dataset.calendarSessionOpen, openTrigger);
   });
 }
 
@@ -4838,161 +5014,6 @@ function getWorkoutDateKey(workout) {
   return weekOneDatesByTrackingId[workout.id] ?? "";
 }
 
-function formatWorkoutDetailsForSheets(workout) {
-  return workout.blocks
-    .filter((block) => !/^track$/i.test(block.title.trim()))
-    .map((block) => `${block.title}: ${block.items.join(" | ")}`)
-    .join("\n");
-}
-
-function formatWorkoutTrackItemsForSheets(workout) {
-  return workout.blocks
-    .filter((block) => /^track$/i.test(block.title.trim()))
-    .flatMap((block) => block.items)
-    .join(" | ");
-}
-
-function extractPlannedYardage(workout) {
-  const swimBlock = workout.blocks.find((block) => /swim/i.test(block.title));
-  return extractCalendarYardage(swimBlock?.title, ...(swimBlock?.items ?? [])) || "";
-}
-
-function csvEscape(value) {
-  const text = String(value ?? "");
-  if (/[",\n\r]/.test(text)) return `"${text.replaceAll('"', '""')}"`;
-  return text;
-}
-
-function rowsToCsv(rows) {
-  return rows.map((row) => row.map(csvEscape).join(",")).join("\n");
-}
-
-function downloadCsv(filename, rows) {
-  const csv = rowsToCsv(rows);
-  const blob = new Blob([`\ufeff${csv}`], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-  showToast(`${filename} downloaded for Google Sheets.`);
-}
-
-function buildWeeklyPlanCsvRows() {
-  return [
-    ["Date", "Day", "Workout Title", "Categories", "Duration", "Purpose", "Workout Details", "Track"],
-    ...workouts.map((workout) => [
-      getWorkoutDateKey(workout),
-      workout.day,
-      workout.title,
-      workout.categories.join("; "),
-      workout.duration,
-      workout.purpose,
-      formatWorkoutDetailsForSheets(workout),
-      formatWorkoutTrackItemsForSheets(workout),
-    ]),
-  ];
-}
-
-function buildStrengthLogCsvRows() {
-  const rows = [["Date", "Day", "Workout Title", "Exercise", "Set", "Load", "Reps or Seconds", "RPE", "Set Notes"]];
-
-  workouts.forEach((workout) => {
-    const day = getDayTracking(workout.id);
-    Object.entries(day.exerciseLogs ?? {}).forEach(([exerciseKey, sets]) => {
-      const exercise = strengthExerciseCatalog[exerciseKey];
-      if (!exercise) return;
-
-      sets.forEach((rawSet, setIndex) => {
-        const set = normalizeExerciseSet(rawSet);
-        rows.push([
-          getWorkoutDateKey(workout),
-          workout.day,
-          workout.title,
-          exercise.name,
-          setIndex + 1,
-          set.load,
-          set.reps,
-          set.rpe,
-          set.notes,
-        ]);
-      });
-    });
-  });
-
-  return rows;
-}
-
-function buildSwimLogCsvRows() {
-  return [
-    [
-      "Date",
-      "Day",
-      "Workout Title",
-      "Total Yards Planned",
-      "Longest Nonstop Swim",
-      "Swim RPE",
-      "Stroke Count per 25 yd",
-      "Breathing Calmness",
-      "Technique/Form Notes",
-    ],
-    ...workouts
-      .filter((workout) => workout.categories.includes("swim"))
-      .map((workout) => {
-        const day = getDayTracking(workout.id);
-        return [
-          getWorkoutDateKey(workout),
-          workout.day,
-          workout.title,
-          extractPlannedYardage(workout),
-          day.nonstopSwim,
-          day.swimRpe,
-          day.strokeCount,
-          day.breathingCalmness,
-          day.swimTechniqueNotes,
-        ];
-      }),
-  ];
-}
-
-function buildDailyCheckinCsvRows() {
-  return [
-    ["Date", "Day", "Workout Title", "Completed", "Shin Pain", "Shoulder Pain", "Fatigue", "Notes"],
-    ...workouts.map((workout) => {
-      const day = getDayTracking(workout.id);
-      return [
-        getWorkoutDateKey(workout),
-        workout.day,
-        workout.title,
-        day.completed ? "yes" : "no",
-        day.shinPain,
-        day.shoulderPain,
-        day.fatigue,
-        day.notes,
-      ];
-    }),
-  ];
-}
-
-function downloadWeeklyPlanCsv() {
-  downloadCsv("june_workout_plan.csv", buildWeeklyPlanCsvRows());
-}
-
-function downloadStrengthLogCsv() {
-  downloadCsv("june_strength_log.csv", buildStrengthLogCsvRows());
-}
-
-function downloadSwimLogCsv() {
-  downloadCsv("june_swim_log.csv", buildSwimLogCsvRows());
-}
-
-function downloadDailyCheckinCsv() {
-  downloadCsv("june_daily_checkin.csv", buildDailyCheckinCsvRows());
-}
-
 function resetTracking() {
   const confirmed = window.confirm("Reset all calendar, workout moves, and June workout tracking saved in this browser?");
   if (!confirmed) return;
@@ -5035,16 +5056,14 @@ function init() {
   renderWorkouts();
   renderTrackingSummary();
   attachCalendarEvents();
+  attachTodayPanelEvents();
+  attachSiteNavEvents();
   attachTabEvents();
   attachFilterEvents();
   attachTrackingEvents();
   activateTab(getTabIdForHash(), { scrollToHash: Boolean(window.location.hash) });
 
   document.querySelector("#copy-checkin").addEventListener("click", copyCheckin);
-  document.querySelector("#download-weekly-plan-csv").addEventListener("click", downloadWeeklyPlanCsv);
-  document.querySelector("#download-strength-log-csv").addEventListener("click", downloadStrengthLogCsv);
-  document.querySelector("#download-swim-log-csv").addEventListener("click", downloadSwimLogCsv);
-  document.querySelector("#download-daily-checkin-csv").addEventListener("click", downloadDailyCheckinCsv);
   document.querySelector("#reset-tracking").addEventListener("click", resetTracking);
 }
 
