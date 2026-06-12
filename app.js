@@ -489,114 +489,6 @@ const swimReadinessChecklist = [
   "Use a support person/escort, clear route, weather/current check, and abort plan for the open-water attempt.",
 ];
 
-const strengthExerciseCatalog = {
-  rdl: {
-    name: "Romanian deadlift",
-    shortName: "RDL",
-    unitLabel: "Weight",
-    resultLabel: "Reps",
-    resultPlaceholder: "8",
-    loadPlaceholder: "135 lb",
-    notePlaceholder: "Grip, hamstring feel, straps, tempo...",
-    summaryType: "loadReps",
-  },
-  weightedPullUp: {
-    name: "Weighted pull-up",
-    shortName: "Weighted pull-up",
-    unitLabel: "Added weight",
-    resultLabel: "Reps",
-    resultPlaceholder: "5",
-    loadPlaceholder: "+10 lb or BW",
-    notePlaceholder: "Grip, chin over bar, band assist, bodyweight...",
-    summaryType: "loadReps",
-  },
-  bulgarianSplitSquat: {
-    name: "Bulgarian split squat",
-    shortName: "Bulgarian split squat",
-    unitLabel: "Load",
-    resultLabel: "Reps/side",
-    resultPlaceholder: "8/side",
-    loadPlaceholder: "25s or bodyweight",
-    notePlaceholder: "Left/right balance, knee tracking, depth...",
-    summaryType: "loadReps",
-  },
-  frontPlank: {
-    name: "Front plank",
-    shortName: "Plank",
-    unitLabel: "Load",
-    resultLabel: "Seconds",
-    resultPlaceholder: "75",
-    loadPlaceholder: "BW",
-    notePlaceholder: "Brace quality, hips, easy/hard...",
-    summaryType: "duration",
-  },
-  calfRaise: {
-    name: "Calf raise",
-    shortName: "Calf raise",
-    unitLabel: "Load",
-    resultLabel: "Reps",
-    resultPlaceholder: "12",
-    loadPlaceholder: "machine or DBs",
-    notePlaceholder: "Full range, straight/bent knee...",
-    summaryType: "loadReps",
-  },
-  tibialisRaise: {
-    name: "Tibialis raise",
-    shortName: "Tibialis raise",
-    unitLabel: "Load",
-    resultLabel: "Reps",
-    resultPlaceholder: "15",
-    loadPlaceholder: "BW or machine",
-    notePlaceholder: "Shin response, controlled tempo...",
-    summaryType: "loadReps",
-  },
-  hangingKneeRaise: {
-    name: "Hanging knee raise",
-    shortName: "Knee raise",
-    unitLabel: "Load",
-    resultLabel: "Reps",
-    resultPlaceholder: "10",
-    loadPlaceholder: "BW",
-    notePlaceholder: "Swing control, abs vs hip flexors...",
-    summaryType: "loadReps",
-  },
-  deadBug: {
-    name: "Dead bug / hollow hold",
-    shortName: "Core hold",
-    unitLabel: "Load",
-    resultLabel: "Reps/sec",
-    resultPlaceholder: "30 sec",
-    loadPlaceholder: "BW",
-    notePlaceholder: "Brace quality, low-back contact...",
-    summaryType: "duration",
-  },
-};
-
-const workoutExerciseLogConfig = {
-  "mon-jun-1": ["rdl", "frontPlank", "calfRaise", "tibialisRaise"],
-  "tue-jun-2": ["weightedPullUp", "deadBug"],
-  "thu-jun-4": ["weightedPullUp", "hangingKneeRaise", "tibialisRaise"],
-  "fri-jun-5": ["bulgarianSplitSquat", "calfRaise", "tibialisRaise", "hangingKneeRaise"],
-  "mon-jun-8": ["rdl", "frontPlank", "calfRaise", "tibialisRaise"],
-  "tue-jun-9": ["weightedPullUp", "deadBug"],
-  "thu-jun-11": ["weightedPullUp", "hangingKneeRaise", "tibialisRaise"],
-  "fri-jun-12": ["bulgarianSplitSquat", "calfRaise", "tibialisRaise", "hangingKneeRaise"],
-  "mon-jun-15": ["rdl", "frontPlank", "calfRaise", "tibialisRaise"],
-  "thu-jun-18": ["weightedPullUp", "hangingKneeRaise", "tibialisRaise"],
-  "fri-jun-19": ["bulgarianSplitSquat", "calfRaise", "tibialisRaise"],
-  "mon-jun-22": ["rdl", "frontPlank", "calfRaise", "tibialisRaise"],
-  "thu-jun-25": ["weightedPullUp", "deadBug"],
-  "mon-jun-29": ["rdl", "frontPlank", "calfRaise", "tibialisRaise"],
-};
-
-const defaultExerciseSetCount = 3;
-const workoutExerciseSetCounts = {
-  "thu-jun-4": { weightedPullUp: 4 },
-  "thu-jun-11": { weightedPullUp: 4 },
-  "thu-jun-18": { weightedPullUp: 4 },
-  "fri-jun-19": { bulgarianSplitSquat: 2 },
-  "thu-jun-25": { weightedPullUp: 3 },
-};
 
 const workouts = [
   {
@@ -2546,72 +2438,11 @@ function saveTracking() {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tracking));
 }
 
-function createBlankExerciseSet() {
-  return { load: "", reps: "", rpe: "", notes: "" };
-}
-
-function getExerciseKeysForWorkout(workoutId) {
-  return workoutExerciseLogConfig[workoutId] ?? [];
-}
-
-function getDefaultExerciseLogs(workoutId) {
-  return Object.fromEntries(
-    getExerciseKeysForWorkout(workoutId).map((exerciseKey) => [
-      exerciseKey,
-      Array.from({ length: getExerciseSetCount(workoutId, exerciseKey) }, createBlankExerciseSet),
-    ]),
-  );
-}
-
-function getExerciseSetCount(workoutId, exerciseKey) {
-  return workoutExerciseSetCounts[workoutId]?.[exerciseKey] ?? defaultExerciseSetCount;
-}
-
-function normalizeExerciseSet(set = {}) {
-  return {
-    load: set.load ?? set.weight ?? "",
-    reps: set.reps ?? set.seconds ?? "",
-    rpe: set.rpe ?? "",
-    notes: set.notes ?? "",
-  };
-}
-
-function normalizeExerciseLogs(workoutId, savedLogs = {}) {
-  const defaultLogs = getDefaultExerciseLogs(workoutId);
-  const validSavedLogs = savedLogs && typeof savedLogs === "object" ? savedLogs : {};
-  const exerciseKeys = [
-    ...new Set([...Object.keys(defaultLogs), ...Object.keys(validSavedLogs)]),
-  ].filter((exerciseKey) => strengthExerciseCatalog[exerciseKey]);
-
-  return Object.fromEntries(
-    exerciseKeys.map((exerciseKey) => {
-      const savedSets = Array.isArray(validSavedLogs[exerciseKey]) ? validSavedLogs[exerciseKey] : [];
-      const defaultSetCount = defaultLogs[exerciseKey]?.length ?? defaultExerciseSetCount;
-      const setCount = Math.max(defaultSetCount, savedSets.length);
-      return [
-        exerciseKey,
-        Array.from({ length: setCount }, (_, index) => normalizeExerciseSet(savedSets[index])),
-      ];
-    }),
-  );
-}
-
 function getDayTracking(id) {
   const saved = tracking[id] ?? {};
-
   return {
     completed: false,
-    shinPain: "",
-    shoulderPain: "",
-    fatigue: "",
-    nonstopSwim: "",
-    swimRpe: "",
-    strokeCount: "",
-    breathingCalmness: "",
-    swimTechniqueNotes: "",
-    notes: "",
     ...saved,
-    exerciseLogs: normalizeExerciseLogs(id, saved.exerciseLogs),
   };
 }
 
@@ -4274,6 +4105,7 @@ function renderWorkouts() {
             </div>
             <p class="workout-purpose">${workout.purpose}</p>
             ${workout.blocks
+              .filter((block) => block.title !== "Track")
               .map(
                 (block) => `
                   <section class="workout-block">
@@ -4300,218 +4132,7 @@ function renderTrackingForm(workout, dayTracking) {
         <input type="checkbox" name="completed" ${dayTracking.completed ? "checked" : ""} />
         Completed / adjusted intentionally
       </label>
-      <div class="tracking-form__row">
-        <div class="field">
-          <label for="${workout.id}-shin">Shin pain 0–10</label>
-          <input id="${workout.id}-shin" name="shinPain" inputmode="numeric" min="0" max="10" type="number" value="${escapeHtml(dayTracking.shinPain)}" />
-        </div>
-        <div class="field">
-          <label for="${workout.id}-shoulder">Shoulder pain 0–10</label>
-          <input id="${workout.id}-shoulder" name="shoulderPain" inputmode="numeric" min="0" max="10" type="number" value="${escapeHtml(dayTracking.shoulderPain)}" />
-        </div>
-        <div class="field">
-          <label for="${workout.id}-fatigue">Fatigue 1–5</label>
-          <input id="${workout.id}-fatigue" name="fatigue" inputmode="numeric" min="1" max="5" type="number" value="${escapeHtml(dayTracking.fatigue)}" />
-        </div>
-      </div>
-      ${workout.categories.includes("swim") ? renderSwimTrackingFields(workout, dayTracking) : ""}
-      ${renderExerciseLogFields(workout, dayTracking)}
-      <div class="field">
-        <label for="${workout.id}-notes">Notes</label>
-        <textarea id="${workout.id}-notes" name="notes" placeholder="How did it feel? Any modifications?">${escapeHtml(dayTracking.notes)}</textarea>
-      </div>
     </form>
-  `;
-}
-
-function renderSwimTrackingFields(workout, dayTracking) {
-  return `
-    <section class="swim-tracking-fields" aria-label="Swim technique tracking">
-      <h4>Swim technique checkpoint</h4>
-      <div class="tracking-form__row tracking-form__row--swim">
-        <div class="field">
-          <label for="${workout.id}-nonstop-swim">Longest nonstop swim yd</label>
-          <input id="${workout.id}-nonstop-swim" name="nonstopSwim" inputmode="numeric" min="0" type="number" value="${escapeHtml(dayTracking.nonstopSwim)}" />
-        </div>
-        <div class="field">
-          <label for="${workout.id}-swim-rpe">Swim RPE 1–10</label>
-          <input id="${workout.id}-swim-rpe" name="swimRpe" inputmode="numeric" min="1" max="10" type="number" value="${escapeHtml(dayTracking.swimRpe)}" />
-        </div>
-        <div class="field">
-          <label for="${workout.id}-stroke-count">Stroke count / 25 yd</label>
-          <input id="${workout.id}-stroke-count" name="strokeCount" inputmode="numeric" min="0" type="number" value="${escapeHtml(dayTracking.strokeCount)}" />
-        </div>
-        <div class="field">
-          <label for="${workout.id}-breathing-calmness">Breathing calmness 1–5</label>
-          <input id="${workout.id}-breathing-calmness" name="breathingCalmness" inputmode="numeric" min="1" max="5" type="number" value="${escapeHtml(dayTracking.breathingCalmness)}" />
-        </div>
-      </div>
-      <div class="field">
-        <label for="${workout.id}-swim-technique-notes">Drill/form notes</label>
-        <textarea id="${workout.id}-swim-technique-notes" name="swimTechniqueNotes" placeholder="Which drill exposed the biggest limiter? Breathing, body position, catch, sighting, etc.">${escapeHtml(dayTracking.swimTechniqueNotes)}</textarea>
-      </div>
-    </section>
-  `;
-}
-
-function renderExerciseLogFields(workout, dayTracking) {
-  const exerciseEntries = Object.entries(dayTracking.exerciseLogs ?? {}).filter(
-    ([exerciseKey]) => strengthExerciseCatalog[exerciseKey],
-  );
-
-  if (!exerciseEntries.length) return "";
-
-  return `
-    <section class="exercise-log-fields" aria-label="Strength exercise performance logging">
-      <div class="exercise-log-fields__heading">
-        <h4>Exercise performance log</h4>
-        <p>Save load, reps/seconds, RPE, and notes per set so future workouts can be adjusted from real performance.</p>
-      </div>
-      <div class="exercise-log-list">
-        ${exerciseEntries.map(([exerciseKey, sets]) => renderExerciseLogCard(workout.id, exerciseKey, sets)).join("")}
-      </div>
-    </section>
-  `;
-}
-
-function renderExerciseLogCard(workoutId, exerciseKey, sets) {
-  const exercise = strengthExerciseCatalog[exerciseKey];
-  const safeSets = sets.length ? sets : Array.from({ length: getExerciseSetCount(workoutId, exerciseKey) }, createBlankExerciseSet);
-
-  return `
-    <article class="exercise-log-card">
-      <header class="exercise-log-card__header">
-        <h5>${escapeHtml(exercise.name)}</h5>
-        <span>${escapeHtml(exercise.shortName)}</span>
-      </header>
-      <div class="exercise-set-grid">
-        ${safeSets
-          .map((set, setIndex) => renderExerciseSetRow(workoutId, exerciseKey, exercise, set, setIndex))
-          .join("")}
-      </div>
-    </article>
-  `;
-}
-
-function renderExerciseSetRow(workoutId, exerciseKey, exercise, set, setIndex) {
-  const fieldPrefix = `${workoutId}-${exerciseKey}-${setIndex}`;
-  const namePrefix = `exercise:${exerciseKey}:${setIndex}`;
-
-  return `
-    <div class="exercise-set-row">
-      <strong>Set ${setIndex + 1}</strong>
-      <div class="field">
-        <label for="${fieldPrefix}-load">${escapeHtml(exercise.unitLabel)}</label>
-        <input id="${fieldPrefix}-load" name="${namePrefix}:load" type="text" inputmode="decimal" value="${escapeHtml(set.load)}" placeholder="${escapeHtml(exercise.loadPlaceholder)}" />
-      </div>
-      <div class="field">
-        <label for="${fieldPrefix}-reps">${escapeHtml(exercise.resultLabel)}</label>
-        <input id="${fieldPrefix}-reps" name="${namePrefix}:reps" type="text" inputmode="decimal" value="${escapeHtml(set.reps)}" placeholder="${escapeHtml(exercise.resultPlaceholder)}" />
-      </div>
-      <div class="field">
-        <label for="${fieldPrefix}-rpe">RPE</label>
-        <input id="${fieldPrefix}-rpe" name="${namePrefix}:rpe" type="number" inputmode="decimal" min="1" max="10" step="0.5" value="${escapeHtml(set.rpe)}" placeholder="7" />
-      </div>
-      <div class="field exercise-set-row__notes">
-        <label for="${fieldPrefix}-notes">Set notes</label>
-        <input id="${fieldPrefix}-notes" name="${namePrefix}:notes" type="text" value="${escapeHtml(set.notes)}" placeholder="${escapeHtml(exercise.notePlaceholder)}" />
-      </div>
-    </div>
-  `;
-}
-
-function parseExerciseLogsFromForm(form, data) {
-  const workoutId = form.dataset.trackingForm;
-  const parsedLogs = getDefaultExerciseLogs(workoutId);
-
-  for (const [name, value] of data.entries()) {
-    if (!name.startsWith("exercise:")) continue;
-
-    const [, exerciseKey, setIndexRaw, fieldName] = name.split(":");
-    const setIndex = Number(setIndexRaw);
-    if (!strengthExerciseCatalog[exerciseKey] || !Number.isInteger(setIndex) || setIndex < 0) continue;
-
-    if (!parsedLogs[exerciseKey]) parsedLogs[exerciseKey] = [];
-    while (parsedLogs[exerciseKey].length <= setIndex) parsedLogs[exerciseKey].push(createBlankExerciseSet());
-    parsedLogs[exerciseKey][setIndex][fieldName] = value ?? "";
-  }
-
-  return Object.fromEntries(
-    Object.entries(parsedLogs).map(([exerciseKey, sets]) => [exerciseKey, sets.map(normalizeExerciseSet)]),
-  );
-}
-
-function hasLoggedExerciseSet(set) {
-  return [set.load, set.reps, set.rpe, set.notes].some((value) => String(value ?? "").trim());
-}
-
-function getLoggedExerciseEntries(exerciseKey) {
-  return workouts.flatMap((workout) => {
-    const day = getDayTracking(workout.id);
-    const sets = day.exerciseLogs?.[exerciseKey] ?? [];
-
-    return sets
-      .map((set, setIndex) => ({ workout, set: normalizeExerciseSet(set), setIndex }))
-      .filter(({ set }) => hasLoggedExerciseSet(set));
-  });
-}
-
-function parseLeadingNumber(value) {
-  const match = String(value ?? "").match(/-?\d+(?:\.\d+)?/);
-  return match ? Number(match[0]) : null;
-}
-
-function formatExerciseSetForDisplay(exerciseKey, set) {
-  const exercise = strengthExerciseCatalog[exerciseKey];
-  const pieces = [];
-  if (set.load) pieces.push(set.load);
-  if (set.reps) pieces.push(`${set.reps} ${exercise.resultLabel.toLowerCase()}`);
-  if (set.rpe) pieces.push(`RPE ${set.rpe}`);
-  return pieces.join(" · ") || "logged";
-}
-
-function getLatestExerciseSummary(exerciseKey) {
-  const entries = getLoggedExerciseEntries(exerciseKey);
-  const latest = entries.at(-1);
-  if (!latest) return "not logged";
-
-  return `${latest.workout.date} set ${latest.setIndex + 1}: ${formatExerciseSetForDisplay(exerciseKey, latest.set)}`;
-}
-
-function getBestDurationSummary(exerciseKey) {
-  const entries = getLoggedExerciseEntries(exerciseKey)
-    .map((entry) => ({ ...entry, seconds: parseLeadingNumber(entry.set.reps) }))
-    .filter((entry) => Number.isFinite(entry.seconds));
-  if (!entries.length) return "not logged";
-
-  const best = entries.reduce((winner, entry) => (entry.seconds > winner.seconds ? entry : winner), entries[0]);
-  return `${best.seconds}s on ${best.workout.date} set ${best.setIndex + 1}`;
-}
-
-function renderStrengthPerformanceSummary() {
-  const items = [
-    { label: "Latest RDL", value: getLatestExerciseSummary("rdl") },
-    { label: "Latest pull-up", value: getLatestExerciseSummary("weightedPullUp") },
-    { label: "Latest split squat", value: getLatestExerciseSummary("bulgarianSplitSquat") },
-    { label: "Best plank", value: getBestDurationSummary("frontPlank") },
-  ];
-
-  return `
-    <section class="strength-performance-summary" aria-label="Strength performance summary">
-      <h4>Strength performance</h4>
-      <div class="strength-performance-grid">
-        ${items
-          .map(
-            (item) => `
-              <article class="strength-performance-card">
-                <span>${escapeHtml(item.label)}</span>
-                <strong>${escapeHtml(item.value)}</strong>
-              </article>
-            `,
-          )
-          .join("")}
-      </div>
-    </section>
   `;
 }
 
@@ -4532,65 +4153,10 @@ function renderTrackingSummary() {
     return { label, done, total, percent: total ? Math.round((done / total) * 100) : 0 };
   });
 
-  const painValues = workouts
-    .map((workout) => getDayTracking(workout.id))
-    .flatMap((day) => [Number(day.shinPain), Number(day.shoulderPain)])
-    .filter((value) => Number.isFinite(value) && value > 0);
-  const maxPain = painValues.length ? Math.max(...painValues) : 0;
-
-  const fatigueValues = workouts
-    .map((workout) => Number(getDayTracking(workout.id).fatigue))
-    .filter((value) => Number.isFinite(value) && value > 0);
-  const avgFatigue = fatigueValues.length
-    ? (fatigueValues.reduce((sum, value) => sum + value, 0) / fatigueValues.length).toFixed(1)
-    : "—";
-
-  const swimDays = workouts
-    .filter((workout) => workout.categories.includes("swim"))
-    .map((workout) => getDayTracking(workout.id));
-  const longestNonstopSwim = Math.max(
-    0,
-    ...swimDays.map((day) => Number(day.nonstopSwim)).filter((value) => Number.isFinite(value)),
-  );
-  const swimRpeValues = swimDays
-    .map((day) => Number(day.swimRpe))
-    .filter((value) => Number.isFinite(value) && value > 0);
-  const avgSwimRpe = swimRpeValues.length
-    ? (swimRpeValues.reduce((sum, value) => sum + value, 0) / swimRpeValues.length).toFixed(1)
-    : "—";
-  const breathingValues = swimDays
-    .map((day) => Number(day.breathingCalmness))
-    .filter((value) => Number.isFinite(value) && value > 0);
-  const avgBreathing = breathingValues.length
-    ? (breathingValues.reduce((sum, value) => sum + value, 0) / breathingValues.length).toFixed(1)
-    : "—";
-
   const el = document.querySelector("#tracking-summary");
   el.innerHTML = `
     ${renderSummaryRow("June", completionPercent, `${completed}/${workouts.length} days`)}
     ${categoryTotals.map((item) => renderSummaryRow(item.label, item.percent, `${item.done}/${item.total}`)).join("")}
-    <div class="summary-row">
-      <strong>Max pain</strong>
-      <div class="progress-bar"><span style="width:${Math.min(maxPain * 10, 100)}%"></span></div>
-      <span>${maxPain || "—"}/10</span>
-    </div>
-    <div class="summary-row">
-      <strong>Avg fatigue</strong>
-      <div class="progress-bar"><span style="width:${avgFatigue === "—" ? 0 : Number(avgFatigue) * 20}%"></span></div>
-      <span>${avgFatigue}/5</span>
-    </div>
-    ${renderSummaryRow("Longest swim", Math.min((longestNonstopSwim / 1250) * 100, 100), `${longestNonstopSwim || "—"} yd`)}
-    <div class="summary-row">
-      <strong>Swim RPE</strong>
-      <div class="progress-bar"><span style="width:${avgSwimRpe === "—" ? 0 : Number(avgSwimRpe) * 10}%"></span></div>
-      <span>${avgSwimRpe}/10</span>
-    </div>
-    <div class="summary-row">
-      <strong>Breathing</strong>
-      <div class="progress-bar"><span style="width:${avgBreathing === "—" ? 0 : Number(avgBreathing) * 20}%"></span></div>
-      <span>${avgBreathing}/5</span>
-    </div>
-    ${renderStrengthPerformanceSummary()}
   `;
 }
 
@@ -4623,19 +4189,7 @@ function updateTrackingFromForm(form, options = {}) {
   const data = new FormData(form);
   const completed = data.get("completed") === "on";
 
-  tracking[id] = {
-    completed,
-    shinPain: data.get("shinPain") ?? "",
-    shoulderPain: data.get("shoulderPain") ?? "",
-    fatigue: data.get("fatigue") ?? "",
-    nonstopSwim: data.get("nonstopSwim") ?? "",
-    swimRpe: data.get("swimRpe") ?? "",
-    strokeCount: data.get("strokeCount") ?? "",
-    breathingCalmness: data.get("breathingCalmness") ?? "",
-    swimTechniqueNotes: data.get("swimTechniqueNotes") ?? "",
-    exerciseLogs: parseExerciseLogsFromForm(form, data),
-    notes: data.get("notes") ?? "",
-  };
+  tracking[id] = { completed };
   saveTracking();
   renderTrackingSummary();
 
@@ -4938,60 +4492,15 @@ function formatCorosMetricsForCheckin(dateKey) {
   ];
 }
 
-function formatExerciseLogsForCheckin(day) {
-  const exerciseLines = Object.entries(day.exerciseLogs ?? {}).flatMap(([exerciseKey, sets]) => {
-    const exercise = strengthExerciseCatalog[exerciseKey];
-    if (!exercise) return [];
-
-    const loggedSets = sets
-      .map((set, setIndex) => ({ set: normalizeExerciseSet(set), setIndex }))
-      .filter(({ set }) => hasLoggedExerciseSet(set));
-    if (!loggedSets.length) return [];
-
-    return [
-      `${exercise.name}:`,
-      ...loggedSets.map(({ set, setIndex }) => {
-        const pieces = [
-          `set ${setIndex + 1}`,
-          set.load ? `load=${set.load}` : "load=not logged",
-          set.reps ? `${exercise.resultLabel.toLowerCase()}=${set.reps}` : `${exercise.resultLabel.toLowerCase()}=not logged`,
-          set.rpe ? `rpe=${set.rpe}` : "rpe=not logged",
-          set.notes ? `notes=${set.notes}` : null,
-        ].filter(Boolean);
-        return `- ${pieces.join(", ")}`;
-      }),
-    ];
-  });
-
-  return exerciseLines.length ? ["Strength performance:", ...exerciseLines] : ["Strength performance: not logged"];
-}
-
 function createCheckinText() {
   const lines = [
     "June check-in: June 1–30",
     "",
     ...workouts.map((workout) => {
       const day = getDayTracking(workout.id);
-      const dateKey = weekOneDatesByTrackingId[workout.id];
-      const swimDetails = workout.categories.includes("swim")
-        ? [
-            `Longest nonstop swim: ${day.nonstopSwim || "not logged"} yd`,
-            `Swim RPE: ${day.swimRpe || "not logged"}/10`,
-            `Stroke count: ${day.strokeCount || "not logged"}/25 yd`,
-            `Breathing calmness: ${day.breathingCalmness || "not logged"}/5`,
-            `Drill/form notes: ${day.swimTechniqueNotes || "—"}`,
-          ]
-        : [];
       return [
         `${workout.day} ${workout.date} — ${workout.title}`,
         `Completed/adjusted: ${day.completed ? "yes" : "no"}`,
-        `Shin pain: ${day.shinPain || "not logged"}/10`,
-        `Shoulder pain: ${day.shoulderPain || "not logged"}/10`,
-        `Fatigue: ${day.fatigue || "not logged"}/5`,
-        ...formatCorosMetricsForCheckin(dateKey),
-        ...swimDetails,
-        ...formatExerciseLogsForCheckin(day),
-        `Notes: ${day.notes || "—"}`,
       ].join("\n");
     }),
   ];

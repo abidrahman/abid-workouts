@@ -17,7 +17,6 @@ Useful additions later:
 
 - Export/import JSON backup
 - Manual sync file download/upload
-- More CSV exports
 
 ## Option 2: Laptop-hosted local server
 

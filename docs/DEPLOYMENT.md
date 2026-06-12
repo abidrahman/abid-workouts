@@ -5,7 +5,7 @@ This app is configured as a static site for GitHub Pages. The production build i
 ## Target URL
 
 ```text
-https://yeskushtia.com/abid-workouts/
+https://abidrahman.github.io/abid-workouts/
 ```
 
 The app uses relative asset URLs so it works locally and when served from the `/abid-workouts/` project-site subpath.
@@ -20,22 +20,6 @@ Expected repository settings:
 2. Go to **Settings → Pages**.
 3. Under **Build and deployment**, choose **GitHub Actions** as the source.
 4. Push or merge into `main` to trigger the deployment workflow.
-
-## Custom-domain notes
-
-The apex domain `yeskushtia.com` is already pointed at the user site repository:
-
-```text
-abidrahman/yeskushtia.github.io
-```
-
-For a project page under that domain, the expected URL path is based on this repository name:
-
-```text
-/abid-workouts/
-```
-
-Do **not** add a `CNAME` file to this project repository for `yeskushtia.com`; the user site owns the apex domain. Adding the same custom domain to multiple repositories can create conflicts.
 
 ## Private repository caveat
 

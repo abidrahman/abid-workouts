@@ -2,17 +2,15 @@
 
 A mini web app for tracking a 3-month training block for Mt. Baker summit preparation and a supported Lake Union swim.
 
-The app includes a calendar, workout details, training phase overview, swim progression, CSV exports, and browser-based progress tracking.
+The app includes a calendar, workout details, training phase overview, swim progression, and browser-based progress tracking.
 
 ## Hosted target
 
-This project is configured for GitHub Pages as a project site under the existing `yeskushtia.com` domain:
+The app is deployed at:
 
 ```text
-https://yeskushtia.com/abid-workouts/
+https://abidrahman.github.io/abid-workouts/
 ```
-
-Because `yeskushtia.com` is already attached to `abidrahman/yeskushtia.github.io`, this repository should not define its own `CNAME` file. GitHub Pages project sites normally inherit the user-site custom domain and are served under `/<repo-name>/`.
 
 ## Requirements
 
