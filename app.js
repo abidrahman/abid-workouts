@@ -2661,6 +2661,7 @@ function applyManualActivityMatch(activityId, sessionId) {
   renderActivityMatchQueue();
   ActivityManager.renderActivityList(syncedActivities);
   showToast(`Linked to ${session.title}`);
+  if (isMatchingTabActive()) renderMatchingTab();
 }
 
 function markActivityAsExtra(activityId) {
@@ -2681,6 +2682,446 @@ function markActivityAsExtra(activityId) {
   renderActivityMatchQueue();
   ActivityManager.renderActivityList(syncedActivities);
   showToast(`Marked "${activity.name}" as extra workout`);
+  if (isMatchingTabActive()) renderMatchingTab();
+}
+
+let skippedReviewSessions = new Set();
+let matchingTabEventsAttached = false;
+
+function isMatchingTabActive() {
+  return !!document.querySelector('[data-tab-panel="matching"].is-active');
+}
+
+function formatMatchingDate(dateKey) {
+  if (!dateKey) return "";
+  const date = new Date(dateKey + "T00:00:00");
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function getLinkedActivityForSession(sessionId) {
+  const autoMatched = getAutoMatchedActivities();
+  if (autoMatched[sessionId]) {
+    const activityId = autoMatched[sessionId].activityId;
+    return syncedActivities.find((a) => String(a.id) === activityId) ?? null;
+  }
+  const manualMatches = loadManualActivityMatches();
+  const manualEntry = Object.entries(manualMatches).find(([, m]) => m.workoutId === sessionId);
+  if (manualEntry) {
+    const activityId = manualEntry[0];
+    return syncedActivities.find((a) => String(a.id) === activityId) ?? null;
+  }
+  return null;
+}
+
+function unlinkActivity(activityId) {
+  const id = String(activityId);
+  const manualMatches = loadManualActivityMatches();
+  delete manualMatches[id];
+  saveManualActivityMatches(manualMatches);
+
+  const autoMatched = getAutoMatchedActivities();
+  for (const [sessionId, entry] of Object.entries(autoMatched)) {
+    if (String(entry?.activityId) === id) {
+      delete autoMatched[sessionId];
+      const trackEntry = calendarTracking[sessionId];
+      if (trackEntry && String(trackEntry.activityId) === id) {
+        calendarTracking[sessionId] = { ...trackEntry, completed: false };
+        delete calendarTracking[sessionId].activityId;
+        delete calendarTracking[sessionId].autoCheckedAt;
+      }
+      break;
+    }
+  }
+  saveAutoMatchedActivities(autoMatched);
+  saveCalendarTracking();
+
+  renderCalendar();
+  renderMatchingTab();
+  showToast("Activity unlinked");
+}
+
+function unlinkFromExtra(activityId) {
+  const extra = loadExtraWorkouts();
+  delete extra[String(activityId)];
+  saveExtraWorkouts(extra);
+  renderCalendar();
+  renderMatchingTab();
+}
+
+function restoreDismissed(activityId) {
+  const dismissed = getDismissedActivities();
+  delete dismissed[String(activityId)];
+  window.localStorage.setItem(DISMISSED_ACTIVITIES_KEY, JSON.stringify(dismissed));
+  renderMatchingTab();
+}
+
+function renderMatchingTab() {
+  const container = document.querySelector("#matching-tracker");
+  if (!container) return;
+
+  const sessions = getAllCalendarSessions();
+  const activities = [...syncedActivities].sort((a, b) => {
+    const aKey = getActivityDateKey(a) || "";
+    const bKey = getActivityDateKey(b) || "";
+    return bKey.localeCompare(aKey);
+  });
+
+  const linkedSessionIds = new Set(
+    sessions.filter((s) => getLinkedActivityForSession(s.id)).map((s) => s.id)
+  );
+
+  const linkedCount = linkedSessionIds.size;
+  const summaryEl = document.querySelector("#matching-summary");
+  if (summaryEl) {
+    summaryEl.textContent = `${linkedCount}/${sessions.length} sessions linked · ${activities.length} Strava activities`;
+  }
+
+  // Section A: Needs Review
+  const reviewItems = [];
+  for (const session of sessions) {
+    if (linkedSessionIds.has(session.id)) continue;
+    if (skippedReviewSessions.has(session.id)) continue;
+    const candidates = activities
+      .filter(
+        (a) =>
+          !getLinkedSessionForActivity(String(a.id)) &&
+          !isActivityMarkedAsExtra(String(a.id)) &&
+          !isActivityDismissed(String(a.id))
+      )
+      .map((a) => ({ activity: a, score: scoreSessionCandidate(a, session) }))
+      .filter((item) => item.score >= 30)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+    if (candidates.length > 0) {
+      reviewItems.push({ session, candidates });
+    }
+  }
+
+  const reviewEl = document.querySelector("#matching-needs-review");
+  if (reviewEl) {
+    if (reviewItems.length === 0) {
+      reviewEl.innerHTML = "";
+    } else {
+      reviewEl.innerHTML = `
+        <div class="matching-block">
+          <div class="matching-block__header">
+            <h3>Needs Review</h3>
+            <span class="matching-block__count">${reviewItems.length}</span>
+          </div>
+          <div class="matching-review-list">
+            ${reviewItems
+              .map((item) => {
+                const sessionIdEsc = escapeHtml(item.session.id);
+                const dateStr = escapeHtml(formatMatchingDate(item.session.dateKey));
+                const title = escapeHtml((item.session.title || "").slice(0, 60));
+                const chips = item.candidates
+                  .map((c) => {
+                    const actId = escapeHtml(String(c.activity.id));
+                    const actName = escapeHtml(
+                      (c.activity.name || normalizeActivityTypeDisplay(c.activity.type)).slice(0, 40)
+                    );
+                    const actDate = escapeHtml(formatMatchingDate(getActivityDateKey(c.activity)));
+                    const dur = c.activity.duration ? `${Math.round(c.activity.duration / 60)}m` : "";
+                    return `<button class="matching-candidate-chip" type="button" data-link-candidate data-candidate-activity="${actId}" data-candidate-session="${sessionIdEsc}">${actName}${actDate ? ` · ${actDate}` : ""}${dur ? ` · ${dur}` : ""}</button>`;
+                  })
+                  .join("");
+                return `
+                <div class="matching-review-card">
+                  <div class="matching-review-card__session">
+                    <strong>${dateStr} · ${title}</strong>
+                  </div>
+                  <div class="matching-review-card__candidates">
+                    ${chips}
+                    <button class="matching-candidate-chip matching-candidate-chip--skip" type="button" data-skip-session="${sessionIdEsc}">Skip</button>
+                  </div>
+                </div>`;
+              })
+              .join("")}
+          </div>
+        </div>`;
+    }
+  }
+
+  // Section B: All Scheduled Workouts grouped by week
+  const weekGroups = new Map();
+  for (const session of sessions) {
+    const date = new Date(session.dateKey + "T00:00:00");
+    const day = date.getDay();
+    const mondayOffset = day === 0 ? -6 : 1 - day;
+    const monday = new Date(date);
+    monday.setDate(date.getDate() + mondayOffset);
+    const weekKey = dateToKey(monday);
+    if (!weekGroups.has(weekKey)) weekGroups.set(weekKey, []);
+    weekGroups.get(weekKey).push(session);
+  }
+
+  const workoutsEl = document.querySelector("#matching-workouts-section");
+  if (workoutsEl) {
+    const sortedWeeks = [...weekGroups.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+    workoutsEl.innerHTML = `
+      <div class="matching-block">
+        <div class="matching-block__header">
+          <h3>All Scheduled Workouts</h3>
+          <span class="matching-block__count">${sessions.length}</span>
+        </div>
+        ${sortedWeeks
+          .map(([weekKey, weekSessions]) => {
+            const weekDate = new Date(weekKey + "T00:00:00");
+            const weekEnd = new Date(weekDate);
+            weekEnd.setDate(weekDate.getDate() + 6);
+            const weekLabel = `${formatMatchingDate(weekKey)} – ${formatMatchingDate(dateToKey(weekEnd))}`;
+            return `
+            <div class="matching-week">
+              <h4 class="matching-week__label">${escapeHtml(weekLabel)}</h4>
+              ${weekSessions
+                .map((session) => {
+                  const sessionIdEsc = escapeHtml(session.id);
+                  const linked = getLinkedActivityForSession(session.id);
+                  const linkedClass = linked ? "matching-row--linked" : "matching-row--unlinked";
+                  const dateStr = escapeHtml(formatMatchingDate(session.dateKey));
+                  const title = escapeHtml((session.title || "").slice(0, 40));
+                  const linkedActivityName = linked
+                    ? escapeHtml((linked.name || normalizeActivityTypeDisplay(linked.type)).slice(0, 40))
+                    : "";
+                  const availableActivities = activities
+                    .filter((a) => !getLinkedSessionForActivity(String(a.id)))
+                    .map((a) => {
+                      const aId = escapeHtml(String(a.id));
+                      const aName = escapeHtml(
+                        (a.name || normalizeActivityTypeDisplay(a.type)).slice(0, 50)
+                      );
+                      const aDate = escapeHtml(formatMatchingDate(getActivityDateKey(a)));
+                      return `<option value="${aId}">${aName}${aDate ? ` (${aDate})` : ""}</option>`;
+                    })
+                    .join("");
+                  const detailsInner = linked
+                    ? `<div class="matching-linked-detail">
+                        ${session.duration ? `<p><strong>Planned:</strong> ${escapeHtml(session.duration)}</p>` : ""}
+                        ${session.note ? `<p class="matching-note">${escapeHtml(session.note.slice(0, 100))}</p>` : ""}
+                        <p><strong>Activity:</strong> ${escapeHtml(linked.name || normalizeActivityTypeDisplay(linked.type))}
+                          ${linked.duration ? ` · ⏱ ${Math.round(linked.duration / 60)} min` : ""}
+                          ${linked.distance ? ` · ${(linked.distance / 1000).toFixed(1)} km` : ""}
+                          ${linked.elevationGain ? ` · ↑${Math.round(linked.elevationGain)} m` : ""}
+                        </p>
+                        <button class="button button--small button--ghost" type="button" data-unlink-activity="${escapeHtml(String(linked.id))}">Unlink</button>
+                      </div>`
+                    : `${session.duration ? `<p><strong>Planned:</strong> ${escapeHtml(session.duration)}</p>` : ""}
+                       ${session.note ? `<p class="matching-note">${escapeHtml(session.note.slice(0, 100))}</p>` : ""}
+                       <div class="matching-link-controls">
+                         <select data-workout-link-select="${sessionIdEsc}">
+                           <option value="">Select activity…</option>
+                           ${availableActivities}
+                         </select>
+                         <button class="button button--small button--primary" type="button" data-workout-link="${sessionIdEsc}">Link</button>
+                       </div>`;
+                  return `
+                  <div class="matching-row ${linkedClass}">
+                    <div class="matching-row__toggle" data-expand-row>
+                      <span class="matching-row__dot"></span>
+                      <span class="matching-row__date">${dateStr}</span>
+                      <span class="matching-row__title">${title}</span>
+                      ${linked ? `<span class="matching-row__linked-activity">${linkedActivityName}</span>` : ""}
+                    </div>
+                    <div class="matching-row__details" hidden>
+                      <div class="matching-row__details-inner">${detailsInner}</div>
+                    </div>
+                  </div>`;
+                })
+                .join("")}
+            </div>`;
+          })
+          .join("")}
+      </div>`;
+  }
+
+  // Section C: All Strava Activities
+  const activitiesEl = document.querySelector("#matching-activities-section");
+  if (activitiesEl) {
+    activitiesEl.innerHTML = `
+      <div class="matching-block">
+        <div class="matching-block__header">
+          <h3>All Strava Activities</h3>
+          <span class="matching-block__count">${activities.length}</span>
+        </div>
+        <div class="matching-activities-list">
+          ${
+            activities.length === 0
+              ? `<p class="matching-empty">No Strava activities synced yet.</p>`
+              : activities
+                  .map((activity) => {
+                    const actId = String(activity.id);
+                    const actIdEsc = escapeHtml(actId);
+                    const isLinked = !!getLinkedSessionForActivity(actId);
+                    const isExtra = isActivityMarkedAsExtra(actId);
+                    const isDismissed = isActivityDismissed(actId);
+                    const linkedSession = isLinked ? getLinkedSessionForActivity(actId) : null;
+                    const typeBadge = escapeHtml(normalizeActivityTypeDisplay(activity.type));
+                    const name = escapeHtml((activity.name || "").slice(0, 40));
+                    const dateStr = escapeHtml(formatMatchingDate(getActivityDateKey(activity)));
+                    const duration = activity.duration
+                      ? `${Math.round(activity.duration / 60)} min`
+                      : "—";
+                    let statusBadge = "";
+                    if (isLinked)
+                      statusBadge = `<span class="matching-status-badge matching-status-badge--linked">✓ Linked</span>`;
+                    else if (isExtra)
+                      statusBadge = `<span class="matching-status-badge matching-status-badge--extra">Extra</span>`;
+                    else if (isDismissed)
+                      statusBadge = `<span class="matching-status-badge matching-status-badge--dismissed">Dismissed</span>`;
+                    const availableSessions = sessions
+                      .filter((s) => !getLinkedActivityForSession(s.id))
+                      .map((s) => {
+                        const sId = escapeHtml(s.id);
+                        const sTitle = escapeHtml((s.title || "").slice(0, 50));
+                        const sDate = escapeHtml(s.dateKey || "");
+                        return `<option value="${sId}">${sDate} · ${sTitle}</option>`;
+                      })
+                      .join("");
+                    let detailsInner;
+                    const metaLine = [
+                      activity.duration ? `⏱ ${Math.round(activity.duration / 60)} min` : "",
+                      activity.distance ? `${(activity.distance / 1000).toFixed(1)} km` : "",
+                      activity.elevationGain ? `↑${Math.round(activity.elevationGain)} m` : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" · ");
+                    if (isLinked) {
+                      detailsInner = `
+                        ${metaLine ? `<p>${escapeHtml(metaLine)}</p>` : ""}
+                        <p><strong>Linked to:</strong> ${escapeHtml(linkedSession?.title || "Unknown workout")}</p>
+                        <button class="button button--small button--ghost" type="button" data-unlink-activity="${actIdEsc}">Unlink</button>`;
+                    } else if (isExtra) {
+                      detailsInner = `
+                        ${metaLine ? `<p>${escapeHtml(metaLine)}</p>` : ""}
+                        <p>Marked as extra workout</p>
+                        <button class="button button--small button--ghost" type="button" data-unlink-from-extra="${actIdEsc}">Remove from extra</button>`;
+                    } else if (isDismissed) {
+                      detailsInner = `
+                        ${metaLine ? `<p>${escapeHtml(metaLine)}</p>` : ""}
+                        <p>Dismissed</p>
+                        <button class="button button--small button--ghost" type="button" data-restore-dismissed="${actIdEsc}">Restore</button>`;
+                    } else {
+                      detailsInner = `
+                        ${metaLine ? `<p>${escapeHtml(metaLine)}</p>` : ""}
+                        <div class="matching-link-controls">
+                          <select data-activity-link-select="${actIdEsc}">
+                            <option value="">Link to workout…</option>
+                            ${availableSessions}
+                          </select>
+                          <button class="button button--small button--primary" type="button" data-activity-link="${actIdEsc}">Link</button>
+                          <button class="button button--small" type="button" data-mark-extra-activity="${actIdEsc}">Mark as Extra</button>
+                          <button class="button button--small button--ghost" type="button" data-dismiss-activity-row="${actIdEsc}">Dismiss</button>
+                        </div>`;
+                    }
+                    return `
+                    <div class="matching-row">
+                      <div class="matching-row__toggle" data-expand-row>
+                        <span class="matching-type-badge">${typeBadge}</span>
+                        <span class="matching-row__title">${name || typeBadge}</span>
+                        <span class="matching-row__date">${dateStr}</span>
+                        <span class="matching-row__duration">${escapeHtml(duration)}</span>
+                        ${statusBadge}
+                      </div>
+                      <div class="matching-row__details" hidden>
+                        <div class="matching-row__details-inner">${detailsInner}</div>
+                      </div>
+                    </div>`;
+                  })
+                  .join("")
+          }
+        </div>
+      </div>`;
+  }
+
+  attachMatchingTabEvents();
+}
+
+function attachMatchingTabEvents() {
+  if (matchingTabEventsAttached) return;
+  const container = document.querySelector("#matching-tracker");
+  if (!container) return;
+  matchingTabEventsAttached = true;
+
+  container.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+
+    const expandTrigger = event.target.closest("[data-expand-row]");
+    if (expandTrigger) {
+      const row = expandTrigger.closest(".matching-row");
+      const details = row?.querySelector(".matching-row__details");
+      if (details) details.hidden = !details.hidden;
+      return;
+    }
+
+    const candidateChip = event.target.closest("[data-link-candidate]");
+    if (candidateChip) {
+      const activityId = candidateChip.dataset.candidateActivity;
+      const sessionId = candidateChip.dataset.candidateSession;
+      if (activityId && sessionId) applyManualActivityMatch(activityId, sessionId);
+      return;
+    }
+
+    const skipBtn = event.target.closest("[data-skip-session]");
+    if (skipBtn) {
+      const sessionId = skipBtn.dataset.skipSession;
+      if (sessionId) {
+        skippedReviewSessions.add(sessionId);
+        renderMatchingTab();
+      }
+      return;
+    }
+
+    const workoutLinkBtn = event.target.closest("[data-workout-link]");
+    if (workoutLinkBtn) {
+      const sessionId = workoutLinkBtn.dataset.workoutLink;
+      const select = container.querySelector(`[data-workout-link-select="${CSS.escape(sessionId)}"]`);
+      const activityId = select?.value;
+      if (!activityId) { showToast("Select an activity first."); return; }
+      applyManualActivityMatch(activityId, sessionId);
+      return;
+    }
+
+    const unlinkBtn = event.target.closest("[data-unlink-activity]");
+    if (unlinkBtn) {
+      unlinkActivity(unlinkBtn.dataset.unlinkActivity);
+      return;
+    }
+
+    const activityLinkBtn = event.target.closest("[data-activity-link]");
+    if (activityLinkBtn) {
+      const activityId = activityLinkBtn.dataset.activityLink;
+      const select = container.querySelector(`[data-activity-link-select="${CSS.escape(activityId)}"]`);
+      const sessionId = select?.value;
+      if (!sessionId) { showToast("Select a workout first."); return; }
+      applyManualActivityMatch(activityId, sessionId);
+      return;
+    }
+
+    const markExtraBtn = event.target.closest("[data-mark-extra-activity]");
+    if (markExtraBtn) {
+      markActivityAsExtra(markExtraBtn.dataset.markExtraActivity);
+      return;
+    }
+
+    const dismissBtn = event.target.closest("[data-dismiss-activity-row]");
+    if (dismissBtn) {
+      dismissActivity(dismissBtn.dataset.dismissActivityRow);
+      renderMatchingTab();
+      return;
+    }
+
+    const restoreBtn = event.target.closest("[data-restore-dismissed]");
+    if (restoreBtn) {
+      restoreDismissed(restoreBtn.dataset.restoreDismissed);
+      return;
+    }
+
+    const unlinkExtraBtn = event.target.closest("[data-unlink-from-extra]");
+    if (unlinkExtraBtn) {
+      unlinkFromExtra(unlinkExtraBtn.dataset.unlinkFromExtra);
+      return;
+    }
+  });
 }
 
 function setUnresolvedMatchQueue(syncResult) {
@@ -2775,7 +3216,7 @@ async function syncActivities() {
   renderActivityMatchQueue();
 }
 
-const tabIds = ["calendar", "overview"];
+const tabIds = ["calendar", "overview", "matching"];
 const tabAliases = {
   dashboard: "calendar",
   "today-panel": "calendar",
@@ -2783,6 +3224,7 @@ const tabAliases = {
   "calendar-tracker": "calendar",
   phases: "overview",
   "phase-timeline": "overview",
+  "match-activities": "matching",
   "tracking-summary": "calendar",
 };
 
@@ -2821,6 +3263,7 @@ async function hydrateFromFirestore() {
     if (changed) {
       renderCalendar();
       renderActivityMatchQueue();
+      if (isMatchingTabActive()) renderMatchingTab();
     }
   } catch (e) {
     console.warn('[Sync] Could not hydrate from Firestore:', e);
@@ -4793,6 +5236,10 @@ function activateTab(tabId, options = {}) {
   } else if (focusPanel) {
     document.querySelector(`[data-tab-panel="${nextTabId}"]`)?.focus?.({ preventScroll: true });
   }
+
+  if (nextTabId === "matching") {
+    renderMatchingTab();
+  }
 }
 
 function attachTabEvents() {
@@ -5106,6 +5553,7 @@ const ActivityManager = {
     await this.fetchSyncedActivities();
     this.renderActivityList(this.activities);
     renderActivityMatchQueue();
+    if (isMatchingTabActive()) renderMatchingTab();
   },
 
   renderActivityList(activities) {
@@ -5670,8 +6118,6 @@ const StrengthWorkoutManager = {
 };
 
 function initAuth() {
-  ActivityManager.init();
-
   // Load activities from the static JSON (updated hourly by GitHub Actions)
   ActivityManager.fetchAndRender().then(() => {
     syncActivities().catch((error) => console.warn("Sync activities failed:", error));

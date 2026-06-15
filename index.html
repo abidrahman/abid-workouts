@@ -14,20 +14,6 @@
   </head>
   <body>
 
-    <div class="activity-sidebar" id="activity-sidebar" aria-label="Synced activities">
-      <div class="activity-sidebar__header">
-        <h3>Recent Activities</h3>
-        <button class="activity-sidebar__close" type="button" id="activity-sidebar-close" aria-label="Close activities">×</button>
-      </div>
-      <div class="activity-sidebar__list" id="activity-list">
-        <p class="activity-sidebar__empty">No activities synced yet</p>
-      </div>
-      <section class="activity-resolution" id="activity-resolution" hidden>
-        <h4>Needs manual linking</h4>
-        <div class="activity-resolution__list" id="activity-resolution-list"></div>
-      </section>
-    </div>
-
     <div class="toast-container" id="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
 
     <header class="hero">
@@ -46,9 +32,7 @@
         <div class="site-nav__menu" id="site-nav-menu" data-site-nav-menu>
           <a class="is-active" href="#calendar" data-tab-link="calendar">Today + Calendar</a>
           <a href="#overview" data-tab-link="overview">Overview</a>
-          <button class="button button--small button--ghost" id="auth-activities-btn" type="button">
-            Strava Activities
-          </button>
+          <a href="#matching" data-tab-link="matching">Match Activities</a>
         </div>
       </nav>
 
@@ -267,6 +251,18 @@
           </ul>
         </article>
 
+      </section>
+
+      <section class="section matching-section tab-panel" id="matching-tracker" data-tab-panel="matching" hidden>
+        <div class="section__inner">
+          <header class="matching-header">
+            <h2>Match Activities</h2>
+            <p id="matching-summary" class="matching-summary__text"></p>
+          </header>
+          <div id="matching-needs-review"></div>
+          <div id="matching-workouts-section"></div>
+          <div id="matching-activities-section"></div>
+        </div>
       </section>
     </main>
 
