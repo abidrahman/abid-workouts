@@ -2428,6 +2428,10 @@ function loadManualActivityMatches() {
 
 function saveManualActivityMatches(matches) {
   window.localStorage.setItem(MANUAL_MATCH_STORAGE_KEY, JSON.stringify(matches));
+  // Sync each match to Firestore
+  Object.entries(matches).forEach(([activityId, data]) => {
+    api.saveActivityMatch(activityId, data.sessionId || data.workoutId, data).catch(() => {});
+  });
 }
 
 function loadExtraWorkouts() {
@@ -2441,6 +2445,10 @@ function loadExtraWorkouts() {
 
 function saveExtraWorkouts(extra) {
   window.localStorage.setItem(EXTRA_WORKOUTS_STORAGE_KEY, JSON.stringify(extra));
+  // Sync each extra workout to Firestore
+  Object.entries(extra).forEach(([activityId, data]) => {
+    api.saveExtraWorkout(activityId, data).catch(() => {});
+  });
 }
 
 function getActivityDateKey(activity) {
@@ -2761,11 +2769,42 @@ const tabAliases = {
   "tracking-summary": "calendar",
 };
 
-// Calendar extensions:
-// - Attach daily COROS metrics via `corosDailyMetrics`: total steps for the day
-//   and previous-night sleep duration formatted as hours + minutes.
-// - Keep this month grid intentionally compact; a future weekly view can consume richer
-//   per-workout fields such as swim focus area, bike mini-summary, and distance.
+// ── Firebase / cross-device sync ──────────────────────────────────────────────
+import * as api from './app-api.js';
+
+// Stable per-user ID — survives page reloads, shared across devices via Firestore
+const APP_USER_ID_KEY = 'abid-workouts-user-id';
+let _userId = localStorage.getItem(APP_USER_ID_KEY);
+if (!_userId) {
+  _userId = 'user-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+  localStorage.setItem(APP_USER_ID_KEY, _userId);
+}
+api.initializeAPI(_userId);
+
+// On first load pull cloud data and merge it in (runs asynchronously, won't block render)
+async function hydrateFromFirestore() {
+  try {
+    const { activityMatches, extraWorkouts } = await api.loadAllUserData();
+    // Merge cloud activity matches into localStorage (cloud wins for new keys)
+    if (activityMatches && Object.keys(activityMatches).length) {
+      const local = loadManualActivityMatches();
+      const merged = { ...local, ...activityMatches };
+      window.localStorage.setItem(MANUAL_MATCH_STORAGE_KEY, JSON.stringify(merged));
+    }
+    // Merge cloud extra workouts into localStorage
+    if (extraWorkouts && Object.keys(extraWorkouts).length) {
+      const local = loadExtraWorkouts();
+      const merged = { ...local, ...extraWorkouts };
+      window.localStorage.setItem(EXTRA_WORKOUTS_STORAGE_KEY, JSON.stringify(merged));
+    }
+  } catch (e) {
+    console.warn('[Sync] Could not hydrate from Firestore:', e);
+  }
+}
+hydrateFromFirestore();
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 let activeFilter = "all";
 let calendarUiState = loadCalendarUiState();
 let tracking = loadTracking();
@@ -2792,6 +2831,9 @@ function loadTracking() {
 
 function saveTracking() {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tracking));
+  // Background cloud sync — dateKey is today's date
+  const dateKey = new Date().toISOString().slice(0, 10);
+  api.saveTracking(dateKey, tracking).catch(() => {});
 }
 
 function getDayTracking(id) {
@@ -2814,6 +2856,8 @@ function loadCalendarTracking() {
 
 function saveCalendarTracking() {
   window.localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(calendarTracking));
+  const dateKey = new Date().toISOString().slice(0, 10);
+  api.saveCalendarTracking(dateKey, calendarTracking).catch(() => {});
 }
 
 function loadCalendarReschedules() {
@@ -2829,6 +2873,7 @@ function loadCalendarReschedules() {
 
 function saveCalendarReschedules() {
   window.localStorage.setItem(CALENDAR_RESCHEDULE_STORAGE_KEY, JSON.stringify(calendarReschedules));
+  api.saveCalendarReschedules(calendarReschedules).catch(() => {});
 }
 
 function loadCalendarUiState() {
@@ -2858,6 +2903,7 @@ function loadCalendarUiState() {
 
 function saveCalendarUiState() {
   window.localStorage.setItem(CALENDAR_UI_STORAGE_KEY, JSON.stringify(calendarUiState));
+  api.saveCalendarUiState(calendarUiState).catch(() => {});
 }
 
 function loadMetricsFromStorage() {
@@ -5477,6 +5523,8 @@ const StrengthWorkoutManager = {
 
   saveLogsToLocalStorage() {
     localStorage.setItem("strengthLogs", JSON.stringify(this.workoutLogs));
+    const dateKey = this.currentDateKey || new Date().toISOString().slice(0, 10);
+    api.saveStrengthLogs(dateKey, this.workoutLogs).catch(() => {});
   },
 
   getWorkoutDate(sessionId) {
