@@ -16,5 +16,8 @@
   },
   "dependencies": {
     "firebase": "^12.14.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.1"
   }
 }

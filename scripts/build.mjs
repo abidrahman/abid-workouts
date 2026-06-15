@@ -1,11 +1,12 @@
 import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { build } from "esbuild";
 
 const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const distDir = join(repoRoot, "dist");
 
-const staticFiles = ["index.html", "styles.css", "app.js", "site.webmanifest"];
+const staticFiles = ["index.html", "styles.css", "site.webmanifest"];
 
 async function copyStaticFiles() {
   await rm(distDir, { recursive: true, force: true });
@@ -22,6 +23,17 @@ async function copyStaticFiles() {
   await copyFile(join(repoRoot, "index.html"), join(distDir, "404.html"));
 }
 
+async function bundleJS() {
+  await build({
+    entryPoints: [join(repoRoot, "app.js")],
+    bundle: true,
+    format: "esm",
+    outfile: join(distDir, "app.js"),
+    platform: "browser",
+  });
+}
+
 await copyStaticFiles();
+await bundleJS();
 
 console.log("Built static site into dist/");
