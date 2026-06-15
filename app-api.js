@@ -187,6 +187,15 @@ async function executeSyncOperation(operation) {
     case 'sync-extra-workout':
       return apiCall('POST', '/syncExtraWorkout', { userId: currentUserId, ...data });
     
+    case 'sync-calendar-tracking':
+      return apiCall('POST', '/syncCalendarTracking', { userId: currentUserId, ...data });
+    
+    case 'sync-calendar-reschedules':
+      return apiCall('POST', '/syncCalendarReschedules', { userId: currentUserId, ...data });
+    
+    case 'sync-strength-logs':
+      return apiCall('POST', '/syncStrengthLogs', { userId: currentUserId, ...data });
+    
     default:
       console.warn('[API] Unknown operation type:', type);
       return { success: false };
@@ -394,6 +403,162 @@ export async function removeExtraWorkout(activityId) {
 }
 
 // ============================================================
+// PUBLIC API: Calendar Tracking
+// ============================================================
+
+/**
+ * Save calendar tracking data
+ */
+export async function saveCalendarTracking(dateKey, calendarData) {
+  const operation = {
+    type: 'sync-calendar-tracking',
+    data: { dateKey, calendarData }
+  };
+  
+  queueChange(operation);
+  
+  if (isOnline()) {
+    return apiCall('POST', '/syncCalendarTracking', { userId: currentUserId, ...operation.data });
+  }
+  
+  return { success: true, queued: true };
+}
+
+/**
+ * Load calendar tracking for a specific date
+ */
+export async function loadCalendarTracking(dateKey) {
+  try {
+    if (isOnline()) {
+      const response = await apiCall('GET', `/loadCalendarTracking?userId=${currentUserId}&dateKey=${dateKey}`);
+      if (response.success && response.data) {
+        return response.data;
+      }
+    }
+    
+    const cached = localStorage.getItem(`calendar-tracking-${dateKey}`);
+    return cached ? JSON.parse(cached) : {};
+  } catch (error) {
+    console.error('[API] Failed to load calendar tracking:', error);
+    return {};
+  }
+}
+
+// ============================================================
+// PUBLIC API: Calendar Reschedules
+// ============================================================
+
+/**
+ * Save calendar reschedules
+ */
+export async function saveCalendarReschedules(reschedules) {
+  const operation = {
+    type: 'sync-calendar-reschedules',
+    data: { reschedules }
+  };
+  
+  queueChange(operation);
+  
+  if (isOnline()) {
+    return apiCall('POST', '/syncCalendarReschedules', { userId: currentUserId, ...operation.data });
+  }
+  
+  return { success: true, queued: true };
+}
+
+/**
+ * Load calendar reschedules
+ */
+export async function loadCalendarReschedules() {
+  try {
+    if (isOnline()) {
+      const response = await apiCall('GET', `/loadCalendarReschedules?userId=${currentUserId}`);
+      if (response.success && response.data) {
+        return response.data;
+      }
+    }
+    
+    const cached = localStorage.getItem('calendar-reschedules');
+    return cached ? JSON.parse(cached) : {};
+  } catch (error) {
+    console.error('[API] Failed to load calendar reschedules:', error);
+    return {};
+  }
+}
+
+// ============================================================
+// PUBLIC API: Calendar UI State
+// ============================================================
+
+/**
+ * Save calendar UI state
+ */
+export async function saveCalendarUiState(uiState) {
+  try {
+    localStorage.setItem('calendar-ui-state', JSON.stringify(uiState));
+    return { success: true };
+  } catch (error) {
+    console.error('[API] Failed to save calendar UI state:', error);
+    return { success: false };
+  }
+}
+
+/**
+ * Load calendar UI state
+ */
+export async function loadCalendarUiState() {
+  try {
+    const cached = localStorage.getItem('calendar-ui-state');
+    return cached ? JSON.parse(cached) : { categoryFilter: 'all', statusFilter: 'all', view: 'compact' };
+  } catch (error) {
+    console.error('[API] Failed to load calendar UI state:', error);
+    return { categoryFilter: 'all', statusFilter: 'all', view: 'compact' };
+  }
+}
+
+// ============================================================
+// PUBLIC API: Strength Logs
+// ============================================================
+
+/**
+ * Save strength logs
+ */
+export async function saveStrengthLogs(dateKey, logs) {
+  const operation = {
+    type: 'sync-strength-logs',
+    data: { dateKey, logs }
+  };
+  
+  queueChange(operation);
+  
+  if (isOnline()) {
+    return apiCall('POST', '/syncStrengthLogs', { userId: currentUserId, ...operation.data });
+  }
+  
+  return { success: true, queued: true };
+}
+
+/**
+ * Load strength logs for a specific date
+ */
+export async function loadStrengthLogs(dateKey) {
+  try {
+    if (isOnline()) {
+      const response = await apiCall('GET', `/loadStrengthLogs?userId=${currentUserId}&dateKey=${dateKey}`);
+      if (response.success && response.data) {
+        return response.data;
+      }
+    }
+    
+    const cached = localStorage.getItem(`strength-logs-${dateKey}`);
+    return cached ? JSON.parse(cached) : {};
+  } catch (error) {
+    console.error('[API] Failed to load strength logs:', error);
+    return {};
+  }
+}
+
+// ============================================================
 // PUBLIC API: Full Sync (Load All User Data)
 // ============================================================
 
@@ -487,6 +652,14 @@ export default {
   saveExtraWorkout,
   loadExtraWorkouts,
   removeExtraWorkout,
+  saveCalendarTracking,
+  loadCalendarTracking,
+  saveCalendarReschedules,
+  loadCalendarReschedules,
+  saveCalendarUiState,
+  loadCalendarUiState,
+  saveStrengthLogs,
+  loadStrengthLogs,
   loadAllUserData,
   shutdown,
   getDebugInfo,
