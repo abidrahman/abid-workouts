@@ -1,6 +1,4 @@
-import { getFirestore } from 'firebase-admin/firestore';
-
-const db = getFirestore();
+import { db } from './firebase-admin-init.js';
 
 /**
  * Firestore Collection Schema

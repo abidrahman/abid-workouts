@@ -1,12 +1,11 @@
 import axios from 'axios';
 import cors from 'cors';
-import { getFirestore } from 'firebase-admin/firestore';
 import { getValidAccessToken } from './auth.js';
 import { config } from 'dotenv';
+import { db } from './firebase-admin-init.js';
 
 config();
 
-const db = getFirestore();
 const corsHandler = cors({ origin: true });
 
 /**

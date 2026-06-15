@@ -1,5 +1,4 @@
 import cors from 'cors';
-import { getFirestore } from 'firebase-admin/firestore';
 import {
   saveWorkoutTracking,
   saveActivityMatch,
@@ -10,9 +9,7 @@ import {
   deleteActivityMatch,
   deleteExtraWorkout
 } from './firestore-init.js';
-
 const corsHandler = cors({ origin: true });
-const db = getFirestore();
 
 /**
  * POST /api/sync-tracking

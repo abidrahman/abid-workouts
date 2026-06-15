@@ -1,11 +1,5 @@
-import admin from 'firebase-admin';
 import functions from 'firebase-functions';
-import { initializeApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
-
-// Initialize Firebase Admin SDK
-initializeApp();
-const db = getFirestore();
+import { db } from './firebase-admin-init.js';
 
 // Import cloud functions
 import authFunction from './auth.js';
