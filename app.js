@@ -2687,7 +2687,62 @@ function setUnresolvedMatchQueue(syncResult) {
 }
 
 async function syncActivities() {
-  // No backend server available — activity matching is done manually via the UI.
+  // Client-side auto-matching using the same scoring logic
+  if (!syncedActivities.length) return;
+
+  const autoMatched = getAutoMatchedActivities();
+  const manualMatches = loadManualActivityMatches();
+  const extra = loadExtraWorkouts();
+  let changed = false;
+  const conflicts = [];
+
+  for (const activity of syncedActivities) {
+    const id = String(activity.id);
+    // Skip already resolved activities
+    if (autoMatched[id] || manualMatches[id] || extra[id]) continue;
+    // Skip if already auto-matched to a session (keyed by session id not activity id)
+    const alreadyAutoChecked = Object.values(autoMatched).some((v) => v?.activityId === id);
+    if (alreadyAutoChecked) continue;
+
+    const scored = getAllCalendarSessions()
+      .map((session) => ({ session, score: scoreSessionCandidate(activity, session) }))
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    if (!scored.length) continue;
+
+    const best = scored[0];
+    // High confidence: type + same day (score >= 90)
+    if (best.score >= 90) {
+      autoMatched[best.session.id] = {
+        activityId: id,
+        confidence: "high",
+        timestamp: new Date().toISOString(),
+      };
+      if (!calendarTracking[best.session.id]) calendarTracking[best.session.id] = {};
+      calendarTracking[best.session.id].completed = true;
+      calendarTracking[best.session.id].autoCheckedAt = new Date().toISOString();
+      calendarTracking[best.session.id].activityId = id;
+      changed = true;
+    } else {
+      // Lower confidence — add to manual resolution queue
+      conflicts.push({ activity, candidates: scored.slice(0, 6).map((s) => s.session) });
+    }
+  }
+
+  if (changed) {
+    saveAutoMatchedActivities(autoMatched);
+    saveCalendarTracking();
+    renderCalendar();
+  }
+
+  // Populate the manual match queue for unresolved activities
+  unresolvedActivityMatches = conflicts.map(({ activity, candidates }) => ({
+    activity,
+    reason: "Possible match — please confirm",
+    candidates,
+  }));
+  renderActivityMatchQueue();
 }
 
 const tabIds = ["calendar", "overview"];
@@ -2717,17 +2772,25 @@ api.initializeAPI(_userId);
 async function hydrateFromFirestore() {
   try {
     const { activityMatches, extraWorkouts } = await api.loadAllUserData();
+    let changed = false;
     // Merge cloud activity matches into localStorage (cloud wins for new keys)
     if (activityMatches && Object.keys(activityMatches).length) {
       const local = loadManualActivityMatches();
       const merged = { ...local, ...activityMatches };
       window.localStorage.setItem(MANUAL_MATCH_STORAGE_KEY, JSON.stringify(merged));
+      changed = true;
     }
     // Merge cloud extra workouts into localStorage
     if (extraWorkouts && Object.keys(extraWorkouts).length) {
       const local = loadExtraWorkouts();
       const merged = { ...local, ...extraWorkouts };
       window.localStorage.setItem(EXTRA_WORKOUTS_STORAGE_KEY, JSON.stringify(merged));
+      changed = true;
+    }
+    // Re-render so Firestore data shows up without a page reload
+    if (changed) {
+      renderCalendar();
+      renderActivityMatchQueue();
     }
   } catch (e) {
     console.warn('[Sync] Could not hydrate from Firestore:', e);
