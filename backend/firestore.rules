@@ -1,0 +1,13 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Personal app: allow read/write to any path under users/{userId}
+    // No Firebase Auth required (single-user app with stable localStorage userId)
+    match /users/{userId}/{document=**} {
+      allow read, write: if true;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

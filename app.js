@@ -489,114 +489,6 @@ const swimReadinessChecklist = [
   "Use a support person/escort, clear route, weather/current check, and abort plan for the open-water attempt.",
 ];
 
-const strengthExerciseCatalog = {
-  rdl: {
-    name: "Romanian deadlift",
-    shortName: "RDL",
-    unitLabel: "Weight",
-    resultLabel: "Reps",
-    resultPlaceholder: "8",
-    loadPlaceholder: "135 lb",
-    notePlaceholder: "Grip, hamstring feel, straps, tempo...",
-    summaryType: "loadReps",
-  },
-  weightedPullUp: {
-    name: "Weighted pull-up",
-    shortName: "Weighted pull-up",
-    unitLabel: "Added weight",
-    resultLabel: "Reps",
-    resultPlaceholder: "5",
-    loadPlaceholder: "+10 lb or BW",
-    notePlaceholder: "Grip, chin over bar, band assist, bodyweight...",
-    summaryType: "loadReps",
-  },
-  bulgarianSplitSquat: {
-    name: "Bulgarian split squat",
-    shortName: "Bulgarian split squat",
-    unitLabel: "Load",
-    resultLabel: "Reps/side",
-    resultPlaceholder: "8/side",
-    loadPlaceholder: "25s or bodyweight",
-    notePlaceholder: "Left/right balance, knee tracking, depth...",
-    summaryType: "loadReps",
-  },
-  frontPlank: {
-    name: "Front plank",
-    shortName: "Plank",
-    unitLabel: "Load",
-    resultLabel: "Seconds",
-    resultPlaceholder: "75",
-    loadPlaceholder: "BW",
-    notePlaceholder: "Brace quality, hips, easy/hard...",
-    summaryType: "duration",
-  },
-  calfRaise: {
-    name: "Calf raise",
-    shortName: "Calf raise",
-    unitLabel: "Load",
-    resultLabel: "Reps",
-    resultPlaceholder: "12",
-    loadPlaceholder: "machine or DBs",
-    notePlaceholder: "Full range, straight/bent knee...",
-    summaryType: "loadReps",
-  },
-  tibialisRaise: {
-    name: "Tibialis raise",
-    shortName: "Tibialis raise",
-    unitLabel: "Load",
-    resultLabel: "Reps",
-    resultPlaceholder: "15",
-    loadPlaceholder: "BW or machine",
-    notePlaceholder: "Shin response, controlled tempo...",
-    summaryType: "loadReps",
-  },
-  hangingKneeRaise: {
-    name: "Hanging knee raise",
-    shortName: "Knee raise",
-    unitLabel: "Load",
-    resultLabel: "Reps",
-    resultPlaceholder: "10",
-    loadPlaceholder: "BW",
-    notePlaceholder: "Swing control, abs vs hip flexors...",
-    summaryType: "loadReps",
-  },
-  deadBug: {
-    name: "Dead bug / hollow hold",
-    shortName: "Core hold",
-    unitLabel: "Load",
-    resultLabel: "Reps/sec",
-    resultPlaceholder: "30 sec",
-    loadPlaceholder: "BW",
-    notePlaceholder: "Brace quality, low-back contact...",
-    summaryType: "duration",
-  },
-};
-
-const workoutExerciseLogConfig = {
-  "mon-jun-1": ["rdl", "frontPlank", "calfRaise", "tibialisRaise"],
-  "tue-jun-2": ["weightedPullUp", "deadBug"],
-  "thu-jun-4": ["weightedPullUp", "hangingKneeRaise", "tibialisRaise"],
-  "fri-jun-5": ["bulgarianSplitSquat", "calfRaise", "tibialisRaise", "hangingKneeRaise"],
-  "mon-jun-8": ["rdl", "frontPlank", "calfRaise", "tibialisRaise"],
-  "tue-jun-9": ["weightedPullUp", "deadBug"],
-  "thu-jun-11": ["weightedPullUp", "hangingKneeRaise", "tibialisRaise"],
-  "fri-jun-12": ["bulgarianSplitSquat", "calfRaise", "tibialisRaise", "hangingKneeRaise"],
-  "mon-jun-15": ["rdl", "frontPlank", "calfRaise", "tibialisRaise"],
-  "thu-jun-18": ["weightedPullUp", "hangingKneeRaise", "tibialisRaise"],
-  "fri-jun-19": ["bulgarianSplitSquat", "calfRaise", "tibialisRaise"],
-  "mon-jun-22": ["rdl", "frontPlank", "calfRaise", "tibialisRaise"],
-  "thu-jun-25": ["weightedPullUp", "deadBug"],
-  "mon-jun-29": ["rdl", "frontPlank", "calfRaise", "tibialisRaise"],
-};
-
-const defaultExerciseSetCount = 3;
-const workoutExerciseSetCounts = {
-  "thu-jun-4": { weightedPullUp: 4 },
-  "thu-jun-11": { weightedPullUp: 4 },
-  "thu-jun-18": { weightedPullUp: 4 },
-  "fri-jun-19": { bulgarianSplitSquat: 2 },
-  "thu-jun-25": { weightedPullUp: 3 },
-};
 
 const workouts = [
   {
@@ -2496,34 +2388,429 @@ const corosConnectorConfig = {
 };
 // Paste/import COROS MCP results here after authorization. Metrics are keyed by the
 // calendar day they should appear on. `steps` is total steps for that date;
-// `sleepMinutes` is the previous-night sleep duration shown on that date.
+// `sleepMinutes` is the previous-night sleep duration shown on that date;
+// `sleepScore` is 0-100 quality score; `calories` is daily total in kcal.
 const corosDailyMetrics = {
-  // "2026-06-01": { steps: 12345, sleepMinutes: 438, sleepDateKey: "2026-05-31" },
+  // "2026-06-01": { steps: 12345, sleepMinutes: 438, sleepScore: 85, calories: 2400, sleepDateKey: "2026-05-31", fetchedAt: 1623744000000 },
 };
-const tabIds = ["calendar", "overview", "swim-plan", "week-one", "tracking"];
+const METRICS_STORAGE_KEY = "workout-metrics";
+const METRICS_CACHE_MAX_AGE = 24 * 60 * 60 * 1000;
+
+// Phase 3: Auto-matched activities pulled from the connected provider (Strava/COROS).
+let syncedActivities = [];
+
+const AUTO_MATCHED_STORAGE_KEY = "workout-auto-matched-v1";
+const MANUAL_MATCH_STORAGE_KEY = "workout-manual-matches-v1";
+const EXTRA_WORKOUTS_STORAGE_KEY = "workout-extra-unplanned-v1";
+let unresolvedActivityMatches = [];
+
+function getAutoMatchedActivities() {
+  try {
+    const raw = window.localStorage.getItem(AUTO_MATCHED_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveAutoMatchedActivities(matched) {
+  window.localStorage.setItem(AUTO_MATCHED_STORAGE_KEY, JSON.stringify(matched));
+}
+
+function loadManualActivityMatches() {
+  try {
+    const raw = window.localStorage.getItem(MANUAL_MATCH_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveManualActivityMatches(matches) {
+  window.localStorage.setItem(MANUAL_MATCH_STORAGE_KEY, JSON.stringify(matches));
+  // Sync each match to Firestore
+  Object.entries(matches).forEach(([activityId, data]) => {
+    api.saveActivityMatch(activityId, data.sessionId || data.workoutId, data).catch(() => {});
+  });
+}
+
+function loadExtraWorkouts() {
+  try {
+    const raw = window.localStorage.getItem(EXTRA_WORKOUTS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveExtraWorkouts(extra) {
+  window.localStorage.setItem(EXTRA_WORKOUTS_STORAGE_KEY, JSON.stringify(extra));
+  // Sync each extra workout to Firestore
+  Object.entries(extra).forEach(([activityId, data]) => {
+    api.saveExtraWorkout(activityId, data).catch(() => {});
+  });
+}
+
+function getActivityDateKey(activity) {
+  if (activity?.date && /^\d{4}-\d{2}-\d{2}$/.test(activity.date)) return activity.date;
+  if (activity?.startTime) {
+    const parsed = new Date(activity.startTime);
+    if (!Number.isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
+  }
+  return null;
+}
+
+function normalizeActivityCategory(activityType) {
+  const text = String(activityType ?? "").toLowerCase();
+  if (/(swim|pool|open water)/.test(text)) return "swim";
+  if (/(ride|bike|cycling)/.test(text)) return "bike";
+  if (/(hike|walk|run|trail|treadmill)/.test(text)) return "hike";
+  if (/(strength|weight|gym|workout)/.test(text)) return "strength";
+  if (/(recovery|mobility|yoga)/.test(text)) return "recovery";
+  return null;
+}
+
+function parsePlannedMinutes(durationText) {
+  const text = String(durationText ?? "");
+  const rangeMatch = text.match(/(\d{1,3})\s*[–-]\s*(\d{1,3})\s*min/i);
+  if (rangeMatch) {
+    return {
+      min: Number.parseInt(rangeMatch[1], 10),
+      max: Number.parseInt(rangeMatch[2], 10),
+    };
+  }
+
+  const singleMatch = text.match(/(\d{1,3})\s*min/i);
+  if (singleMatch) {
+    const value = Number.parseInt(singleMatch[1], 10);
+    return { min: value, max: value };
+  }
+
+  return null;
+}
+
+function getCalendarSessionById(sessionId) {
+  return getAllCalendarSessions().find((session) => session.id === sessionId) ?? null;
+}
+
+function scoreSessionCandidate(activity, session) {
+  const activityCategory = normalizeActivityCategory(activity?.type);
+  const activityDateKey = getActivityDateKey(activity);
+  const activityMinutes = Number.isFinite(activity?.duration) ? Math.round(activity.duration / 60) : null;
+  const plannedMinutes = parsePlannedMinutes(session.duration);
+  const daysDelta = activityDateKey ? Math.abs(getDaysBetweenDateKeys(activityDateKey, session.dateKey)) : 99;
+  const typeMatch = activityCategory ? session.categories.includes(activityCategory) : false;
+  const durationMidpoint = plannedMinutes ? (plannedMinutes.min + plannedMinutes.max) / 2 : null;
+  const durationDelta = activityMinutes !== null && durationMidpoint !== null
+    ? Math.abs(activityMinutes - durationMidpoint)
+    : 999;
+
+  // Allow cross-category matching: strength ↔ hike (for stairmaster/vertical training)
+  const isStrengthActivity = activityCategory === "strength";
+  const isHikeSession = session.categories.includes("hike");
+  const crossCategoryMatch = isStrengthActivity && isHikeSession;
+
+  let score = 0;
+  if (typeMatch) score += 60;
+  else if (crossCategoryMatch) score += 35; // Cross-category bonus (lower than exact match)
+  
+  if (daysDelta === 0) score += 30;
+  else if (daysDelta === 1) score += 15;
+  else if (daysDelta === 2) score += 6;
+
+  if (durationDelta <= 10) score += 12;
+  else if (durationDelta <= 25) score += 6;
+
+  return score;
+}
+
+function getSuggestedSessionsForActivity(activity, limit = 6) {
+  return getAllCalendarSessions()
+    .map((session) => ({ session, score: scoreSessionCandidate(activity, session) }))
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((item) => item.session);
+}
+
+function getLinkedSessionForActivity(activityId) {
+  const manualMatches = loadManualActivityMatches();
+  const manualMatch = manualMatches[activityId];
+  if (manualMatch?.workoutId) {
+    return getCalendarSessionById(manualMatch.workoutId);
+  }
+
+  const autoMatched = getAutoMatchedActivities();
+  const autoEntry = Object.entries(autoMatched).find(([, value]) => value?.activityId === activityId);
+  if (autoEntry) {
+    return getCalendarSessionById(autoEntry[0]);
+  }
+
+  return null;
+}
+
+function isActivityMarkedAsExtra(activityId) {
+  const extra = loadExtraWorkouts();
+  return !!extra[activityId];
+}
+
+function renderActivityMatchQueue() {
+  const queueEl = document.querySelector("#activity-resolution-list");
+  const sectionEl = document.querySelector("#activity-resolution");
+  if (!queueEl || !sectionEl) return;
+
+  const unresolved = unresolvedActivityMatches.filter((item) => !getLinkedSessionForActivity(item.activity.id) && !isActivityMarkedAsExtra(item.activity.id));
+  if (!unresolved.length) {
+    sectionEl.hidden = true;
+    queueEl.innerHTML = "";
+    return;
+  }
+
+  sectionEl.hidden = false;
+  queueEl.innerHTML = unresolved
+    .map((item) => {
+      const activity = item.activity;
+      const activityId = escapeHtml(String(activity.id));
+      const activityDate = escapeHtml(getActivityDateKey(activity) ?? "Unknown date");
+      const activityType = escapeHtml(activity.type ?? "Activity");
+      const options = item.candidates
+        .map(
+          (session) =>
+            `<option value="${escapeHtml(session.id)}">${escapeHtml(session.dateKey)} · ${escapeHtml(session.title)}</option>`,
+        )
+        .join("");
+      return `
+        <article class="activity-resolution-item">
+          <div class="activity-resolution-item__header">
+            <strong>${activityType}</strong>
+            <span>${activityDate}</span>
+          </div>
+          <p class="activity-resolution-item__reason">${escapeHtml(item.reason ?? "Needs manual linking")}</p>
+          <div class="activity-resolution-item__controls">
+            <select data-manual-match-select="${activityId}">
+              <option value="">Select workout…</option>
+              ${options}
+            </select>
+            <button class="button button--small button--primary" type="button" data-manual-match-link="${activityId}">
+              Link
+            </button>
+            <button class="button button--small" type="button" data-mark-extra="${activityId}">
+              Mark as Extra
+            </button>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function applyManualActivityMatch(activityId, sessionId) {
+  const session = getCalendarSessionById(sessionId);
+  if (!session) {
+    showToast("Could not find selected workout.");
+    return;
+  }
+
+  const manualMatches = loadManualActivityMatches();
+  manualMatches[activityId] = {
+    workoutId: session.id,
+    linkedAt: new Date().toISOString(),
+  };
+  saveManualActivityMatches(manualMatches);
+
+  const nextTracking = calendarTracking[session.id] ?? {};
+  calendarTracking[session.id] = {
+    ...nextTracking,
+    completed: true,
+    activityId,
+    manualLinkedAt: new Date().toISOString(),
+  };
+
+  saveCalendarTracking();
+  renderCalendar();
+  renderActivityMatchQueue();
+  ActivityManager.renderActivityList(syncedActivities);
+  showToast(`Linked to ${session.title}`);
+}
+
+function markActivityAsExtra(activityId) {
+  const activity = syncedActivities.find((a) => String(a.id) === activityId);
+  if (!activity) {
+    showToast("Could not find activity.");
+    return;
+  }
+
+  const extra = loadExtraWorkouts();
+  extra[activityId] = {
+    activity,
+    markedAt: new Date().toISOString(),
+  };
+  saveExtraWorkouts(extra);
+
+  renderCalendar();
+  renderActivityMatchQueue();
+  ActivityManager.renderActivityList(syncedActivities);
+  showToast(`Marked "${activity.name}" as extra workout`);
+}
+
+function setUnresolvedMatchQueue(syncResult) {
+  const nextQueue = [];
+  const byId = new Map(getAllCalendarSessions().map((session) => [session.id, session]));
+
+  (syncResult.conflicts || []).forEach((item) => {
+    const activity = item.activity;
+    if (!activity?.id) return;
+    const fromCandidates = (item.candidates || []).map((id) => byId.get(id)).filter(Boolean);
+    const fallback = getSuggestedSessionsForActivity(activity);
+    nextQueue.push({
+      activity,
+      reason: item.reason || "Multiple possible matches",
+      candidates: fromCandidates.length ? fromCandidates : fallback,
+    });
+  });
+
+  (syncResult.unmatched || []).forEach((item) => {
+    const activity = item.activity;
+    if (!activity?.id) return;
+    const candidates = getSuggestedSessionsForActivity(activity);
+    if (candidates.length) {
+      nextQueue.push({
+        activity,
+        reason: item.reason || "No confident auto-match",
+        candidates,
+      });
+    }
+  });
+
+  unresolvedActivityMatches = nextQueue;
+  renderActivityMatchQueue();
+}
+
+async function syncActivities() {
+  try {
+    // Build workout plan by date
+    const workoutPlanByDate = {};
+    for (const [dateKey, sessionList] of Object.entries(monthOneCalendarSessions)) {
+      if (!workoutPlanByDate[dateKey]) {
+        workoutPlanByDate[dateKey] = [];
+      }
+      workoutPlanByDate[dateKey].push(...sessionList);
+    }
+    
+    // Call backend sync endpoint
+    const response = await fetch("/api/sync-activities", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        activities: syncedActivities,
+        workoutPlanByDate,
+        currentTracking: calendarTracking,
+      }),
+    });
+
+    if (!response.ok) {
+      console.warn("Activity sync failed:", response.status);
+      return;
+    }
+
+    const result = await response.json();
+    if (!result) return;
+
+    // Process auto-checked activities
+    const autoMatched = getAutoMatchedActivities();
+    
+    for (const match of result.autoChecked || []) {
+      if (match.matchedWorkoutId) {
+        // Auto-check the workout
+        if (!calendarTracking[match.matchedWorkoutId]) {
+          calendarTracking[match.matchedWorkoutId] = {};
+        }
+        calendarTracking[match.matchedWorkoutId].completed = true;
+        calendarTracking[match.matchedWorkoutId].autoCheckedAt = new Date().toISOString();
+        calendarTracking[match.matchedWorkoutId].activityId = match.activity.id;
+        
+        // Store in localStorage
+        autoMatched[match.matchedWorkoutId] = {
+          activityId: match.activity.id,
+          confidence: match.confidence,
+          timestamp: new Date().toISOString(),
+        };
+      }
+    }
+
+    // Handle conflicts (prompt user)
+    setUnresolvedMatchQueue(result);
+
+    // Save results
+    saveCalendarTracking();
+    saveAutoMatchedActivities(autoMatched);
+    
+    // Re-render calendar with updated completion status
+    renderCalendar();
+    
+    console.log("Activity sync complete:", {
+      autoChecked: (result.autoChecked || []).length,
+      conflicts: (result.conflicts || []).length,
+      unmatched: (result.unmatched || []).length,
+    });
+  } catch (error) {
+    console.warn("Activity sync error:", error);
+  }
+}
+
+const tabIds = ["calendar", "overview"];
 const tabAliases = {
   dashboard: "calendar",
   "today-panel": "calendar",
   "today-workouts": "calendar",
   "calendar-tracker": "calendar",
-  "summary-cards": "calendar",
   phases: "overview",
   "phase-timeline": "overview",
-  "swim-methodology": "swim-plan",
-  "workout-grid": "week-one",
-  "tracking-summary": "tracking",
+  "tracking-summary": "calendar",
 };
 
-// Calendar extensions:
-// - Attach daily COROS metrics via `corosDailyMetrics`: total steps for the day
-//   and previous-night sleep duration formatted as hours + minutes.
-// - Keep this month grid intentionally compact; a future weekly view can consume richer
-//   per-workout fields such as swim focus area, bike mini-summary, and distance.
+// ── Firebase / cross-device sync ──────────────────────────────────────────────
+import * as api from './app-api.js';
+
+// Stable per-user ID — survives page reloads, shared across devices via Firestore
+const APP_USER_ID_KEY = 'abid-workouts-user-id';
+let _userId = localStorage.getItem(APP_USER_ID_KEY);
+if (!_userId) {
+  _userId = 'user-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+  localStorage.setItem(APP_USER_ID_KEY, _userId);
+}
+api.initializeAPI(_userId);
+
+// On first load pull cloud data and merge it in (runs asynchronously, won't block render)
+async function hydrateFromFirestore() {
+  try {
+    const { activityMatches, extraWorkouts } = await api.loadAllUserData();
+    // Merge cloud activity matches into localStorage (cloud wins for new keys)
+    if (activityMatches && Object.keys(activityMatches).length) {
+      const local = loadManualActivityMatches();
+      const merged = { ...local, ...activityMatches };
+      window.localStorage.setItem(MANUAL_MATCH_STORAGE_KEY, JSON.stringify(merged));
+    }
+    // Merge cloud extra workouts into localStorage
+    if (extraWorkouts && Object.keys(extraWorkouts).length) {
+      const local = loadExtraWorkouts();
+      const merged = { ...local, ...extraWorkouts };
+      window.localStorage.setItem(EXTRA_WORKOUTS_STORAGE_KEY, JSON.stringify(merged));
+    }
+  } catch (e) {
+    console.warn('[Sync] Could not hydrate from Firestore:', e);
+  }
+}
+hydrateFromFirestore();
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 let activeFilter = "all";
 let calendarUiState = loadCalendarUiState();
 let tracking = loadTracking();
 let calendarTracking = loadCalendarTracking();
 let calendarReschedules = loadCalendarReschedules();
+let cachedMetrics = loadMetricsFromStorage();
 let calendarDays = buildCalendarDays();
 let calendarEventsAttached = false;
 let todayPanelEventsAttached = false;
@@ -2544,74 +2831,16 @@ function loadTracking() {
 
 function saveTracking() {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tracking));
-}
-
-function createBlankExerciseSet() {
-  return { load: "", reps: "", rpe: "", notes: "" };
-}
-
-function getExerciseKeysForWorkout(workoutId) {
-  return workoutExerciseLogConfig[workoutId] ?? [];
-}
-
-function getDefaultExerciseLogs(workoutId) {
-  return Object.fromEntries(
-    getExerciseKeysForWorkout(workoutId).map((exerciseKey) => [
-      exerciseKey,
-      Array.from({ length: getExerciseSetCount(workoutId, exerciseKey) }, createBlankExerciseSet),
-    ]),
-  );
-}
-
-function getExerciseSetCount(workoutId, exerciseKey) {
-  return workoutExerciseSetCounts[workoutId]?.[exerciseKey] ?? defaultExerciseSetCount;
-}
-
-function normalizeExerciseSet(set = {}) {
-  return {
-    load: set.load ?? set.weight ?? "",
-    reps: set.reps ?? set.seconds ?? "",
-    rpe: set.rpe ?? "",
-    notes: set.notes ?? "",
-  };
-}
-
-function normalizeExerciseLogs(workoutId, savedLogs = {}) {
-  const defaultLogs = getDefaultExerciseLogs(workoutId);
-  const validSavedLogs = savedLogs && typeof savedLogs === "object" ? savedLogs : {};
-  const exerciseKeys = [
-    ...new Set([...Object.keys(defaultLogs), ...Object.keys(validSavedLogs)]),
-  ].filter((exerciseKey) => strengthExerciseCatalog[exerciseKey]);
-
-  return Object.fromEntries(
-    exerciseKeys.map((exerciseKey) => {
-      const savedSets = Array.isArray(validSavedLogs[exerciseKey]) ? validSavedLogs[exerciseKey] : [];
-      const defaultSetCount = defaultLogs[exerciseKey]?.length ?? defaultExerciseSetCount;
-      const setCount = Math.max(defaultSetCount, savedSets.length);
-      return [
-        exerciseKey,
-        Array.from({ length: setCount }, (_, index) => normalizeExerciseSet(savedSets[index])),
-      ];
-    }),
-  );
+  // Background cloud sync — dateKey is today's date
+  const dateKey = new Date().toISOString().slice(0, 10);
+  api.saveTracking(dateKey, tracking).catch(() => {});
 }
 
 function getDayTracking(id) {
   const saved = tracking[id] ?? {};
-
   return {
     completed: false,
-    shinPain: "",
-    shoulderPain: "",
-    fatigue: "",
-    nonstopSwim: "",
-    swimRpe: "",
-    strokeCount: "",
-    breathingCalmness: "",
-    swimTechniqueNotes: "",
-    notes: "",
     ...saved,
-    exerciseLogs: normalizeExerciseLogs(id, saved.exerciseLogs),
   };
 }
 
@@ -2627,6 +2856,8 @@ function loadCalendarTracking() {
 
 function saveCalendarTracking() {
   window.localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(calendarTracking));
+  const dateKey = new Date().toISOString().slice(0, 10);
+  api.saveCalendarTracking(dateKey, calendarTracking).catch(() => {});
 }
 
 function loadCalendarReschedules() {
@@ -2642,6 +2873,7 @@ function loadCalendarReschedules() {
 
 function saveCalendarReschedules() {
   window.localStorage.setItem(CALENDAR_RESCHEDULE_STORAGE_KEY, JSON.stringify(calendarReschedules));
+  api.saveCalendarReschedules(calendarReschedules).catch(() => {});
 }
 
 function loadCalendarUiState() {
@@ -2671,6 +2903,177 @@ function loadCalendarUiState() {
 
 function saveCalendarUiState() {
   window.localStorage.setItem(CALENDAR_UI_STORAGE_KEY, JSON.stringify(calendarUiState));
+  api.saveCalendarUiState(calendarUiState).catch(() => {});
+}
+
+function loadMetricsFromStorage() {
+  try {
+    const raw = window.localStorage.getItem(METRICS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (error) {
+    console.warn("Could not load metrics from storage", error);
+    return {};
+  }
+}
+
+function saveMetricsToStorage(metrics) {
+  try {
+    window.localStorage.setItem(METRICS_STORAGE_KEY, JSON.stringify(metrics));
+  } catch (error) {
+    console.warn("Could not save metrics to storage", error);
+  }
+}
+
+function fetchDailyMetrics(dateRange = null) {
+  // Fetch metrics from /api/metrics endpoint
+  // dateRange: { start: "2026-06-01", end: "2026-08-31" } or null for all
+  const params = new URLSearchParams();
+  if (dateRange?.start) params.append("start", dateRange.start);
+  if (dateRange?.end) params.append("end", dateRange.end);
+
+  const url = `/api/metrics${params.toString() ? "?" + params : ""}`;
+  
+  return fetch(url)
+    .then((response) => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
+    })
+    .then((data) => {
+      const metrics = Array.isArray(data) ? data : data.metrics ? data.metrics : [];
+      cacheMetrics(metrics);
+      return metrics;
+    })
+    .catch((error) => {
+      console.warn("Failed to fetch metrics:", error);
+      return [];
+    });
+}
+
+function cacheMetrics(metricsArray) {
+  // Merge new metrics with cached ones
+  if (!Array.isArray(metricsArray)) return;
+  
+  metricsArray.forEach((metric) => {
+    const dateKey = metric.dateKey;
+    if (dateKey && typeof dateKey === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dateKey)) {
+      cachedMetrics[dateKey] = {
+        ...cachedMetrics[dateKey],
+        sleepDuration: metric.sleepDuration ?? metric.sleepMinutes,
+        sleepScore: metric.sleepScore,
+        calories: metric.calories,
+        steps: metric.steps,
+        fetchedAt: Date.now(),
+      };
+    }
+  });
+  
+  saveMetricsToStorage(cachedMetrics);
+}
+
+function getMetricsForDate(dateKey) {
+  // Try cached metrics first, then corosDailyMetrics
+  const cached = cachedMetrics[dateKey];
+  if (cached) return cached;
+  
+  const coros = corosDailyMetrics[dateKey];
+  if (coros) {
+    return {
+      sleepDuration: coros.sleepMinutes,
+      sleepScore: coros.sleepScore,
+      calories: coros.calories,
+      steps: coros.steps,
+      sleepDateKey: coros.sleepDateKey,
+      fetchedAt: coros.fetchedAt,
+    };
+  }
+  
+  return null;
+}
+
+function formatMetrics(metrics) {
+  if (!metrics) return null;
+  
+  const sleepDuration = metrics.sleepDuration ?? metrics.sleepMinutes;
+  const sleepScore = metrics.sleepScore;
+  const calories = metrics.calories;
+  const steps = metrics.steps;
+  
+  const display = {
+    sleep: sleepDuration ? formatSleepDuration(sleepDuration) : null,
+    sleepScore: sleepScore || null,
+    calories: calories ? formatCalories(calories) : null,
+    steps: steps ? formatSteps(steps) : null,
+    color: getMetricsColor(metrics),
+  };
+  
+  return display;
+}
+
+function formatCalories(calories) {
+  return new Intl.NumberFormat("en-US").format(Math.round(calories));
+}
+
+function formatSteps(steps) {
+  if (steps >= 10000) {
+    return `${(steps / 1000).toFixed(1)}k`;
+  }
+  return new Intl.NumberFormat("en-US").format(steps);
+}
+
+function getMetricsColor(metrics) {
+  if (!metrics) return "neutral";
+  
+  const sleepDuration = metrics.sleepDuration ?? metrics.sleepMinutes;
+  const steps = metrics.steps;
+  const calories = metrics.calories;
+  
+  // Color coding: good (green), warning (yellow), concern (red)
+  let concern = false;
+  let warning = false;
+  
+  // Sleep quality
+  if (sleepDuration && sleepDuration < 360) {
+    concern = true; // <6h
+  } else if (sleepDuration && sleepDuration < 420) {
+    warning = true; // <7h
+  }
+  
+  // Steps
+  if (steps && steps < 5000) {
+    concern = true;
+  } else if (steps && steps < 8000) {
+    warning = true;
+  }
+  
+  // Calories (healthy range ~2000-2800 for active person)
+  if (calories && (calories < 1500 || calories > 3500)) {
+    warning = true;
+  }
+  
+  if (concern) return "concern";
+  if (warning) return "warning";
+  return "good";
+}
+
+function isCacheStale(fetchedAt) {
+  if (!fetchedAt) return true;
+  return Date.now() - fetchedAt > METRICS_CACHE_MAX_AGE;
+}
+
+function getTimeAgo(timestamp) {
+  if (!timestamp) return "never";
+  
+  const now = Date.now();
+  const diff = now - timestamp;
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  
+  if (seconds < 60) return "just now";
+  if (minutes < 60) return `${minutes}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  return `${days}d ago`;
 }
 
 function dateToKey(date) {
@@ -2976,69 +3379,125 @@ function renderCorosMetricChip(type, label, value, title) {
 
 function renderCalendarDayCorosMetrics(day) {
   const metrics = getCorosMetricsForDate(day.dateKey);
-  if (!metrics || (metrics.steps === null && metrics.sleepMinutes === null)) return "";
-
+  const allMetrics = getMetricsForDate(day.dateKey);
+  
+  if (!metrics && !allMetrics) return "";
+  
+  const combined = { ...allMetrics, ...metrics };
+  const sleepDuration = combined.sleepMinutes ?? combined.sleepDuration;
+  const steps = combined.steps;
+  const calories = combined.calories;
+  const sleepScore = combined.sleepScore;
+  
+  if (!steps && !sleepDuration && !calories) return "";
+  
+  const display = formatMetrics(combined);
+  if (!display) return "";
+  
+  const colorClass = display.color ? `metrics-${display.color}` : "metrics-good";
   const chips = [];
-  if (metrics.steps !== null) {
-    chips.push(
-      renderCorosMetricChip(
-        "steps",
-        "Steps",
-        formatCorosInteger(metrics.steps),
-        `COROS total steps on ${day.dateKey}`,
-      ),
-    );
-  }
-  if (metrics.sleepMinutes !== null) {
+  
+  if (display.sleep) {
     chips.push(
       renderCorosMetricChip(
         "sleep",
-        "Sleep",
-        formatSleepDuration(metrics.sleepMinutes),
-        `COROS previous-night sleep from ${metrics.sleepDateKey}`,
+        "😴",
+        `${display.sleep}${sleepScore ? ` (${sleepScore}%)` : ""}`,
+        `Sleep: ${display.sleep}${sleepScore ? ` quality score: ${sleepScore}%` : ""} on ${combined.sleepDateKey ?? day.dateKey}`,
       ),
     );
   }
+  
+  if (display.calories) {
+    chips.push(
+      renderCorosMetricChip(
+        "calories",
+        "🔥",
+        `${display.calories} cal`,
+        `Calories: ${display.calories} kcal on ${day.dateKey}`,
+      ),
+    );
+  }
+  
+  if (display.steps) {
+    chips.push(
+      renderCorosMetricChip(
+        "steps",
+        "👟",
+        display.steps,
+        `Steps: ${new Intl.NumberFormat("en-US").format(steps)} on ${day.dateKey}`,
+      ),
+    );
+  }
+  
+  const timeInfo = combined.fetchedAt 
+    ? `<span class="metrics-last-update" title="${new Date(combined.fetchedAt).toLocaleString()}">Updated ${getTimeAgo(combined.fetchedAt)}</span>`
+    : "";
 
-  return `<div class="calendar-day__coros" aria-label="COROS metrics for ${day.dateKey}">${chips.join("")}</div>`;
+  return `<div class="calendar-day__coros ${colorClass}" aria-label="Daily metrics for ${day.dateKey}">${chips.join("")}${timeInfo}</div>`;
 }
 
 function renderCalendarDetailCorosMetrics(day) {
   const metrics = getCorosMetricsForDate(day.dateKey);
-
-  if (!metrics || (metrics.steps === null && metrics.sleepMinutes === null)) {
+  const allMetrics = getMetricsForDate(day.dateKey);
+  const combined = { ...allMetrics, ...metrics };
+  
+  const sleepDuration = combined.sleepMinutes ?? combined.sleepDuration;
+  const sleepScore = combined.sleepScore;
+  const steps = combined.steps;
+  const calories = combined.calories;
+  
+  if (!sleepDuration && !steps && !calories) {
     return `
       <section class="calendar-detail__section calendar-detail__coros">
-        <h4>COROS steps + sleep</h4>
-        <p>No COROS metrics imported for this date yet. Once the MCP connector is reachable and authorized, total steps and previous-night sleep can be pasted into <code>corosDailyMetrics</code>.</p>
+        <h4>Daily metrics</h4>
+        <p>No metrics imported for this date yet. Once connected, sleep, calories, and steps data will appear here.</p>
       </section>
     `;
   }
 
   const rows = [];
-  if (metrics.steps !== null) {
+  
+  if (sleepDuration) {
     rows.push(`
       <article class="calendar-detail__coros-card">
-        <span>Total steps</span>
-        <strong>${formatCorosInteger(metrics.steps)}</strong>
+        <span>Sleep</span>
+        <strong>${formatSleepDuration(sleepDuration)}</strong>
+        ${sleepScore ? `<span class="sleep-score">Quality: ${sleepScore}%</span>` : ""}
+        <small>Night of: ${escapeHtml(combined.sleepDateKey ?? day.dateKey)}</small>
+      </article>
+    `);
+  }
+  
+  if (calories) {
+    rows.push(`
+      <article class="calendar-detail__coros-card">
+        <span>Calories</span>
+        <strong>${formatCalories(calories)} kcal</strong>
         <small>${escapeHtml(day.dateKey)}</small>
       </article>
     `);
   }
-  if (metrics.sleepMinutes !== null) {
+  
+  if (steps) {
     rows.push(`
       <article class="calendar-detail__coros-card">
-        <span>Previous-night sleep</span>
-        <strong>${formatSleepDuration(metrics.sleepMinutes)}</strong>
-        <small>Sleep night: ${escapeHtml(metrics.sleepDateKey)}</small>
+        <span>Steps</span>
+        <strong>${new Intl.NumberFormat("en-US").format(steps)}</strong>
+        <small>${escapeHtml(day.dateKey)}</small>
       </article>
     `);
   }
+  
+  const timeInfo = combined.fetchedAt 
+    ? `<small class="metrics-timestamp">Data updated ${getTimeAgo(combined.fetchedAt)}</small>`
+    : "";
 
   return `
     <section class="calendar-detail__section calendar-detail__coros">
-      <h4>COROS steps + sleep</h4>
+      <h4>Daily metrics</h4>
       <div class="calendar-detail__coros-grid">${rows.join("")}</div>
+      ${timeInfo}
     </section>
   `;
 }
@@ -3220,6 +3679,16 @@ function renderCalendarSessionMovedBadge(session) {
   const movedCopy = getCalendarSessionMovedCopy(session);
   if (!movedCopy) return "";
   return `<span class="calendar-session__move-badge">${escapeHtml(movedCopy)}</span>`;
+}
+
+function renderAutoCheckBadge(autoMatchInfo) {
+  if (!autoMatchInfo) return "";
+  const timestamp = new Date(autoMatchInfo.timestamp);
+  const dateStr = timestamp.toLocaleDateString();
+  const timeStr = timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const tooltip = `Auto-checked from COROS on ${dateStr} at ${timeStr} (${autoMatchInfo.confidence} confidence)`;
+  
+  return `<span class="calendar-session__auto-check-badge" title="${escapeHtml(tooltip)}">✓ Auto-matched</span>`;
 }
 
 function renderCalendarRescheduleControls(session) {
@@ -3912,6 +4381,31 @@ function renderCalendarDay(day) {
   if (day.dateKey === todayKey) classes.push("is-today");
   if (!visibleSessions.length && hasActiveCalendarFilters()) classes.push("is-filtered-empty");
 
+  // Get extra workouts for this day
+  const extra = loadExtraWorkouts();
+  const extraForDay = Object.values(extra).filter((entry) => getActivityDateKey(entry.activity) === day.dateKey);
+  const extraHtml = extraForDay
+    .map((entry) => {
+      const activity = entry.activity;
+      const activityType = escapeHtml(activity.type ?? "Activity");
+      const duration = activity.duration ? `${Math.round(activity.duration / 60)} min` : "—";
+      return `
+        <article class="calendar-session calendar-session--extra">
+          <span class="calendar-session__extra-badge">Extra</span>
+          <button class="calendar-session__open" type="button" title="Extra workout: ${activityType}">
+            <span class="calendar-session__content">
+              <strong>${escapeHtml(activity.name ?? "Extra activity")}</strong>
+              <span class="calendar-session__compact-summary">
+                <span class="calendar-session__discipline">${activityType}</span>
+                <span class="calendar-session__descriptor">${duration}</span>
+              </span>
+            </span>
+          </button>
+        </article>
+      `;
+    })
+    .join("");
+
   return `
     <section class="${classes.join(" ")}" data-calendar-day="${day.dateKey}">
       <div class="calendar-day__header">
@@ -3922,6 +4416,7 @@ function renderCalendarDay(day) {
       ${renderCalendarDayCorosMetrics(day)}
       <div class="calendar-day__sessions">
         ${visibleSessions.map((session) => renderCalendarSession(session)).join("")}
+        ${extraHtml}
         ${!visibleSessions.length && hasActiveCalendarFilters() ? `<span class="calendar-day__empty">No match</span>` : ""}
         ${hiddenCount > 0 && hasActiveCalendarFilters() ? `<span class="calendar-day__hidden">+${hiddenCount} hidden</span>` : ""}
       </div>
@@ -3938,10 +4433,14 @@ function renderCalendarSession(session) {
   const compactDescriptor = getCalendarSessionCompactDescriptor(session);
   const isDraggable = isCalendarSessionDraggable(session);
   const dragClass = isDraggable ? "calendar-session--draggable" : "calendar-session--locked";
+  
+  // Check if this session was auto-matched
+  const autoMatched = getAutoMatchedActivities();
+  const isAutoChecked = completed && autoMatched[session.id];
 
   return `
     <article
-      class="calendar-session calendar-session--${primaryCategory} calendar-session--compact-${compactCategory} ${completed ? "is-complete" : ""} ${dragClass}"
+      class="calendar-session calendar-session--${primaryCategory} calendar-session--compact-${compactCategory} ${completed ? "is-complete" : ""} ${dragClass}${isAutoChecked ? " calendar-session--auto-checked" : ""}"
       data-calendar-session-card="${session.id}"
       data-calendar-draggable="${String(isDraggable)}"
       draggable="${isDraggable ? "true" : "false"}"
@@ -3973,6 +4472,7 @@ function renderCalendarSession(session) {
           </span>
           <span class="calendar-session__meta">${escapeHtml(session.duration)}</span>
           ${renderCalendarSessionMovedBadge(session)}
+          ${isAutoChecked ? renderAutoCheckBadge(autoMatched[session.id]) : ""}
           <span class="calendar-session__tags">
             ${session.categories
               .map((category) => `<span class="${tagClass(category)}">${category}</span>`)
@@ -4015,6 +4515,7 @@ function renderCalendarSessionDetail(sessionId) {
   const sessionContext = getCalendarSessionMilestoneContext(session);
   const coachingCue = getCalendarSessionCoachingCue(session);
   const workoutBlocks = getWorkoutSpecificBlocks(detailedWorkout, session, day);
+  const isStrengthSession = session.categories.includes("strength");
 
   contentEl.innerHTML = `
     <p class="eyebrow">${escapeHtml(formatCalendarDate(day))}</p>
@@ -4035,6 +4536,16 @@ function renderCalendarSessionDetail(sessionId) {
       />
       <span>${completed ? "Completed" : "Mark this workout complete"}</span>
     </label>
+
+    ${isStrengthSession ? `
+      <button 
+        class="button button--primary calendar-detail__link" 
+        type="button" 
+        data-strength-workout-start="${session.id}"
+      >
+        Start Strength Workout
+      </button>
+    ` : ""}
 
     <section class="calendar-detail__context" aria-label="Workout context">
       <p>${escapeHtml(sessionContext)}</p>
@@ -4069,6 +4580,36 @@ function renderCalendarSessionDetail(sessionId) {
             <p>Use the checkbox here or in the calendar grid to keep this session synced with your monthly progress.</p>
           </section>
         `
+    }
+
+    ${
+      isStrengthSession
+        ? (() => {
+            const latestLog = StrengthWorkoutManager.getLatestLogForDate(day.dateKey);
+            if (latestLog && Object.keys(latestLog.exerciseLogs).length > 0) {
+              return `
+                <section class="calendar-detail__section">
+                  <h4>Latest strength info</h4>
+                  ${Object.entries(latestLog.exerciseLogs)
+                    .map(([key, sets]) => {
+                      const exerciseName = key.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+                      const latestSet = sets[sets.length - 1];
+                      let display = `${latestSet.weight} × ${latestSet.reps}`;
+                      if (latestSet.rpe) display += ` @ RPE ${latestSet.rpe}`;
+                      return `<p style="margin: 0.4rem 0;">${escapeHtml(exerciseName)}: ${escapeHtml(display)}</p>`;
+                    })
+                    .join("")}
+                </section>
+              `;
+            }
+            return `
+              <section class="calendar-detail__section">
+                <h4>Latest strength info</h4>
+                <p>No logged strength data yet. Start a workout to log your exercises.</p>
+              </section>
+            `;
+          })()
+        : ""
     }
   `;
 }
@@ -4274,6 +4815,7 @@ function renderWorkouts() {
             </div>
             <p class="workout-purpose">${workout.purpose}</p>
             ${workout.blocks
+              .filter((block) => block.title !== "Track")
               .map(
                 (block) => `
                   <section class="workout-block">
@@ -4300,218 +4842,7 @@ function renderTrackingForm(workout, dayTracking) {
         <input type="checkbox" name="completed" ${dayTracking.completed ? "checked" : ""} />
         Completed / adjusted intentionally
       </label>
-      <div class="tracking-form__row">
-        <div class="field">
-          <label for="${workout.id}-shin">Shin pain 0–10</label>
-          <input id="${workout.id}-shin" name="shinPain" inputmode="numeric" min="0" max="10" type="number" value="${escapeHtml(dayTracking.shinPain)}" />
-        </div>
-        <div class="field">
-          <label for="${workout.id}-shoulder">Shoulder pain 0–10</label>
-          <input id="${workout.id}-shoulder" name="shoulderPain" inputmode="numeric" min="0" max="10" type="number" value="${escapeHtml(dayTracking.shoulderPain)}" />
-        </div>
-        <div class="field">
-          <label for="${workout.id}-fatigue">Fatigue 1–5</label>
-          <input id="${workout.id}-fatigue" name="fatigue" inputmode="numeric" min="1" max="5" type="number" value="${escapeHtml(dayTracking.fatigue)}" />
-        </div>
-      </div>
-      ${workout.categories.includes("swim") ? renderSwimTrackingFields(workout, dayTracking) : ""}
-      ${renderExerciseLogFields(workout, dayTracking)}
-      <div class="field">
-        <label for="${workout.id}-notes">Notes</label>
-        <textarea id="${workout.id}-notes" name="notes" placeholder="How did it feel? Any modifications?">${escapeHtml(dayTracking.notes)}</textarea>
-      </div>
     </form>
-  `;
-}
-
-function renderSwimTrackingFields(workout, dayTracking) {
-  return `
-    <section class="swim-tracking-fields" aria-label="Swim technique tracking">
-      <h4>Swim technique checkpoint</h4>
-      <div class="tracking-form__row tracking-form__row--swim">
-        <div class="field">
-          <label for="${workout.id}-nonstop-swim">Longest nonstop swim yd</label>
-          <input id="${workout.id}-nonstop-swim" name="nonstopSwim" inputmode="numeric" min="0" type="number" value="${escapeHtml(dayTracking.nonstopSwim)}" />
-        </div>
-        <div class="field">
-          <label for="${workout.id}-swim-rpe">Swim RPE 1–10</label>
-          <input id="${workout.id}-swim-rpe" name="swimRpe" inputmode="numeric" min="1" max="10" type="number" value="${escapeHtml(dayTracking.swimRpe)}" />
-        </div>
-        <div class="field">
-          <label for="${workout.id}-stroke-count">Stroke count / 25 yd</label>
-          <input id="${workout.id}-stroke-count" name="strokeCount" inputmode="numeric" min="0" type="number" value="${escapeHtml(dayTracking.strokeCount)}" />
-        </div>
-        <div class="field">
-          <label for="${workout.id}-breathing-calmness">Breathing calmness 1–5</label>
-          <input id="${workout.id}-breathing-calmness" name="breathingCalmness" inputmode="numeric" min="1" max="5" type="number" value="${escapeHtml(dayTracking.breathingCalmness)}" />
-        </div>
-      </div>
-      <div class="field">
-        <label for="${workout.id}-swim-technique-notes">Drill/form notes</label>
-        <textarea id="${workout.id}-swim-technique-notes" name="swimTechniqueNotes" placeholder="Which drill exposed the biggest limiter? Breathing, body position, catch, sighting, etc.">${escapeHtml(dayTracking.swimTechniqueNotes)}</textarea>
-      </div>
-    </section>
-  `;
-}
-
-function renderExerciseLogFields(workout, dayTracking) {
-  const exerciseEntries = Object.entries(dayTracking.exerciseLogs ?? {}).filter(
-    ([exerciseKey]) => strengthExerciseCatalog[exerciseKey],
-  );
-
-  if (!exerciseEntries.length) return "";
-
-  return `
-    <section class="exercise-log-fields" aria-label="Strength exercise performance logging">
-      <div class="exercise-log-fields__heading">
-        <h4>Exercise performance log</h4>
-        <p>Save load, reps/seconds, RPE, and notes per set so future workouts can be adjusted from real performance.</p>
-      </div>
-      <div class="exercise-log-list">
-        ${exerciseEntries.map(([exerciseKey, sets]) => renderExerciseLogCard(workout.id, exerciseKey, sets)).join("")}
-      </div>
-    </section>
-  `;
-}
-
-function renderExerciseLogCard(workoutId, exerciseKey, sets) {
-  const exercise = strengthExerciseCatalog[exerciseKey];
-  const safeSets = sets.length ? sets : Array.from({ length: getExerciseSetCount(workoutId, exerciseKey) }, createBlankExerciseSet);
-
-  return `
-    <article class="exercise-log-card">
-      <header class="exercise-log-card__header">
-        <h5>${escapeHtml(exercise.name)}</h5>
-        <span>${escapeHtml(exercise.shortName)}</span>
-      </header>
-      <div class="exercise-set-grid">
-        ${safeSets
-          .map((set, setIndex) => renderExerciseSetRow(workoutId, exerciseKey, exercise, set, setIndex))
-          .join("")}
-      </div>
-    </article>
-  `;
-}
-
-function renderExerciseSetRow(workoutId, exerciseKey, exercise, set, setIndex) {
-  const fieldPrefix = `${workoutId}-${exerciseKey}-${setIndex}`;
-  const namePrefix = `exercise:${exerciseKey}:${setIndex}`;
-
-  return `
-    <div class="exercise-set-row">
-      <strong>Set ${setIndex + 1}</strong>
-      <div class="field">
-        <label for="${fieldPrefix}-load">${escapeHtml(exercise.unitLabel)}</label>
-        <input id="${fieldPrefix}-load" name="${namePrefix}:load" type="text" inputmode="decimal" value="${escapeHtml(set.load)}" placeholder="${escapeHtml(exercise.loadPlaceholder)}" />
-      </div>
-      <div class="field">
-        <label for="${fieldPrefix}-reps">${escapeHtml(exercise.resultLabel)}</label>
-        <input id="${fieldPrefix}-reps" name="${namePrefix}:reps" type="text" inputmode="decimal" value="${escapeHtml(set.reps)}" placeholder="${escapeHtml(exercise.resultPlaceholder)}" />
-      </div>
-      <div class="field">
-        <label for="${fieldPrefix}-rpe">RPE</label>
-        <input id="${fieldPrefix}-rpe" name="${namePrefix}:rpe" type="number" inputmode="decimal" min="1" max="10" step="0.5" value="${escapeHtml(set.rpe)}" placeholder="7" />
-      </div>
-      <div class="field exercise-set-row__notes">
-        <label for="${fieldPrefix}-notes">Set notes</label>
-        <input id="${fieldPrefix}-notes" name="${namePrefix}:notes" type="text" value="${escapeHtml(set.notes)}" placeholder="${escapeHtml(exercise.notePlaceholder)}" />
-      </div>
-    </div>
-  `;
-}
-
-function parseExerciseLogsFromForm(form, data) {
-  const workoutId = form.dataset.trackingForm;
-  const parsedLogs = getDefaultExerciseLogs(workoutId);
-
-  for (const [name, value] of data.entries()) {
-    if (!name.startsWith("exercise:")) continue;
-
-    const [, exerciseKey, setIndexRaw, fieldName] = name.split(":");
-    const setIndex = Number(setIndexRaw);
-    if (!strengthExerciseCatalog[exerciseKey] || !Number.isInteger(setIndex) || setIndex < 0) continue;
-
-    if (!parsedLogs[exerciseKey]) parsedLogs[exerciseKey] = [];
-    while (parsedLogs[exerciseKey].length <= setIndex) parsedLogs[exerciseKey].push(createBlankExerciseSet());
-    parsedLogs[exerciseKey][setIndex][fieldName] = value ?? "";
-  }
-
-  return Object.fromEntries(
-    Object.entries(parsedLogs).map(([exerciseKey, sets]) => [exerciseKey, sets.map(normalizeExerciseSet)]),
-  );
-}
-
-function hasLoggedExerciseSet(set) {
-  return [set.load, set.reps, set.rpe, set.notes].some((value) => String(value ?? "").trim());
-}
-
-function getLoggedExerciseEntries(exerciseKey) {
-  return workouts.flatMap((workout) => {
-    const day = getDayTracking(workout.id);
-    const sets = day.exerciseLogs?.[exerciseKey] ?? [];
-
-    return sets
-      .map((set, setIndex) => ({ workout, set: normalizeExerciseSet(set), setIndex }))
-      .filter(({ set }) => hasLoggedExerciseSet(set));
-  });
-}
-
-function parseLeadingNumber(value) {
-  const match = String(value ?? "").match(/-?\d+(?:\.\d+)?/);
-  return match ? Number(match[0]) : null;
-}
-
-function formatExerciseSetForDisplay(exerciseKey, set) {
-  const exercise = strengthExerciseCatalog[exerciseKey];
-  const pieces = [];
-  if (set.load) pieces.push(set.load);
-  if (set.reps) pieces.push(`${set.reps} ${exercise.resultLabel.toLowerCase()}`);
-  if (set.rpe) pieces.push(`RPE ${set.rpe}`);
-  return pieces.join(" · ") || "logged";
-}
-
-function getLatestExerciseSummary(exerciseKey) {
-  const entries = getLoggedExerciseEntries(exerciseKey);
-  const latest = entries.at(-1);
-  if (!latest) return "not logged";
-
-  return `${latest.workout.date} set ${latest.setIndex + 1}: ${formatExerciseSetForDisplay(exerciseKey, latest.set)}`;
-}
-
-function getBestDurationSummary(exerciseKey) {
-  const entries = getLoggedExerciseEntries(exerciseKey)
-    .map((entry) => ({ ...entry, seconds: parseLeadingNumber(entry.set.reps) }))
-    .filter((entry) => Number.isFinite(entry.seconds));
-  if (!entries.length) return "not logged";
-
-  const best = entries.reduce((winner, entry) => (entry.seconds > winner.seconds ? entry : winner), entries[0]);
-  return `${best.seconds}s on ${best.workout.date} set ${best.setIndex + 1}`;
-}
-
-function renderStrengthPerformanceSummary() {
-  const items = [
-    { label: "Latest RDL", value: getLatestExerciseSummary("rdl") },
-    { label: "Latest pull-up", value: getLatestExerciseSummary("weightedPullUp") },
-    { label: "Latest split squat", value: getLatestExerciseSummary("bulgarianSplitSquat") },
-    { label: "Best plank", value: getBestDurationSummary("frontPlank") },
-  ];
-
-  return `
-    <section class="strength-performance-summary" aria-label="Strength performance summary">
-      <h4>Strength performance</h4>
-      <div class="strength-performance-grid">
-        ${items
-          .map(
-            (item) => `
-              <article class="strength-performance-card">
-                <span>${escapeHtml(item.label)}</span>
-                <strong>${escapeHtml(item.value)}</strong>
-              </article>
-            `,
-          )
-          .join("")}
-      </div>
-    </section>
   `;
 }
 
@@ -4532,65 +4863,10 @@ function renderTrackingSummary() {
     return { label, done, total, percent: total ? Math.round((done / total) * 100) : 0 };
   });
 
-  const painValues = workouts
-    .map((workout) => getDayTracking(workout.id))
-    .flatMap((day) => [Number(day.shinPain), Number(day.shoulderPain)])
-    .filter((value) => Number.isFinite(value) && value > 0);
-  const maxPain = painValues.length ? Math.max(...painValues) : 0;
-
-  const fatigueValues = workouts
-    .map((workout) => Number(getDayTracking(workout.id).fatigue))
-    .filter((value) => Number.isFinite(value) && value > 0);
-  const avgFatigue = fatigueValues.length
-    ? (fatigueValues.reduce((sum, value) => sum + value, 0) / fatigueValues.length).toFixed(1)
-    : "—";
-
-  const swimDays = workouts
-    .filter((workout) => workout.categories.includes("swim"))
-    .map((workout) => getDayTracking(workout.id));
-  const longestNonstopSwim = Math.max(
-    0,
-    ...swimDays.map((day) => Number(day.nonstopSwim)).filter((value) => Number.isFinite(value)),
-  );
-  const swimRpeValues = swimDays
-    .map((day) => Number(day.swimRpe))
-    .filter((value) => Number.isFinite(value) && value > 0);
-  const avgSwimRpe = swimRpeValues.length
-    ? (swimRpeValues.reduce((sum, value) => sum + value, 0) / swimRpeValues.length).toFixed(1)
-    : "—";
-  const breathingValues = swimDays
-    .map((day) => Number(day.breathingCalmness))
-    .filter((value) => Number.isFinite(value) && value > 0);
-  const avgBreathing = breathingValues.length
-    ? (breathingValues.reduce((sum, value) => sum + value, 0) / breathingValues.length).toFixed(1)
-    : "—";
-
   const el = document.querySelector("#tracking-summary");
   el.innerHTML = `
     ${renderSummaryRow("June", completionPercent, `${completed}/${workouts.length} days`)}
     ${categoryTotals.map((item) => renderSummaryRow(item.label, item.percent, `${item.done}/${item.total}`)).join("")}
-    <div class="summary-row">
-      <strong>Max pain</strong>
-      <div class="progress-bar"><span style="width:${Math.min(maxPain * 10, 100)}%"></span></div>
-      <span>${maxPain || "—"}/10</span>
-    </div>
-    <div class="summary-row">
-      <strong>Avg fatigue</strong>
-      <div class="progress-bar"><span style="width:${avgFatigue === "—" ? 0 : Number(avgFatigue) * 20}%"></span></div>
-      <span>${avgFatigue}/5</span>
-    </div>
-    ${renderSummaryRow("Longest swim", Math.min((longestNonstopSwim / 1250) * 100, 100), `${longestNonstopSwim || "—"} yd`)}
-    <div class="summary-row">
-      <strong>Swim RPE</strong>
-      <div class="progress-bar"><span style="width:${avgSwimRpe === "—" ? 0 : Number(avgSwimRpe) * 10}%"></span></div>
-      <span>${avgSwimRpe}/10</span>
-    </div>
-    <div class="summary-row">
-      <strong>Breathing</strong>
-      <div class="progress-bar"><span style="width:${avgBreathing === "—" ? 0 : Number(avgBreathing) * 20}%"></span></div>
-      <span>${avgBreathing}/5</span>
-    </div>
-    ${renderStrengthPerformanceSummary()}
   `;
 }
 
@@ -4623,19 +4899,7 @@ function updateTrackingFromForm(form, options = {}) {
   const data = new FormData(form);
   const completed = data.get("completed") === "on";
 
-  tracking[id] = {
-    completed,
-    shinPain: data.get("shinPain") ?? "",
-    shoulderPain: data.get("shoulderPain") ?? "",
-    fatigue: data.get("fatigue") ?? "",
-    nonstopSwim: data.get("nonstopSwim") ?? "",
-    swimRpe: data.get("swimRpe") ?? "",
-    strokeCount: data.get("strokeCount") ?? "",
-    breathingCalmness: data.get("breathingCalmness") ?? "",
-    swimTechniqueNotes: data.get("swimTechniqueNotes") ?? "",
-    exerciseLogs: parseExerciseLogsFromForm(form, data),
-    notes: data.get("notes") ?? "",
-  };
+  tracking[id] = { completed };
   saveTracking();
   renderTrackingSummary();
 
@@ -4662,7 +4926,7 @@ function getTabIdForHash(hash = window.location.hash) {
   if (!id) return "calendar";
   if (tabIds.includes(id)) return id;
   if (tabAliases[id]) return tabAliases[id];
-  if (id.startsWith("workout-")) return "week-one";
+  if (id.startsWith("workout-")) return "calendar";
 
   const target = document.getElementById(id);
   return target?.closest("[data-tab-panel]")?.dataset.tabPanel ?? "calendar";
@@ -4900,11 +5164,6 @@ function updateCalendarSessionCompletion(checkbox) {
   renderCalendar();
   renderTrackingSummary();
 
-  if (weekOneTrackingIdsByDate[plannedDateKey]) {
-    renderWorkouts();
-    attachTrackingEvents();
-  }
-
   if (openDetailSessionId === sessionId && dialog && !dialog.hidden) {
     renderCalendarSessionDetail(sessionId);
   }
@@ -4938,60 +5197,15 @@ function formatCorosMetricsForCheckin(dateKey) {
   ];
 }
 
-function formatExerciseLogsForCheckin(day) {
-  const exerciseLines = Object.entries(day.exerciseLogs ?? {}).flatMap(([exerciseKey, sets]) => {
-    const exercise = strengthExerciseCatalog[exerciseKey];
-    if (!exercise) return [];
-
-    const loggedSets = sets
-      .map((set, setIndex) => ({ set: normalizeExerciseSet(set), setIndex }))
-      .filter(({ set }) => hasLoggedExerciseSet(set));
-    if (!loggedSets.length) return [];
-
-    return [
-      `${exercise.name}:`,
-      ...loggedSets.map(({ set, setIndex }) => {
-        const pieces = [
-          `set ${setIndex + 1}`,
-          set.load ? `load=${set.load}` : "load=not logged",
-          set.reps ? `${exercise.resultLabel.toLowerCase()}=${set.reps}` : `${exercise.resultLabel.toLowerCase()}=not logged`,
-          set.rpe ? `rpe=${set.rpe}` : "rpe=not logged",
-          set.notes ? `notes=${set.notes}` : null,
-        ].filter(Boolean);
-        return `- ${pieces.join(", ")}`;
-      }),
-    ];
-  });
-
-  return exerciseLines.length ? ["Strength performance:", ...exerciseLines] : ["Strength performance: not logged"];
-}
-
 function createCheckinText() {
   const lines = [
     "June check-in: June 1–30",
     "",
     ...workouts.map((workout) => {
       const day = getDayTracking(workout.id);
-      const dateKey = weekOneDatesByTrackingId[workout.id];
-      const swimDetails = workout.categories.includes("swim")
-        ? [
-            `Longest nonstop swim: ${day.nonstopSwim || "not logged"} yd`,
-            `Swim RPE: ${day.swimRpe || "not logged"}/10`,
-            `Stroke count: ${day.strokeCount || "not logged"}/25 yd`,
-            `Breathing calmness: ${day.breathingCalmness || "not logged"}/5`,
-            `Drill/form notes: ${day.swimTechniqueNotes || "—"}`,
-          ]
-        : [];
       return [
         `${workout.day} ${workout.date} — ${workout.title}`,
         `Completed/adjusted: ${day.completed ? "yes" : "no"}`,
-        `Shin pain: ${day.shinPain || "not logged"}/10`,
-        `Shoulder pain: ${day.shoulderPain || "not logged"}/10`,
-        `Fatigue: ${day.fatigue || "not logged"}/5`,
-        ...formatCorosMetricsForCheckin(dateKey),
-        ...swimDetails,
-        ...formatExerciseLogsForCheckin(day),
-        `Notes: ${day.notes || "—"}`,
       ].join("\n");
     }),
   ];
@@ -5026,8 +5240,6 @@ function resetTracking() {
   calendarDays = buildCalendarDays();
   renderCalendar();
   attachCalendarEvents();
-  renderWorkouts();
-  attachTrackingEvents();
   renderTrackingSummary();
   showToast("All tracking reset.");
 }
@@ -5046,25 +5258,786 @@ function showToast(message) {
   toastTimer = window.setTimeout(() => toast.classList.remove("is-visible"), 2600);
 }
 
+const AuthManager = {
+  currentStatus: null,
+  statusCheckTimer: null,
+
+  async getAuthStatus() {
+    try {
+      const response = await fetch("/api/auth/status", {
+        method: "GET",
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch auth status");
+      this.currentStatus = await response.json();
+      return this.currentStatus;
+    } catch (error) {
+      console.error("Auth status error:", error);
+      this.currentStatus = { connected: false };
+      return this.currentStatus;
+    }
+  },
+
+  async startOAuthFlow() {
+    try {
+      const response = await fetch("/api/auth/authorize", {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (data.authUrl) {
+        window.location.href = data.authUrl;
+      } else {
+        showToast("Unable to start Strava connection");
+      }
+    } catch (error) {
+      console.error("OAuth flow error:", error);
+      showToast("Connection failed. Please try again.");
+    }
+  },
+
+  async syncActivities() {
+    try {
+      const syncBtn = document.querySelector("#auth-sync-btn");
+      if (syncBtn) {
+        syncBtn.disabled = true;
+        syncBtn.classList.add("is-loading");
+      }
+
+      const response = await fetch("/api/sync", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) throw new Error("Sync failed");
+      const data = await response.json();
+
+      if (syncBtn) {
+        syncBtn.disabled = false;
+        syncBtn.classList.remove("is-loading");
+      }
+
+      showToast(`Synced ${data.count || 0} activities`);
+      await ActivityManager.fetchAndRender();
+      await syncActivities();
+    } catch (error) {
+      console.error("Sync error:", error);
+      showToast("Sync failed. Please try again.");
+      const syncBtn = document.querySelector("#auth-sync-btn");
+      if (syncBtn) {
+        syncBtn.disabled = false;
+        syncBtn.classList.remove("is-loading");
+      }
+    }
+  },
+
+  async logout() {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      this.currentStatus = { connected: false };
+      this.renderStatus();
+      ActivityManager.renderActivityList([]);
+      showToast("Logged out successfully");
+    } catch (error) {
+      console.error("Logout error:", error);
+      showToast("Logout failed");
+    }
+  },
+
+  renderStatus() {
+    const panel = document.querySelector("#auth-status-panel");
+    const statusText = document.querySelector("#auth-status-text");
+    const connectBtn = document.querySelector("#auth-connect-btn");
+    const syncBtn = document.querySelector("#auth-sync-btn");
+    const activitiesBtn = document.querySelector("#auth-activities-btn");
+
+    if (!panel || !statusText) return;
+
+    if (this.currentStatus?.connected && this.currentStatus?.user) {
+      const lastSync = this.currentStatus.lastSync
+        ? new Date(this.currentStatus.lastSync).toLocaleString()
+        : "Never";
+      statusText.innerHTML = `
+        <span class="auth-status-badge">✓ Connected as <strong>${escapeHtml(this.currentStatus.user)}</strong></span>
+        <span class="auth-status-time">Last sync: ${lastSync}</span>
+      `;
+      connectBtn.hidden = true;
+      syncBtn.hidden = false;
+      activitiesBtn.hidden = false;
+    } else {
+      statusText.textContent = "Not connected to Strava";
+      connectBtn.hidden = false;
+      syncBtn.hidden = true;
+      activitiesBtn.hidden = true;
+    }
+  },
+
+  init() {
+    const connectBtn = document.querySelector("#auth-connect-btn");
+    const syncBtn = document.querySelector("#auth-sync-btn");
+
+    if (connectBtn) connectBtn.addEventListener("click", () => this.startOAuthFlow());
+    if (syncBtn) syncBtn.addEventListener("click", () => this.syncActivities());
+  },
+};
+
+const ActivityManager = {
+  activities: [],
+
+  async fetchSyncedActivities() {
+    try {
+      const response = await fetch("/api/activities", {
+        method: "GET",
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch activities");
+      const data = await response.json();
+      this.activities = data.activities || [];
+      syncedActivities = this.activities;
+      return this.activities;
+    } catch (error) {
+      console.error("Activity fetch error:", error);
+      this.activities = [];
+      return [];
+    }
+  },
+
+  async fetchAndRender() {
+    await this.fetchSyncedActivities();
+    this.renderActivityList(this.activities);
+    renderActivityMatchQueue();
+  },
+
+  renderActivityList(activities) {
+    const listEl = document.querySelector("#activity-list");
+    if (!listEl) return;
+
+    if (!activities || activities.length === 0) {
+      listEl.innerHTML = '<p class="activity-sidebar__empty">No activities synced yet</p>';
+      return;
+    }
+
+    listEl.innerHTML = activities
+      .slice(0, 20)
+      .map((activity) => this.renderActivityItem(activity))
+      .join("");
+  },
+
+  renderActivityItem(activity) {
+    const date = activity.startTime
+      ? new Date(activity.startTime).toLocaleDateString()
+      : "Unknown date";
+    const duration = activity.duration ? `${Math.round(activity.duration / 60)} min` : "—";
+    const activityType = activity.type || "Activity";
+    const linkedSession = getLinkedSessionForActivity(String(activity.id));
+    const matchMeta = linkedSession
+      ? `<p class="activity-item__match">✓ Linked: ${escapeHtml(linkedSession.title)}</p>`
+      : "";
+
+    return `
+      <div class="activity-item">
+        <div class="activity-item__header">
+          <span class="activity-item__type">${escapeHtml(activityType)}</span>
+          <span class="activity-item__date">${date}</span>
+        </div>
+        <div class="activity-item__meta">
+          <span class="activity-item__duration">⏱ ${duration}</span>
+          ${
+            activity.distance
+              ? `<span class="activity-item__distance">📍 ${(activity.distance / 1000).toFixed(2)} km</span>`
+              : ""
+          }
+        </div>
+        ${matchMeta}
+      </div>
+    `;
+  },
+
+  init() {
+    const activitiesBtn = document.querySelector("#auth-activities-btn");
+    const sidebarClose = document.querySelector("#activity-sidebar-close");
+    const sidebar = document.querySelector("#activity-sidebar");
+
+    if (activitiesBtn) {
+      activitiesBtn.addEventListener("click", () => {
+        if (sidebar) sidebar.classList.toggle("is-open");
+      });
+    }
+
+    if (sidebarClose) {
+      sidebarClose.addEventListener("click", () => {
+        if (sidebar) sidebar.classList.remove("is-open");
+      });
+    }
+
+    if (sidebar) {
+      sidebar.addEventListener("click", (e) => {
+        if (e.target === sidebar) sidebar.classList.remove("is-open");
+      });
+
+      sidebar.addEventListener("click", (event) => {
+        const linkButton = event.target.closest("[data-manual-match-link]");
+        if (!linkButton) return;
+        const activityId = linkButton.dataset.manualMatchLink;
+        const select = [...sidebar.querySelectorAll("[data-manual-match-select]")].find(
+          (item) => item.dataset.manualMatchSelect === activityId,
+        );
+        const sessionId = select?.value;
+        if (!sessionId) {
+          showToast("Select a workout first.");
+          return;
+        }
+        applyManualActivityMatch(activityId, sessionId);
+      });
+
+      sidebar.addEventListener("click", (event) => {
+        const extraButton = event.target.closest("[data-mark-extra]");
+        if (!extraButton) return;
+        const activityId = extraButton.dataset.markExtra;
+        markActivityAsExtra(activityId);
+      });
+    }
+  },
+};
+
+// Strength Workout Manager
+const StrengthWorkoutManager = {
+  currentWorkout: null,
+  currentSessionId: null,
+  currentDateKey: null,
+  currentLogKey: null,
+  workoutLogs: {},
+
+  init() {
+    this.loadLogsFromLocalStorage();
+    this.attachModalEvents();
+  },
+
+  loadLogsFromLocalStorage() {
+    const stored = localStorage.getItem("strengthLogs");
+    this.workoutLogs = stored ? JSON.parse(stored) : {};
+  },
+
+  saveLogsToLocalStorage() {
+    localStorage.setItem("strengthLogs", JSON.stringify(this.workoutLogs));
+    const dateKey = this.currentDateKey || new Date().toISOString().slice(0, 10);
+    api.saveStrengthLogs(dateKey, this.workoutLogs).catch(() => {});
+  },
+
+  getWorkoutDate(sessionId) {
+    const context = getCalendarSessionContext(sessionId);
+    return context ? context.day : null;
+  },
+
+  startWorkout(sessionId) {
+    const context = getCalendarSessionContext(sessionId);
+    if (!context) {
+      console.error("Session not found:", sessionId);
+      return;
+    }
+
+    const { day, session } = context;
+    this.currentSessionId = sessionId;
+    this.currentDateKey = day.dateKey;
+    this.currentWorkout = {
+      workoutId: sessionId,
+      title: session.title,
+      date: day.dateKey,
+      dateDisplay: formatCalendarDate(day),
+      exerciseLogs: {},
+      timestamp: Date.now(),
+    };
+
+    this.renderWorkoutModal();
+    this.openWorkoutModal();
+  },
+
+  renderWorkoutModal() {
+    const modal = document.querySelector("#strength-workout-modal");
+    const titleEl = document.querySelector("#strength-workout-title");
+    const dateEl = document.querySelector("#strength-workout-date");
+    const exerciseListEl = document.querySelector("#strength-exercise-list");
+
+    if (titleEl) titleEl.textContent = this.currentWorkout.title;
+    if (dateEl) dateEl.textContent = this.currentWorkout.dateDisplay;
+
+    const sessionId = this.currentSessionId;
+    const context = getCalendarSessionContext(sessionId);
+    if (!context || !context.session.categories.includes("strength")) {
+      exerciseListEl.innerHTML = "<p>No exercises found for this workout.</p>";
+      return;
+    }
+
+    const detailedWorkout = getDetailedWorkoutForDate(context.day.dateKey);
+    if (!detailedWorkout) {
+      exerciseListEl.innerHTML = "<p>No detailed workout found.</p>";
+      return;
+    }
+
+    const exercises = this.extractExercisesFromWorkout(detailedWorkout, context.session);
+    exerciseListEl.innerHTML = exercises
+      .map((exercise, idx) => this.renderExerciseForm(exercise, idx))
+      .join("");
+
+    // Attach event listeners for add-set buttons
+    exerciseListEl.querySelectorAll(".add-set-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const exerciseKey = btn.dataset.exerciseKey;
+        this.addSet(exerciseKey);
+      });
+    });
+
+    // Attach event listeners for delete buttons
+    exerciseListEl.querySelectorAll(".set-delete-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const exerciseKey = btn.dataset.exerciseKey;
+        const setIndex = parseInt(btn.dataset.setIndex);
+        this.deleteSet(exerciseKey, setIndex);
+      });
+    });
+
+    // Attach input listeners for auto-save
+    exerciseListEl.querySelectorAll("input, textarea").forEach((input) => {
+      input.addEventListener("change", () => this.autoSaveForm());
+      input.addEventListener("blur", () => this.autoSaveForm());
+    });
+  },
+
+  extractExercisesFromWorkout(workout, session) {
+    const relevantBlocks = workout.blocks.filter((block) => {
+      const blockTitle = block.title.toLowerCase();
+      const blockText = `${block.title} ${block.items.join(" ")}`.toLowerCase();
+      const categoryKeywords = session.categories.flatMap((cat) => getBlockCategoryKeywords(cat));
+      return categoryKeywords.some((keyword) => blockTitle.includes(keyword) || blockText.includes(keyword));
+    });
+
+    const exercises = [];
+    relevantBlocks.forEach((block) => {
+      block.items.forEach((item) => {
+        const match = item.match(/^([^:]+):/);
+        if (match) {
+          const exerciseName = match[1].trim();
+          const exerciseKey = exerciseName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+          if (!exercises.find((e) => e.key === exerciseKey)) {
+            exercises.push({
+              key: exerciseKey,
+              name: exerciseName,
+              description: item,
+            });
+          }
+        }
+      });
+    });
+
+    return exercises.length > 0
+      ? exercises
+      : [
+          {
+            key: "exercise-1",
+            name: "Exercise 1",
+            description: session.title,
+          },
+          {
+            key: "exercise-2",
+            name: "Exercise 2",
+            description: "Additional exercise",
+          },
+        ];
+  },
+
+  renderExerciseForm(exercise, idx) {
+    const sets = this.currentWorkout.exerciseLogs[exercise.key] || [{ weight: "", reps: "", rpe: "", notes: "" }];
+    const exerciseKey = exercise.key;
+
+    return `
+      <div class="exercise-form">
+        <h3 class="exercise-form-title">${escapeHtml(exercise.name)}</h3>
+        <p style="color: var(--muted); font-size: 0.9rem; margin: 0 0 0.8rem;">${escapeHtml(exercise.description)}</p>
+        
+        <div class="exercise-sets">
+          ${sets
+            .map(
+              (set, setIdx) => `
+                <div style="border-bottom: 1px solid rgba(220, 230, 223, 0.5); padding-bottom: 0.8rem; margin-bottom: 0.8rem;">
+                  <div class="exercise-set-row">
+                    <div class="set-inputs">
+                      <label>Weight/Load</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g., 185 lb or BW" 
+                        value="${escapeHtml(set.weight)}"
+                        data-exercise-key="${exerciseKey}"
+                        data-set-index="${setIdx}"
+                        data-field="weight"
+                        class="weight-input"
+                      />
+                    </div>
+                    <div class="set-inputs">
+                      <label>Reps/Time</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g., 6 or 90 sec" 
+                        value="${escapeHtml(set.reps)}"
+                        data-exercise-key="${exerciseKey}"
+                        data-set-index="${setIdx}"
+                        data-field="reps"
+                        class="reps-input"
+                      />
+                    </div>
+                    <div class="set-inputs">
+                      <label>RPE (1-10)</label>
+                      <input 
+                        type="number" 
+                        min="1" 
+                        max="10" 
+                        placeholder="7" 
+                        value="${set.rpe}"
+                        data-exercise-key="${exerciseKey}"
+                        data-set-index="${setIdx}"
+                        data-field="rpe"
+                        class="rpe-input"
+                      />
+                    </div>
+                    ${setIdx > 0 ? `
+                      <button 
+                        type="button" 
+                        class="set-delete-btn" 
+                        data-exercise-key="${exerciseKey}"
+                        data-set-index="${setIdx}"
+                      >
+                        Delete
+                      </button>
+                    ` : '<div></div>'}
+                  </div>
+                  <div class="exercise-notes" style="margin-top: 0.5rem;">
+                    <label style="display: block; font-size: 0.75rem; margin-bottom: 0.3rem;">Notes (Set ${setIdx + 1})</label>
+                    <textarea 
+                      placeholder="How did this set feel?"
+                      data-exercise-key="${exerciseKey}"
+                      data-set-index="${setIdx}"
+                      data-field="notes"
+                      class="notes-input"
+                      style="min-height: 50px;"
+                    >${escapeHtml(set.notes || "")}</textarea>
+                  </div>
+                </div>
+              `,
+            )
+            .join("")}
+        </div>
+
+        <button 
+          type="button" 
+          class="add-set-btn" 
+          data-exercise-key="${exerciseKey}"
+        >
+          + Add Set
+        </button>
+      </div>
+    `;
+  },
+
+  autoSaveForm() {
+    const exerciseListEl = document.querySelector("#strength-exercise-list");
+    if (!exerciseListEl) return;
+
+    const inputs = exerciseListEl.querySelectorAll("input, textarea");
+    inputs.forEach((input) => {
+      const exerciseKey = input.dataset.exerciseKey;
+      const setIndex = parseInt(input.dataset.setIndex) || 0;
+      const field = input.dataset.field;
+
+      if (!this.currentWorkout.exerciseLogs[exerciseKey]) {
+        this.currentWorkout.exerciseLogs[exerciseKey] = [];
+      }
+
+      if (!this.currentWorkout.exerciseLogs[exerciseKey][setIndex]) {
+        this.currentWorkout.exerciseLogs[exerciseKey][setIndex] = { weight: "", reps: "", rpe: "", notes: "" };
+      }
+
+      this.currentWorkout.exerciseLogs[exerciseKey][setIndex][field] = input.value;
+    });
+
+    this.saveLogsToLocalStorage();
+  },
+
+  addSet(exerciseKey) {
+    if (!this.currentWorkout.exerciseLogs[exerciseKey]) {
+      this.currentWorkout.exerciseLogs[exerciseKey] = [];
+    }
+    this.currentWorkout.exerciseLogs[exerciseKey].push({ weight: "", reps: "", rpe: "", notes: "" });
+    this.renderWorkoutModal();
+  },
+
+  deleteSet(exerciseKey, setIndex) {
+    if (this.currentWorkout.exerciseLogs[exerciseKey]) {
+      this.currentWorkout.exerciseLogs[exerciseKey].splice(setIndex, 1);
+      this.renderWorkoutModal();
+    }
+  },
+
+  finishWorkout() {
+    this.autoSaveForm();
+
+    const workout = this.currentWorkout;
+    const logKey = `${workout.date}-${workout.workoutId}`;
+    this.workoutLogs[logKey] = {
+      ...workout,
+      timestamp: Date.now(),
+      syncedToBackend: false,
+      syncedAt: null,
+    };
+
+    this.saveLogsToLocalStorage();
+    this.closeWorkoutModal();
+    this.showSummaryModal(logKey);
+  },
+
+  showSummaryModal(logKey) {
+    const log = this.workoutLogs[logKey];
+    if (!log) return;
+
+    this.currentLogKey = logKey;
+
+    const summaryEl = document.querySelector("#strength-summary-content");
+    const titleEl = document.querySelector("#strength-summary-title");
+    const dateEl = document.querySelector("#strength-summary-date");
+    const exercisesEl = document.querySelector("#strength-summary-exercises");
+
+    if (titleEl) titleEl.textContent = log.title;
+    if (dateEl) dateEl.textContent = log.dateDisplay;
+
+    const exercisesHtml = Object.entries(log.exerciseLogs)
+      .map(([key, sets]) => {
+        const exerciseName = key.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+        const setsHtml = sets
+          .map((set) => {
+            let display = `${set.weight} × ${set.reps}`;
+            if (set.rpe) display += ` @ RPE ${set.rpe}`;
+            if (set.notes) display += ` - ${set.notes}`;
+            return `<div class="summary-exercise-set">${escapeHtml(display)}</div>`;
+          })
+          .join("");
+
+        return `
+          <div class="summary-exercise">
+            <h4 class="summary-exercise-title">${escapeHtml(exerciseName)}</h4>
+            ${setsHtml}
+          </div>
+        `;
+      })
+      .join("");
+
+    if (exercisesEl) exercisesEl.innerHTML = exercisesHtml;
+
+    this.openSummaryModal();
+  },
+
+  loadLog(logKey) {
+    const log = this.workoutLogs[logKey];
+    if (!log) return;
+
+    this.currentLogKey = logKey;
+    this.currentSessionId = log.workoutId;
+    this.currentDateKey = log.date;
+    this.currentWorkout = {
+      ...log,
+      timestamp: Date.now(),
+    };
+
+    this.renderWorkoutModal();
+    this.openWorkoutModal();
+  },
+
+  openWorkoutModal() {
+    const modal = document.querySelector("#strength-workout-modal");
+    if (modal) {
+      modal.hidden = false;
+      modal.classList.add("is-visible");
+      document.body.classList.add("has-workout-modal");
+    }
+  },
+
+  closeWorkoutModal() {
+    const modal = document.querySelector("#strength-workout-modal");
+    if (modal) {
+      modal.classList.remove("is-visible");
+      modal.hidden = true;
+      document.body.classList.remove("has-workout-modal");
+    }
+  },
+
+  openSummaryModal() {
+    const modal = document.querySelector("#strength-summary-modal");
+    if (modal) {
+      modal.hidden = false;
+      modal.classList.add("is-visible");
+      document.body.classList.add("has-summary-modal");
+    }
+  },
+
+  closeSummaryModal() {
+    const modal = document.querySelector("#strength-summary-modal");
+    if (modal) {
+      modal.classList.remove("is-visible");
+      modal.hidden = true;
+      document.body.classList.remove("has-summary-modal");
+    }
+  },
+
+  attachModalEvents() {
+    const calendar = document.querySelector("#calendar-tracker");
+    if (calendar) {
+      calendar.addEventListener("click", (event) => {
+        if (!(event.target instanceof Element)) return;
+
+        const startBtn = event.target.closest("[data-strength-workout-start]");
+        if (startBtn) {
+          this.startWorkout(startBtn.dataset.strengthWorkoutStart);
+          return;
+        }
+      });
+    }
+
+    // Finish button
+    const finishBtn = document.querySelector("#strength-finish-btn");
+    if (finishBtn) {
+      finishBtn.addEventListener("click", () => this.finishWorkout());
+    }
+
+    // Cancel button
+    const cancelBtn = document.querySelector("#strength-cancel-btn");
+    if (cancelBtn) {
+      cancelBtn.addEventListener("click", () => this.closeWorkoutModal());
+    }
+
+    // Modal backdrop and close button
+    document.querySelectorAll("[data-strength-modal-close]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        if (e.target.closest("[data-strength-modal-close]")) {
+          this.closeWorkoutModal();
+        }
+      });
+    });
+
+    // Summary modal buttons
+    const doneBtn = document.querySelector("#strength-summary-done-btn");
+    if (doneBtn) {
+      doneBtn.addEventListener("click", () => {
+        this.closeSummaryModal();
+        // Sync to backend (optional)
+        this.syncToBackend();
+      });
+    }
+
+    const editBtn = document.querySelector("#strength-summary-edit-btn");
+    if (editBtn) {
+      editBtn.addEventListener("click", () => {
+        this.closeSummaryModal();
+        if (this.currentLogKey) {
+          this.loadLog(this.currentLogKey);
+        } else {
+          this.openWorkoutModal();
+        }
+      });
+    }
+
+    document.querySelectorAll("[data-summary-modal-close]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        if (e.target.closest("[data-summary-modal-close]")) {
+          this.closeSummaryModal();
+        }
+      });
+    });
+  },
+
+  syncToBackend() {
+    const logsToSync = Object.values(this.workoutLogs).filter((log) => !log.syncedToBackend);
+    if (!logsToSync.length) return;
+
+    logsToSync.forEach((log) => {
+      const payload = {
+        workoutId: log.workoutId,
+        date: log.date,
+        timestamp: log.timestamp,
+        exerciseLogs: log.exerciseLogs,
+      };
+
+      fetch("/api/strength-logs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+        .then((res) => {
+          if (res.ok) {
+            const logKey = `${log.date}-${log.workoutId}`;
+            this.workoutLogs[logKey].syncedToBackend = true;
+            this.workoutLogs[logKey].syncedAt = new Date().toISOString();
+            this.saveLogsToLocalStorage();
+          }
+        })
+        .catch((err) => console.error("Error syncing strength log:", err));
+    });
+  },
+
+  getLatestLogForDate(dateKey) {
+    const logsForDate = Object.values(this.workoutLogs).filter((log) => log.date === dateKey);
+    if (!logsForDate.length) return null;
+    return logsForDate.sort((a, b) => b.timestamp - a.timestamp)[0];
+  },
+};
+
+function initAuth() {
+  AuthManager.init();
+  ActivityManager.init();
+
+  AuthManager.getAuthStatus().then(() => {
+    AuthManager.renderStatus();
+    if (AuthManager.currentStatus?.connected) {
+      ActivityManager.fetchAndRender().then(() => {
+        syncActivities().catch((error) => console.warn("Sync activities failed:", error));
+      });
+    }
+  });
+}
+
 function init() {
-  renderSummaryCards();
-  renderWeekTargets();
-  renderMonthOneGoals();
-  renderSwimPlan();
   renderPhases();
   renderCalendar();
-  renderWorkouts();
   renderTrackingSummary();
   attachCalendarEvents();
   attachTodayPanelEvents();
   attachSiteNavEvents();
   attachTabEvents();
-  attachFilterEvents();
-  attachTrackingEvents();
   activateTab(getTabIdForHash(), { scrollToHash: Boolean(window.location.hash) });
 
-  document.querySelector("#copy-checkin").addEventListener("click", copyCheckin);
   document.querySelector("#reset-tracking").addEventListener("click", resetTracking);
+
+  StrengthWorkoutManager.init();
+  initMetrics();
+  initAuth();
+  
+}
+
+function initMetrics() {
+  // Fetch metrics once per session if available
+  const today = new Date();
+  const calendarStart = dateToKey(calendarStartDate);
+  const calendarEnd = dateToKey(calendarEndDate);
+  
+  // Try to fetch metrics for the calendar range
+  fetchDailyMetrics({ start: calendarStart, end: calendarEnd })
+    .then(() => {
+      renderCalendar();
+      renderCorosStatus();
+    })
+    .catch((error) => {
+      console.warn("Metrics fetch failed, using cached data", error);
+      renderCorosStatus();
+    });
 }
 
 init();
