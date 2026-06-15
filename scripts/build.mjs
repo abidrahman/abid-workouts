@@ -1,4 +1,4 @@
-import { copyFile, cp, mkdir, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
@@ -7,7 +7,6 @@ const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const distDir = join(repoRoot, "dist");
 
 const staticFiles = ["index.html", "styles.css", "site.webmanifest"];
-const staticDirs = ["data"];
 
 async function copyStaticFiles() {
   await rm(distDir, { recursive: true, force: true });
@@ -15,13 +14,6 @@ async function copyStaticFiles() {
 
   await Promise.all(
     staticFiles.map((fileName) => copyFile(join(repoRoot, fileName), join(distDir, fileName))),
-  );
-
-  await Promise.all(
-    staticDirs.map(async (dirName) => {
-      await mkdir(join(distDir, dirName), { recursive: true });
-      await cp(join(repoRoot, dirName), join(distDir, dirName), { recursive: true });
-    }),
   );
 
   // GitHub Pages should serve files as-is instead of running them through Jekyll.

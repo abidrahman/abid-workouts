@@ -5175,7 +5175,7 @@ const ActivityManager = {
 
   async fetchSyncedActivities() {
     try {
-      const res = await fetch("data/activities.json");
+      const res = await fetch("https://raw.githubusercontent.com/abidrahman/abid-workouts/main/data/activities.json");
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       this.activities = Array.isArray(data) ? data : [];
