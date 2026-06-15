@@ -13,6 +13,37 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div class="auth-status-panel" id="auth-status-panel" aria-live="polite" aria-label="Strava authentication status">
+      <div class="auth-status-panel__content">
+        <span class="auth-status-panel__text" id="auth-status-text">Connecting…</span>
+        <button class="button button--small button--primary" id="auth-connect-btn" type="button" hidden>
+          Connect Strava
+        </button>
+        <button class="button button--small button--ghost" id="auth-sync-btn" type="button" hidden>
+          Sync Now
+        </button>
+        <button class="button button--small button--ghost" id="auth-activities-btn" type="button" hidden>
+          Activities
+        </button>
+      </div>
+    </div>
+
+    <div class="activity-sidebar" id="activity-sidebar" aria-label="Synced activities">
+      <div class="activity-sidebar__header">
+        <h3>Recent Activities</h3>
+        <button class="activity-sidebar__close" type="button" id="activity-sidebar-close" aria-label="Close activities">×</button>
+      </div>
+      <div class="activity-sidebar__list" id="activity-list">
+        <p class="activity-sidebar__empty">No activities synced yet</p>
+      </div>
+      <section class="activity-resolution" id="activity-resolution" hidden>
+        <h4>Needs manual linking</h4>
+        <div class="activity-resolution__list" id="activity-resolution-list"></div>
+      </section>
+    </div>
+
+    <div class="toast-container" id="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
+
     <header class="hero">
       <nav class="topbar site-nav" aria-label="Training plan navigation" data-site-nav>
         <a class="site-nav__brand" href="#dashboard">Baker + Lake Union</a>
@@ -29,9 +60,6 @@
         <div class="site-nav__menu" id="site-nav-menu" data-site-nav-menu>
           <a class="is-active" href="#calendar" data-tab-link="calendar">Today + Calendar</a>
           <a href="#overview" data-tab-link="overview">Overview</a>
-          <a href="#swim-plan" data-tab-link="swim-plan">Swim Plan</a>
-          <a href="#week-one" data-tab-link="week-one">June Workouts</a>
-          <a href="#tracking" data-tab-link="tracking">Tracking</a>
         </div>
       </nav>
 
@@ -57,16 +85,12 @@
 
         <div class="hero__actions">
           <a class="button button--primary" href="#calendar" data-tab-link="calendar">Open Calendar</a>
-          <a class="button button--ghost" href="#week-one" data-tab-link="week-one">View June Workouts</a>
+          <a class="button button--ghost" href="#overview" data-tab-link="overview">View Overview</a>
         </div>
       </section>
     </header>
 
     <main>
-      <section class="section tab-panel is-active" aria-label="Goal summary" data-tab-panel="calendar">
-        <div class="stats-grid" id="summary-cards"></div>
-      </section>
-
       <section class="section calendar-section tab-panel is-active" id="calendar-tracker" data-tab-panel="calendar">
         <div class="section-heading">
           <p class="eyebrow">Single-view tracker</p>
@@ -78,18 +102,21 @@
         </div>
 
         <div class="calendar-progress" id="calendar-progress" aria-label="Calendar completion summary"></div>
-
-        <section class="month-one-goals" aria-labelledby="month-one-goals-title">
-          <div class="month-one-goals__header">
-            <p class="eyebrow">Month 1 intent</p>
-            <h3 id="month-one-goals-title">Weekly goals for June</h3>
-            <p>
-              The first month is planned by week, not just by individual workouts: build rhythm, then capacity,
-              then absorb before the next progression.
-            </p>
+        <article class="panel">
+          <div class="section-heading section-heading--compact">
+            <p class="eyebrow">Saved locally</p>
+            <h3>Workout completion tracker</h3>
           </div>
-          <div class="month-one-goals__grid" id="month-one-goals"></div>
-        </section>
+          <div class="tracking-summary" id="tracking-summary"></div>
+          <div class="button-row">
+            <button class="button button--danger" id="reset-tracking" type="button">
+              Reset tracking
+            </button>
+          </div>
+          <p class="small-note">
+            Your completion status is saved only in this browser via localStorage.
+          </p>
+        </article>
 
         <div class="calendar-legend" aria-label="Workout category legend">
           <span class="tag tag--swim">swim</span>
@@ -145,6 +172,54 @@
             </div>
           </section>
         </div>
+
+        <div class="workout-modal" id="strength-workout-modal" role="dialog" aria-modal="true" aria-labelledby="strength-workout-title" hidden>
+          <div class="workout-modal__backdrop" data-strength-modal-close></div>
+          <section class="workout-modal__panel" aria-label="Strength workout logging">
+            <button class="workout-modal__close" type="button" data-strength-modal-close aria-label="Close workout">×</button>
+            <div class="strength-workout-form" id="strength-workout-form">
+              <div class="form-header">
+                <h2 id="strength-workout-title">Start Workout</h2>
+                <p id="strength-workout-date" class="eyebrow"></p>
+              </div>
+
+              <div class="exercise-list" id="strength-exercise-list"></div>
+
+              <div class="form-actions">
+                <button type="button" class="button button--primary" id="strength-finish-btn" data-strength-action="finish">
+                  Finish Workout
+                </button>
+                <button type="button" class="button button--ghost" id="strength-cancel-btn" data-strength-action="cancel">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="summary-modal" id="strength-summary-modal" role="dialog" aria-modal="true" aria-labelledby="strength-summary-title" hidden>
+          <div class="summary-modal__backdrop" data-summary-modal-close></div>
+          <section class="summary-modal__panel" aria-label="Workout summary">
+            <button class="summary-modal__close" type="button" data-summary-modal-close aria-label="Close summary">×</button>
+            <div class="strength-summary-content" id="strength-summary-content">
+              <div class="summary-header">
+                <h2 id="strength-summary-title">Workout Complete!</h2>
+                <p id="strength-summary-date" class="eyebrow"></p>
+              </div>
+
+              <div class="summary-exercises" id="strength-summary-exercises"></div>
+
+              <div class="summary-actions">
+                <button type="button" class="button button--primary" id="strength-summary-done-btn" data-summary-action="done">
+                  Done
+                </button>
+                <button type="button" class="button button--ghost" id="strength-summary-edit-btn" data-summary-action="edit">
+                  Edit
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
       </section>
 
       <section class="section two-column tab-panel" data-tab-panel="overview">
@@ -176,49 +251,7 @@
         </article>
       </section>
 
-      <section class="section swim-section tab-panel" id="swim-methodology" data-tab-panel="swim-plan">
-        <div class="section-heading">
-          <p class="eyebrow">Swim progression</p>
-          <h2>Technique-first path to a 1,600 yd open-water swim</h2>
-          <p>
-            The swim plan now pairs every endurance session with specific drills,
-            one weekly nonstop checkpoint, and open-water skills so a newer swimmer
-            improves efficiency instead of only adding yards.
-          </p>
-        </div>
-
-        <div class="swim-method-grid" id="swim-methodology-cards"></div>
-
-        <div class="swim-plan-layout">
-          <article class="panel">
-            <div class="section-heading section-heading--compact">
-              <p class="eyebrow">Drill progression</p>
-              <h2>What to practice and why</h2>
-            </div>
-            <div class="drill-progression" id="swim-drill-progression"></div>
-          </article>
-
-          <article class="panel panel--accent">
-            <div class="section-heading section-heading--compact">
-              <p class="eyebrow">Readiness gates</p>
-              <h2>Before Lake Union</h2>
-            </div>
-            <ul class="check-list" id="swim-readiness-checklist"></ul>
-          </article>
-        </div>
-
-        <article class="panel long-swim-panel">
-          <div class="section-heading section-heading--compact">
-            <p class="eyebrow">Weekly long swim</p>
-            <h2>Nonstop distance targets</h2>
-            <p>
-              The long swim is a controlled checkpoint, not a weekly suffer test.
-              Increase distance only when breathing is calm and shoulder pain stays at or below 2/10.
-            </p>
-          </div>
-          <div class="long-swim-table" id="long-swim-targets"></div>
-        </article>
-      </section>
+      <section class="section swim-section tab-panel" id="swim-methodology" data-tab-panel="swim-plan"></section>
 
       <section class="section tab-panel" id="phases" data-tab-panel="overview">
         <div class="section-heading">
@@ -232,61 +265,9 @@
         <div class="timeline" id="phase-timeline"></div>
       </section>
 
-      <section class="section tab-panel" id="week-one" data-tab-panel="week-one">
-        <div class="section-heading">
-          <p class="eyebrow">June 1–30</p>
-          <h2>June detailed workout plan</h2>
-          <p>
-            Filter by modality or review the full month. Each day includes the main
-            purpose, workout details, intensity guidance, and what to track.
-          </p>
-        </div>
+      <section class="section tab-panel" id="week-one" data-tab-panel="week-one"></section>
 
-        <div class="toolbar" aria-label="Workout filters">
-          <button class="filter-button is-active" type="button" data-filter="all">All</button>
-          <button class="filter-button" type="button" data-filter="swim">Swim</button>
-          <button class="filter-button" type="button" data-filter="bike">Bike</button>
-          <button class="filter-button" type="button" data-filter="strength">Strength</button>
-          <button class="filter-button" type="button" data-filter="hike">Hike / Stairs</button>
-          <button class="filter-button" type="button" data-filter="recovery">Recovery</button>
-        </div>
-
-        <div class="week-grid" id="workout-grid"></div>
-      </section>
-
-      <section class="section two-column tab-panel" id="tracking" data-tab-panel="tracking">
-        <article class="panel">
-          <div class="section-heading section-heading--compact">
-            <p class="eyebrow">Saved locally</p>
-            <h2>June tracking summary</h2>
-          </div>
-          <div class="tracking-summary" id="tracking-summary"></div>
-          <div class="button-row">
-            <button class="button button--primary" id="copy-checkin" type="button">
-              Copy weekly check-in
-            </button>
-            <button class="button button--danger" id="reset-tracking" type="button">
-              Reset tracking
-            </button>
-          </div>
-          <p class="small-note">
-            Your completion status is saved only in this browser via localStorage.
-          </p>
-        </article>
-
-        <article class="panel">
-          <div class="section-heading section-heading--compact">
-            <p class="eyebrow">Guardrails</p>
-            <h2>Adjustment rules</h2>
-          </div>
-          <ul class="rules-list">
-            <li><strong>Shin pain &gt; 2–3/10:</strong> remove weighted stairs/hiking for 48–72 hr; bike/swim only.</li>
-            <li><strong>Shoulder pain during swim:</strong> stop hard sets; switch to easy technique or kicking.</li>
-            <li><strong>Fatigue high 2 days in a row:</strong> drop optional sessions before cutting key workouts.</li>
-            <li><strong>Long hike day:</strong> practice fueling, hydration, pack fit, and downhill control.</li>
-          </ul>
-        </article>
-      </section>
+      <section class="section two-column tab-panel" id="tracking" data-tab-panel="tracking"></section>
 
       <section class="section two-column tab-panel" data-tab-panel="overview">
         <article class="panel">
