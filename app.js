@@ -2380,23 +2380,10 @@ const calendarMilestones = {
   recovery: { dateKey: "2026-08-01", label: "Mt. Baker" },
   default: { dateKey: "2026-08-01", label: "Mt. Baker" },
 };
-const corosConnectorConfig = {
-  region: "North America / other",
-  endpoint: "https://mcpus.coros.com/mcp",
-  status:
-    "MCP endpoint selected from COROS instructions; live authorization/query is pending because the endpoint timed out from this machine.",
-};
-// Paste/import COROS MCP results here after authorization. Metrics are keyed by the
-// calendar day they should appear on. `steps` is total steps for that date;
-// `sleepMinutes` is the previous-night sleep duration shown on that date;
-// `sleepScore` is 0-100 quality score; `calories` is daily total in kcal.
-const corosDailyMetrics = {
-  // "2026-06-01": { steps: 12345, sleepMinutes: 438, sleepScore: 85, calories: 2400, sleepDateKey: "2026-05-31", fetchedAt: 1623744000000 },
-};
 const METRICS_STORAGE_KEY = "workout-metrics";
 const METRICS_CACHE_MAX_AGE = 24 * 60 * 60 * 1000;
 
-// Phase 3: Auto-matched activities pulled from the connected provider (Strava/COROS).
+// Phase 3: Auto-matched activities pulled from the connected provider (Strava).
 let syncedActivities = [];
 
 const AUTO_MATCHED_STORAGE_KEY = "workout-auto-matched-v1";
@@ -2946,21 +2933,8 @@ function cacheMetrics(metricsArray) {
 }
 
 function getMetricsForDate(dateKey) {
-  // Try cached metrics first, then corosDailyMetrics
   const cached = cachedMetrics[dateKey];
   if (cached) return cached;
-  
-  const coros = corosDailyMetrics[dateKey];
-  if (coros) {
-    return {
-      sleepDuration: coros.sleepMinutes,
-      sleepScore: coros.sleepScore,
-      calories: coros.calories,
-      steps: coros.steps,
-      sleepDateKey: coros.sleepDateKey,
-      fetchedAt: coros.fetchedAt,
-    };
-  }
   
   return null;
 }
@@ -3288,34 +3262,6 @@ function getPreviousDateKey(dateKey) {
   return dateToKey(date);
 }
 
-function getCorosMetricsForDate(dateKey) {
-  const rawMetrics = corosDailyMetrics[dateKey];
-  if (!rawMetrics) return null;
-
-  const steps = Number(rawMetrics.steps);
-  const sleepMinutes = Number(rawMetrics.sleepMinutes ?? rawMetrics.sleepTotalMinutes);
-
-  return {
-    ...rawMetrics,
-    steps: Number.isFinite(steps) && steps >= 0 ? steps : null,
-    sleepMinutes: Number.isFinite(sleepMinutes) && sleepMinutes >= 0 ? sleepMinutes : null,
-    sleepDateKey: rawMetrics.sleepDateKey ?? getPreviousDateKey(dateKey),
-  };
-}
-
-function hasCorosMetricsForDate(dateKey) {
-  const metrics = getCorosMetricsForDate(dateKey);
-  return Boolean(metrics && (metrics.steps !== null || metrics.sleepMinutes !== null));
-}
-
-function getCorosMetricDateKeys() {
-  return Object.keys(corosDailyMetrics).filter(hasCorosMetricsForDate).sort();
-}
-
-function formatCorosInteger(value) {
-  return new Intl.NumberFormat("en-US").format(value);
-}
-
 function formatSleepDuration(minutes) {
   const roundedMinutes = Math.round(minutes);
   const hours = Math.floor(roundedMinutes / 60);
@@ -3323,158 +3269,6 @@ function formatSleepDuration(minutes) {
 
   if (!hours) return `${remainderMinutes}m`;
   return `${hours}h ${String(remainderMinutes).padStart(2, "0")}m`;
-}
-
-function renderCorosStatus() {
-  const el = document.querySelector("#coros-status");
-  if (!el) return;
-
-  const metricDateKeys = getCorosMetricDateKeys();
-  const metricCount = metricDateKeys.length;
-  const dateRange = metricCount
-    ? `${metricDateKeys[0]} → ${metricDateKeys[metricDateKeys.length - 1]}`
-    : "waiting for authorized data";
-
-  el.innerHTML = `
-    <strong>COROS ${metricCount ? "data loaded" : "connection pending"}:</strong>
-    <span>${escapeHtml(corosConnectorConfig.region)} endpoint selected.</span>
-    <span>${escapeHtml(metricCount ? `${metricCount} day(s) of steps/sleep loaded (${dateRange}).` : corosConnectorConfig.status)}</span>
-    <code>${escapeHtml(corosConnectorConfig.endpoint)}</code>
-  `;
-}
-
-function renderCorosMetricChip(type, label, value, title) {
-  return `
-    <span class="coros-chip coros-chip--${type}" title="${escapeHtml(title)}">
-      <span class="coros-chip__label">${escapeHtml(label)}</span>
-      <strong>${escapeHtml(value)}</strong>
-    </span>
-  `;
-}
-
-function renderCalendarDayCorosMetrics(day) {
-  const metrics = getCorosMetricsForDate(day.dateKey);
-  const allMetrics = getMetricsForDate(day.dateKey);
-  
-  if (!metrics && !allMetrics) return "";
-  
-  const combined = { ...allMetrics, ...metrics };
-  const sleepDuration = combined.sleepMinutes ?? combined.sleepDuration;
-  const steps = combined.steps;
-  const calories = combined.calories;
-  const sleepScore = combined.sleepScore;
-  
-  if (!steps && !sleepDuration && !calories) return "";
-  
-  const display = formatMetrics(combined);
-  if (!display) return "";
-  
-  const colorClass = display.color ? `metrics-${display.color}` : "metrics-good";
-  const chips = [];
-  
-  if (display.sleep) {
-    chips.push(
-      renderCorosMetricChip(
-        "sleep",
-        "😴",
-        `${display.sleep}${sleepScore ? ` (${sleepScore}%)` : ""}`,
-        `Sleep: ${display.sleep}${sleepScore ? ` quality score: ${sleepScore}%` : ""} on ${combined.sleepDateKey ?? day.dateKey}`,
-      ),
-    );
-  }
-  
-  if (display.calories) {
-    chips.push(
-      renderCorosMetricChip(
-        "calories",
-        "🔥",
-        `${display.calories} cal`,
-        `Calories: ${display.calories} kcal on ${day.dateKey}`,
-      ),
-    );
-  }
-  
-  if (display.steps) {
-    chips.push(
-      renderCorosMetricChip(
-        "steps",
-        "👟",
-        display.steps,
-        `Steps: ${new Intl.NumberFormat("en-US").format(steps)} on ${day.dateKey}`,
-      ),
-    );
-  }
-  
-  const timeInfo = combined.fetchedAt 
-    ? `<span class="metrics-last-update" title="${new Date(combined.fetchedAt).toLocaleString()}">Updated ${getTimeAgo(combined.fetchedAt)}</span>`
-    : "";
-
-  return `<div class="calendar-day__coros ${colorClass}" aria-label="Daily metrics for ${day.dateKey}">${chips.join("")}${timeInfo}</div>`;
-}
-
-function renderCalendarDetailCorosMetrics(day) {
-  const metrics = getCorosMetricsForDate(day.dateKey);
-  const allMetrics = getMetricsForDate(day.dateKey);
-  const combined = { ...allMetrics, ...metrics };
-  
-  const sleepDuration = combined.sleepMinutes ?? combined.sleepDuration;
-  const sleepScore = combined.sleepScore;
-  const steps = combined.steps;
-  const calories = combined.calories;
-  
-  if (!sleepDuration && !steps && !calories) {
-    return `
-      <section class="calendar-detail__section calendar-detail__coros">
-        <h4>Daily metrics</h4>
-        <p>No metrics imported for this date yet. Once connected, sleep, calories, and steps data will appear here.</p>
-      </section>
-    `;
-  }
-
-  const rows = [];
-  
-  if (sleepDuration) {
-    rows.push(`
-      <article class="calendar-detail__coros-card">
-        <span>Sleep</span>
-        <strong>${formatSleepDuration(sleepDuration)}</strong>
-        ${sleepScore ? `<span class="sleep-score">Quality: ${sleepScore}%</span>` : ""}
-        <small>Night of: ${escapeHtml(combined.sleepDateKey ?? day.dateKey)}</small>
-      </article>
-    `);
-  }
-  
-  if (calories) {
-    rows.push(`
-      <article class="calendar-detail__coros-card">
-        <span>Calories</span>
-        <strong>${formatCalories(calories)} kcal</strong>
-        <small>${escapeHtml(day.dateKey)}</small>
-      </article>
-    `);
-  }
-  
-  if (steps) {
-    rows.push(`
-      <article class="calendar-detail__coros-card">
-        <span>Steps</span>
-        <strong>${new Intl.NumberFormat("en-US").format(steps)}</strong>
-        <small>${escapeHtml(day.dateKey)}</small>
-      </article>
-    `);
-  }
-  
-  const timeInfo = combined.fetchedAt 
-    ? `<small class="metrics-timestamp">Data updated ${getTimeAgo(combined.fetchedAt)}</small>`
-    : "";
-
-  return `
-    <section class="calendar-detail__section calendar-detail__coros">
-      <h4>Daily metrics</h4>
-      <div class="calendar-detail__coros-grid">${rows.join("")}</div>
-      ${timeInfo}
-    </section>
-  `;
 }
 
 function hasActiveCalendarFilters() {
@@ -3661,7 +3455,7 @@ function renderAutoCheckBadge(autoMatchInfo) {
   const timestamp = new Date(autoMatchInfo.timestamp);
   const dateStr = timestamp.toLocaleDateString();
   const timeStr = timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  const tooltip = `Auto-checked from COROS on ${dateStr} at ${timeStr} (${autoMatchInfo.confidence} confidence)`;
+  const tooltip = `Auto-matched from Strava on ${dateStr} at ${timeStr} (${autoMatchInfo.confidence} confidence)`;
   
   return `<span class="calendar-session__auto-check-badge" title="${escapeHtml(tooltip)}">✓ Auto-matched</span>`;
 }
@@ -4132,7 +3926,6 @@ function renderCalendar() {
 
   renderCalendarProgress();
   renderCalendarControls();
-  renderCorosStatus();
   monthsEl.classList.toggle("calendar-months--compact", calendarUiState.view === "compact");
   monthsEl.classList.toggle("calendar-months--detailed", calendarUiState.view === "detailed");
 
@@ -4388,7 +4181,6 @@ function renderCalendarDay(day) {
         <span class="calendar-day__weekday">${calendarWeekdayNames[day.weekday]}</span>
         <span class="calendar-day__count">${completion.completed}/${completion.total}</span>
       </div>
-      ${renderCalendarDayCorosMetrics(day)}
       <div class="calendar-day__sessions">
         ${visibleSessions.map((session) => renderCalendarSession(session)).join("")}
         ${extraHtml}
@@ -4527,8 +4319,6 @@ function renderCalendarSessionDetail(sessionId) {
       <p>${escapeHtml(coachingCue)}</p>
       <span>${escapeHtml(phaseLabel)}</span>
     </section>
-
-    ${renderCalendarDetailCorosMetrics(day)}
 
     <section class="calendar-detail__section">
       <h4>Plan note</h4>
@@ -5158,18 +4948,6 @@ function jumpToCalendarTarget() {
   dayEl.scrollIntoView({ behavior: "smooth", block: "center" });
   dayEl.classList.add("is-jump-highlight");
   window.setTimeout(() => dayEl.classList.remove("is-jump-highlight"), 1500);
-}
-
-function formatCorosMetricsForCheckin(dateKey) {
-  const metrics = getCorosMetricsForDate(dateKey);
-  if (!metrics || (metrics.steps === null && metrics.sleepMinutes === null)) {
-    return ["COROS steps: not imported", "Previous-night sleep: not imported"];
-  }
-
-  return [
-    `COROS steps: ${metrics.steps === null ? "not imported" : formatCorosInteger(metrics.steps)}`,
-    `Previous-night sleep: ${metrics.sleepMinutes === null ? "not imported" : formatSleepDuration(metrics.sleepMinutes)}`,
-  ];
 }
 
 function createCheckinText() {
@@ -5849,11 +5627,9 @@ function initMetrics() {
   fetchDailyMetrics({ start: calendarStart, end: calendarEnd })
     .then(() => {
       renderCalendar();
-      renderCorosStatus();
     })
     .catch((error) => {
       console.warn("Metrics fetch failed, using cached data", error);
-      renderCorosStatus();
     });
 }
 

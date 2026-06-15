@@ -1704,23 +1704,6 @@ main {
   color: var(--primary-2);
 }
 
-.calendar-coros-status {
-  background:
-    linear-gradient(135deg, rgba(229, 243, 236, 0.86), rgba(255, 244, 221, 0.72)),
-    #fff;
-}
-
-.calendar-coros-status code,
-.calendar-detail__coros code {
-  padding: 0.12rem 0.32rem;
-  color: var(--primary-2);
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(220, 230, 223, 0.95);
-  border-radius: 999px;
-  font-size: 0.78em;
-  font-weight: 800;
-}
-
 .calendar-month--compact .calendar-month__header {
   padding: 0.9rem 1rem;
 }
@@ -1778,72 +1761,6 @@ main {
   border-radius: 999px;
   font-size: 0.68rem;
   font-weight: 900;
-}
-
-.calendar-day__coros {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.24rem;
-  align-items: center;
-}
-
-.coros-chip {
-  display: inline-flex;
-  gap: 0.22rem;
-  align-items: baseline;
-  width: fit-content;
-  max-width: 100%;
-  padding: 0.16rem 0.38rem;
-  overflow: hidden;
-  border: 1px solid rgba(220, 230, 223, 0.95);
-  border-radius: 999px;
-  font-size: 0.67rem;
-  line-height: 1.15;
-  white-space: nowrap;
-}
-
-.coros-chip__label {
-  color: var(--muted-2);
-  font-size: 0.58rem;
-  font-weight: 950;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.coros-chip strong {
-  overflow: hidden;
-  color: var(--ink);
-  font-weight: 950;
-  text-overflow: ellipsis;
-}
-
-.coros-chip--steps {
-  background: rgba(234, 244, 251, 0.92);
-  border-color: rgba(41, 117, 168, 0.18);
-}
-
-.coros-chip--sleep {
-  background: rgba(255, 244, 221, 0.92);
-  border-color: rgba(242, 165, 65, 0.24);
-}
-
-.coros-chip--calories {
-  background: rgba(255, 240, 245, 0.92);
-  border-color: rgba(191, 61, 42, 0.2);
-}
-
-.calendar-day__coros.metrics-good {
-  opacity: 0.85;
-}
-
-.calendar-day__coros.metrics-warning {
-  opacity: 0.9;
-  filter: hue-rotate(-35deg) saturate(1.2);
-}
-
-.calendar-day__coros.metrics-concern {
-  opacity: 0.95;
-  filter: hue-rotate(-45deg) saturate(1.4);
 }
 
 .metrics-last-update {
@@ -2250,35 +2167,6 @@ main {
 .calendar-detail__block h5 {
   margin: 0;
   letter-spacing: -0.025em;
-}
-
-.calendar-detail__coros-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.7rem;
-  margin-top: 0.75rem;
-}
-
-.calendar-detail__coros-card {
-  display: grid;
-  gap: 0.25rem;
-  padding: 0.85rem;
-  background: rgba(238, 245, 239, 0.72);
-  border: 1px solid rgba(220, 230, 223, 0.95);
-  border-radius: 16px;
-}
-
-.calendar-detail__coros-card span,
-.calendar-detail__coros-card small {
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 850;
-}
-
-.calendar-detail__coros-card strong {
-  color: var(--primary-2);
-  font-size: clamp(1.35rem, 3vw, 1.9rem);
-  letter-spacing: -0.04em;
 }
 
 .calendar-detail__section p {
@@ -3324,10 +3212,6 @@ body.has-calendar-drag .calendar-day--blank {
   .calendar-detail__block {
     padding: 0.85rem;
     border-radius: 16px;
-  }
-
-  .calendar-detail__coros-grid {
-    grid-template-columns: 1fr;
   }
 
   .calendar-detail__blocks {
