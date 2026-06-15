@@ -5170,66 +5170,6 @@ function showToast(message) {
   toastTimer = window.setTimeout(() => toast.classList.remove("is-visible"), 2600);
 }
 
-const AuthManager = {
-  currentStatus: null,
-  statusCheckTimer: null,
-
-  async getAuthStatus() {
-    this.currentStatus = { connected: false };
-    return this.currentStatus;
-  },
-
-  async startOAuthFlow() {
-    showToast("Strava OAuth requires a backend server — not available in this deployment.");
-  },
-
-  async syncActivities() {
-    showToast("Strava sync requires a backend server — not available in this deployment.");
-  },
-
-  async logout() {
-    this.currentStatus = { connected: false };
-    this.renderStatus();
-    ActivityManager.renderActivityList([]);
-  },
-
-  renderStatus() {
-    const panel = document.querySelector("#auth-status-panel");
-    const statusText = document.querySelector("#auth-status-text");
-    const connectBtn = document.querySelector("#auth-connect-btn");
-    const syncBtn = document.querySelector("#auth-sync-btn");
-    const activitiesBtn = document.querySelector("#auth-activities-btn");
-
-    if (!panel || !statusText) return;
-
-    if (this.currentStatus?.connected && this.currentStatus?.user) {
-      const lastSync = this.currentStatus.lastSync
-        ? new Date(this.currentStatus.lastSync).toLocaleString()
-        : "Never";
-      statusText.innerHTML = `
-        <span class="auth-status-badge">✓ Connected as <strong>${escapeHtml(this.currentStatus.user)}</strong></span>
-        <span class="auth-status-time">Last sync: ${lastSync}</span>
-      `;
-      connectBtn.hidden = true;
-      syncBtn.hidden = false;
-      activitiesBtn.hidden = false;
-    } else {
-      statusText.textContent = "Not connected to Strava";
-      connectBtn.hidden = false;
-      syncBtn.hidden = true;
-      activitiesBtn.hidden = true;
-    }
-  },
-
-  init() {
-    const connectBtn = document.querySelector("#auth-connect-btn");
-    const syncBtn = document.querySelector("#auth-sync-btn");
-
-    if (connectBtn) connectBtn.addEventListener("click", () => this.startOAuthFlow());
-    if (syncBtn) syncBtn.addEventListener("click", () => this.syncActivities());
-  },
-};
-
 const ActivityManager = {
   activities: [],
 
@@ -5810,10 +5750,9 @@ const StrengthWorkoutManager = {
 };
 
 function initAuth() {
-  AuthManager.init();
   ActivityManager.init();
 
-  // Always load activities from the static JSON (updated hourly by GitHub Actions)
+  // Load activities from the static JSON (updated hourly by GitHub Actions)
   ActivityManager.fetchAndRender().then(() => {
     syncActivities().catch((error) => console.warn("Sync activities failed:", error));
   });

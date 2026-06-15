@@ -13,20 +13,6 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="auth-status-panel" id="auth-status-panel" aria-live="polite" aria-label="Strava authentication status">
-      <div class="auth-status-panel__content">
-        <span class="auth-status-panel__text" id="auth-status-text">Connecting…</span>
-        <button class="button button--small button--primary" id="auth-connect-btn" type="button" hidden>
-          Connect Strava
-        </button>
-        <button class="button button--small button--ghost" id="auth-sync-btn" type="button" hidden>
-          Sync Now
-        </button>
-        <button class="button button--small button--ghost" id="auth-activities-btn" type="button" hidden>
-          Activities
-        </button>
-      </div>
-    </div>
 
     <div class="activity-sidebar" id="activity-sidebar" aria-label="Synced activities">
       <div class="activity-sidebar__header">
@@ -60,6 +46,9 @@
         <div class="site-nav__menu" id="site-nav-menu" data-site-nav-menu>
           <a class="is-active" href="#calendar" data-tab-link="calendar">Today + Calendar</a>
           <a href="#overview" data-tab-link="overview">Overview</a>
+          <button class="button button--small button--ghost" id="auth-activities-btn" type="button">
+            Strava Activities
+          </button>
         </div>
       </nav>
 
