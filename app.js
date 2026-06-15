@@ -5084,9 +5084,16 @@ const ActivityManager = {
       const res = await fetch("https://raw.githubusercontent.com/abidrahman/abid-workouts/main/data/activities.json");
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      this.activities = Array.isArray(data) ? data : [];
-      syncedActivities = this.activities;
-      return this.activities;
+      // Filter to the training block window using the app's canonical date constants
+      const startKey = dateToKey(calendarStartDate);
+      const endKey = dateToKey(calendarEndDate);
+      const inBlock = (Array.isArray(data) ? data : []).filter((a) => {
+        const dateKey = getActivityDateKey(a);
+        return dateKey && dateKey >= startKey && dateKey <= endKey;
+      });
+      this.activities = inBlock;
+      syncedActivities = inBlock;
+      return inBlock;
     } catch (error) {
       console.warn("Could not load activities.json:", error);
       this.activities = [];
