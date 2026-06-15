@@ -3489,8 +3489,38 @@ body.has-calendar-drag .calendar-day--blank {
 
 .activity-resolution-item__controls {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto auto auto;
   gap: 0.45rem;
+}
+
+.activity-resolution-item__meta {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 0.3rem 0 0.5rem;
+}
+
+.activity-meta-chip {
+  font-size: 0.75rem;
+  background: var(--surface-2, #f0f4f2);
+  border-radius: 6px;
+  padding: 0.15rem 0.45rem;
+  color: var(--ink);
+}
+
+.activity-item__name {
+  margin: 0.2rem 0 0.3rem;
+  font-size: 0.8rem;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activity-item__elevation {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .activity-resolution-item__controls select {

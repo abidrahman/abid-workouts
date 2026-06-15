@@ -57,15 +57,18 @@ if (!activitiesRes.ok) {
 const raw = await activitiesRes.json();
 
 // Step 3: Transform to the shape the frontend expects
-const activities = raw.map((a) => ({
-  id: String(a.id),
-  name: a.name,
-  type: a.type,
-  startTime: a.start_date,
-  duration: a.moving_time,      // seconds
-  distance: a.distance,         // metres
-  elevationGain: a.total_elevation_gain,
-}));
+// Use start_date_local (athlete's local timezone) to avoid UTC date-shift bugs
+const activities = raw
+  .filter((a) => a.start_date_local >= "2026-06-01")  // only training block activities
+  .map((a) => ({
+    id: String(a.id),
+    name: a.name,
+    type: a.type,
+    startTime: a.start_date_local,  // local time — no UTC date shift
+    duration: a.moving_time,        // seconds
+    distance: a.distance,           // metres
+    elevationGain: a.total_elevation_gain,
+  }));
 
 // Step 4: Write to data/activities.json
 const outPath = join(repoRoot, "data", "activities.json");

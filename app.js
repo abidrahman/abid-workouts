@@ -2389,7 +2389,36 @@ let syncedActivities = [];
 const AUTO_MATCHED_STORAGE_KEY = "workout-auto-matched-v1";
 const MANUAL_MATCH_STORAGE_KEY = "workout-manual-matches-v1";
 const EXTRA_WORKOUTS_STORAGE_KEY = "workout-extra-unplanned-v1";
+const DISMISSED_ACTIVITIES_KEY = "workout-dismissed-activities-v1";
 let unresolvedActivityMatches = [];
+
+function getDismissedActivities() {
+  try {
+    const raw = window.localStorage.getItem(DISMISSED_ACTIVITIES_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function dismissActivity(activityId) {
+  const dismissed = getDismissedActivities();
+  dismissed[String(activityId)] = true;
+  window.localStorage.setItem(DISMISSED_ACTIVITIES_KEY, JSON.stringify(dismissed));
+}
+
+function isActivityDismissed(activityId) {
+  return !!getDismissedActivities()[String(activityId)];
+}
+
+function normalizeActivityTypeDisplay(type) {
+  const text = String(type ?? "").toLowerCase();
+  if (/(swim|pool|open water)/.test(text)) return "Swim";
+  if (/(ride|bike|cycling)/.test(text)) return "Bike";
+  if (/(run|trail run)/.test(text)) return "Run";
+  if (/(hike|walk)/.test(text)) return "Hike";
+  if (/(strength|weight|gym|workout)/.test(text)) return "Strength";
+  if (/(recovery|mobility|yoga)/.test(text)) return "Recovery";
+  return type || "Activity";
+}
 
 function getAutoMatchedActivities() {
   try {
@@ -2546,7 +2575,11 @@ function renderActivityMatchQueue() {
   const sectionEl = document.querySelector("#activity-resolution");
   if (!queueEl || !sectionEl) return;
 
-  const unresolved = unresolvedActivityMatches.filter((item) => !getLinkedSessionForActivity(item.activity.id) && !isActivityMarkedAsExtra(item.activity.id));
+  const unresolved = unresolvedActivityMatches.filter((item) =>
+    !getLinkedSessionForActivity(item.activity.id) &&
+    !isActivityMarkedAsExtra(item.activity.id) &&
+    !isActivityDismissed(item.activity.id)
+  );
   if (!unresolved.length) {
     sectionEl.hidden = true;
     queueEl.innerHTML = "";
@@ -2559,7 +2592,13 @@ function renderActivityMatchQueue() {
       const activity = item.activity;
       const activityId = escapeHtml(String(activity.id));
       const activityDate = escapeHtml(getActivityDateKey(activity) ?? "Unknown date");
-      const activityType = escapeHtml(activity.type ?? "Activity");
+      const activityType = escapeHtml(normalizeActivityTypeDisplay(activity.type));
+      const activityName = escapeHtml(activity.name ?? "");
+      const duration = activity.duration ? `${Math.round(activity.duration / 60)} min` : null;
+      const distance = activity.distance ? `${(activity.distance / 1000).toFixed(1)} km` : null;
+      const elevation = activity.elevationGain ? `↑${Math.round(activity.elevationGain)} m` : null;
+      const metaChips = [duration, distance, elevation].filter(Boolean)
+        .map((v) => `<span class="activity-meta-chip">${escapeHtml(v)}</span>`).join("");
       const options = item.candidates
         .map(
           (session) =>
@@ -2569,9 +2608,10 @@ function renderActivityMatchQueue() {
       return `
         <article class="activity-resolution-item">
           <div class="activity-resolution-item__header">
-            <strong>${activityType}</strong>
+            <strong>${activityType}${activityName ? ` — ${activityName}` : ""}</strong>
             <span>${activityDate}</span>
           </div>
+          ${metaChips ? `<div class="activity-resolution-item__meta">${metaChips}</div>` : ""}
           <p class="activity-resolution-item__reason">${escapeHtml(item.reason ?? "Needs manual linking")}</p>
           <div class="activity-resolution-item__controls">
             <select data-manual-match-select="${activityId}">
@@ -2582,7 +2622,10 @@ function renderActivityMatchQueue() {
               Link
             </button>
             <button class="button button--small" type="button" data-mark-extra="${activityId}">
-              Mark as Extra
+              Extra
+            </button>
+            <button class="button button--small button--ghost" type="button" data-dismiss-activity="${activityId}">
+              Dismiss
             </button>
           </div>
         </article>
@@ -4376,6 +4419,28 @@ function renderCalendarSessionDetail(sessionId) {
           })()
         : ""
     }
+
+    ${(() => {
+      const autoMatched = getAutoMatchedActivities();
+      const manualMatches = loadManualActivityMatches();
+      const autoEntry = autoMatched[session.id];
+      const manualEntry = Object.entries(manualMatches).find(([, v]) => v?.workoutId === session.id || v?.sessionId === session.id);
+      const linkedActivityId = autoEntry?.activityId ?? (manualEntry ? manualEntry[0] : null);
+      const linkedActivity = linkedActivityId ? syncedActivities.find((a) => String(a.id) === String(linkedActivityId)) : null;
+      if (!linkedActivity) return "";
+      const duration = linkedActivity.duration ? `${Math.round(linkedActivity.duration / 60)} min` : null;
+      const distance = linkedActivity.distance ? `${(linkedActivity.distance / 1000).toFixed(1)} km` : null;
+      const elevation = linkedActivity.elevationGain ? `↑${Math.round(linkedActivity.elevationGain)} m` : null;
+      const chips = [duration, distance, elevation].filter(Boolean)
+        .map((v) => `<span class="activity-meta-chip">${escapeHtml(v)}</span>`).join(" ");
+      return `
+        <section class="calendar-detail__section">
+          <h4>Strava activity</h4>
+          <p><strong>${escapeHtml(linkedActivity.name || normalizeActivityTypeDisplay(linkedActivity.type))}</strong></p>
+          <div>${chips}</div>
+        </section>
+      `;
+    })()}
   `;
 }
 
@@ -5056,7 +5121,9 @@ const ActivityManager = {
       ? new Date(activity.startTime).toLocaleDateString()
       : "Unknown date";
     const duration = activity.duration ? `${Math.round(activity.duration / 60)} min` : "—";
-    const activityType = activity.type || "Activity";
+    const activityType = normalizeActivityTypeDisplay(activity.type);
+    const distance = activity.distance ? `${(activity.distance / 1000).toFixed(1)} km` : null;
+    const elevation = activity.elevationGain ? `↑${Math.round(activity.elevationGain)} m` : null;
     const linkedSession = getLinkedSessionForActivity(String(activity.id));
     const matchMeta = linkedSession
       ? `<p class="activity-item__match">✓ Linked: ${escapeHtml(linkedSession.title)}</p>`
@@ -5068,13 +5135,11 @@ const ActivityManager = {
           <span class="activity-item__type">${escapeHtml(activityType)}</span>
           <span class="activity-item__date">${date}</span>
         </div>
+        ${activity.name ? `<p class="activity-item__name">${escapeHtml(activity.name)}</p>` : ""}
         <div class="activity-item__meta">
           <span class="activity-item__duration">⏱ ${duration}</span>
-          ${
-            activity.distance
-              ? `<span class="activity-item__distance">📍 ${(activity.distance / 1000).toFixed(2)} km</span>`
-              : ""
-          }
+          ${distance ? `<span class="activity-item__distance">📍 ${escapeHtml(distance)}</span>` : ""}
+          ${elevation ? `<span class="activity-item__elevation">⛰ ${escapeHtml(elevation)}</span>` : ""}
         </div>
         ${matchMeta}
       </div>
@@ -5123,6 +5188,13 @@ const ActivityManager = {
         if (!extraButton) return;
         const activityId = extraButton.dataset.markExtra;
         markActivityAsExtra(activityId);
+      });
+
+      sidebar.addEventListener("click", (event) => {
+        const dismissButton = event.target.closest("[data-dismiss-activity]");
+        if (!dismissButton) return;
+        dismissActivity(dismissButton.dataset.dismissActivity);
+        renderActivityMatchQueue();
       });
     }
   },
