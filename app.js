@@ -2687,75 +2687,7 @@ function setUnresolvedMatchQueue(syncResult) {
 }
 
 async function syncActivities() {
-  try {
-    // Build workout plan by date
-    const workoutPlanByDate = {};
-    for (const [dateKey, sessionList] of Object.entries(monthOneCalendarSessions)) {
-      if (!workoutPlanByDate[dateKey]) {
-        workoutPlanByDate[dateKey] = [];
-      }
-      workoutPlanByDate[dateKey].push(...sessionList);
-    }
-    
-    // Call backend sync endpoint
-    const response = await fetch("/api/sync-activities", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        activities: syncedActivities,
-        workoutPlanByDate,
-        currentTracking: calendarTracking,
-      }),
-    });
-
-    if (!response.ok) {
-      console.warn("Activity sync failed:", response.status);
-      return;
-    }
-
-    const result = await response.json();
-    if (!result) return;
-
-    // Process auto-checked activities
-    const autoMatched = getAutoMatchedActivities();
-    
-    for (const match of result.autoChecked || []) {
-      if (match.matchedWorkoutId) {
-        // Auto-check the workout
-        if (!calendarTracking[match.matchedWorkoutId]) {
-          calendarTracking[match.matchedWorkoutId] = {};
-        }
-        calendarTracking[match.matchedWorkoutId].completed = true;
-        calendarTracking[match.matchedWorkoutId].autoCheckedAt = new Date().toISOString();
-        calendarTracking[match.matchedWorkoutId].activityId = match.activity.id;
-        
-        // Store in localStorage
-        autoMatched[match.matchedWorkoutId] = {
-          activityId: match.activity.id,
-          confidence: match.confidence,
-          timestamp: new Date().toISOString(),
-        };
-      }
-    }
-
-    // Handle conflicts (prompt user)
-    setUnresolvedMatchQueue(result);
-
-    // Save results
-    saveCalendarTracking();
-    saveAutoMatchedActivities(autoMatched);
-    
-    // Re-render calendar with updated completion status
-    renderCalendar();
-    
-    console.log("Activity sync complete:", {
-      autoChecked: (result.autoChecked || []).length,
-      conflicts: (result.conflicts || []).length,
-      unmatched: (result.unmatched || []).length,
-    });
-  } catch (error) {
-    console.warn("Activity sync error:", error);
-  }
+  // No backend server available — activity matching is done manually via the UI.
 }
 
 const tabIds = ["calendar", "overview"];
@@ -2925,28 +2857,8 @@ function saveMetricsToStorage(metrics) {
 }
 
 function fetchDailyMetrics(dateRange = null) {
-  // Fetch metrics from /api/metrics endpoint
-  // dateRange: { start: "2026-06-01", end: "2026-08-31" } or null for all
-  const params = new URLSearchParams();
-  if (dateRange?.start) params.append("start", dateRange.start);
-  if (dateRange?.end) params.append("end", dateRange.end);
-
-  const url = `/api/metrics${params.toString() ? "?" + params : ""}`;
-  
-  return fetch(url)
-    .then((response) => {
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return response.json();
-    })
-    .then((data) => {
-      const metrics = Array.isArray(data) ? data : data.metrics ? data.metrics : [];
-      cacheMetrics(metrics);
-      return metrics;
-    })
-    .catch((error) => {
-      console.warn("Failed to fetch metrics:", error);
-      return [];
-    });
+  // No backend server available — metrics are loaded from local storage only.
+  return Promise.resolve([]);
 }
 
 function cacheMetrics(metricsArray) {
@@ -5263,88 +5175,22 @@ const AuthManager = {
   statusCheckTimer: null,
 
   async getAuthStatus() {
-    try {
-      const response = await fetch("/api/auth/status", {
-        method: "GET",
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch auth status");
-      this.currentStatus = await response.json();
-      return this.currentStatus;
-    } catch (error) {
-      console.error("Auth status error:", error);
-      this.currentStatus = { connected: false };
-      return this.currentStatus;
-    }
+    this.currentStatus = { connected: false };
+    return this.currentStatus;
   },
 
   async startOAuthFlow() {
-    try {
-      const response = await fetch("/api/auth/authorize", {
-        method: "POST",
-        credentials: "include",
-      });
-      const data = await response.json();
-      if (data.authUrl) {
-        window.location.href = data.authUrl;
-      } else {
-        showToast("Unable to start Strava connection");
-      }
-    } catch (error) {
-      console.error("OAuth flow error:", error);
-      showToast("Connection failed. Please try again.");
-    }
+    showToast("Strava OAuth requires a backend server — not available in this deployment.");
   },
 
   async syncActivities() {
-    try {
-      const syncBtn = document.querySelector("#auth-sync-btn");
-      if (syncBtn) {
-        syncBtn.disabled = true;
-        syncBtn.classList.add("is-loading");
-      }
-
-      const response = await fetch("/api/sync", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!response.ok) throw new Error("Sync failed");
-      const data = await response.json();
-
-      if (syncBtn) {
-        syncBtn.disabled = false;
-        syncBtn.classList.remove("is-loading");
-      }
-
-      showToast(`Synced ${data.count || 0} activities`);
-      await ActivityManager.fetchAndRender();
-      await syncActivities();
-    } catch (error) {
-      console.error("Sync error:", error);
-      showToast("Sync failed. Please try again.");
-      const syncBtn = document.querySelector("#auth-sync-btn");
-      if (syncBtn) {
-        syncBtn.disabled = false;
-        syncBtn.classList.remove("is-loading");
-      }
-    }
+    showToast("Strava sync requires a backend server — not available in this deployment.");
   },
 
   async logout() {
-    try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      this.currentStatus = { connected: false };
-      this.renderStatus();
-      ActivityManager.renderActivityList([]);
-      showToast("Logged out successfully");
-    } catch (error) {
-      console.error("Logout error:", error);
-      showToast("Logout failed");
-    }
+    this.currentStatus = { connected: false };
+    this.renderStatus();
+    ActivityManager.renderActivityList([]);
   },
 
   renderStatus() {
@@ -5388,21 +5234,9 @@ const ActivityManager = {
   activities: [],
 
   async fetchSyncedActivities() {
-    try {
-      const response = await fetch("/api/activities", {
-        method: "GET",
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch activities");
-      const data = await response.json();
-      this.activities = data.activities || [];
-      syncedActivities = this.activities;
-      return this.activities;
-    } catch (error) {
-      console.error("Activity fetch error:", error);
-      this.activities = [];
-      return [];
-    }
+    this.activities = [];
+    syncedActivities = [];
+    return [];
   },
 
   async fetchAndRender() {
@@ -5955,32 +5789,7 @@ const StrengthWorkoutManager = {
   },
 
   syncToBackend() {
-    const logsToSync = Object.values(this.workoutLogs).filter((log) => !log.syncedToBackend);
-    if (!logsToSync.length) return;
-
-    logsToSync.forEach((log) => {
-      const payload = {
-        workoutId: log.workoutId,
-        date: log.date,
-        timestamp: log.timestamp,
-        exerciseLogs: log.exerciseLogs,
-      };
-
-      fetch("/api/strength-logs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
-        .then((res) => {
-          if (res.ok) {
-            const logKey = `${log.date}-${log.workoutId}`;
-            this.workoutLogs[logKey].syncedToBackend = true;
-            this.workoutLogs[logKey].syncedAt = new Date().toISOString();
-            this.saveLogsToLocalStorage();
-          }
-        })
-        .catch((err) => console.error("Error syncing strength log:", err));
-    });
+    // Strength logs are synced to Firestore via saveLogsToLocalStorage() → app-api.js
   },
 
   getLatestLogForDate(dateKey) {
