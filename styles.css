@@ -2472,6 +2472,36 @@ body.has-calendar-dialog {
   line-height: 1.2;
 }
 
+/* Extra/unplanned workouts styling */
+.calendar-session--extra {
+  --session-color: var(--accent);
+  background: rgba(242, 165, 65, 0.08);
+  border-color: rgba(242, 165, 65, 0.3);
+  border-left-color: var(--accent);
+}
+
+.calendar-session--extra:hover,
+.calendar-session--extra:focus-within {
+  border-color: rgba(242, 165, 65, 0.5);
+  border-left-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.calendar-session__extra-badge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.2rem 0.42rem;
+  color: #b87a1f;
+  background: rgba(242, 165, 65, 0.18);
+  border: 1px solid rgba(242, 165, 65, 0.35);
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 950;
+  line-height: 1.2;
+  margin-right: 0.3rem;
+  align-self: center;
+}
+
 .button--ghost-dark {
   color: var(--primary-2);
   background: #fff;

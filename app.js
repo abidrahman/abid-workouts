@@ -2401,6 +2401,7 @@ let syncedActivities = [];
 
 const AUTO_MATCHED_STORAGE_KEY = "workout-auto-matched-v1";
 const MANUAL_MATCH_STORAGE_KEY = "workout-manual-matches-v1";
+const EXTRA_WORKOUTS_STORAGE_KEY = "workout-extra-unplanned-v1";
 let unresolvedActivityMatches = [];
 
 function getAutoMatchedActivities() {
@@ -2427,6 +2428,19 @@ function loadManualActivityMatches() {
 
 function saveManualActivityMatches(matches) {
   window.localStorage.setItem(MANUAL_MATCH_STORAGE_KEY, JSON.stringify(matches));
+}
+
+function loadExtraWorkouts() {
+  try {
+    const raw = window.localStorage.getItem(EXTRA_WORKOUTS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveExtraWorkouts(extra) {
+  window.localStorage.setItem(EXTRA_WORKOUTS_STORAGE_KEY, JSON.stringify(extra));
 }
 
 function getActivityDateKey(activity) {
@@ -2527,12 +2541,17 @@ function getLinkedSessionForActivity(activityId) {
   return null;
 }
 
+function isActivityMarkedAsExtra(activityId) {
+  const extra = loadExtraWorkouts();
+  return !!extra[activityId];
+}
+
 function renderActivityMatchQueue() {
   const queueEl = document.querySelector("#activity-resolution-list");
   const sectionEl = document.querySelector("#activity-resolution");
   if (!queueEl || !sectionEl) return;
 
-  const unresolved = unresolvedActivityMatches.filter((item) => !getLinkedSessionForActivity(item.activity.id));
+  const unresolved = unresolvedActivityMatches.filter((item) => !getLinkedSessionForActivity(item.activity.id) && !isActivityMarkedAsExtra(item.activity.id));
   if (!unresolved.length) {
     sectionEl.hidden = true;
     queueEl.innerHTML = "";
@@ -2566,6 +2585,9 @@ function renderActivityMatchQueue() {
             </select>
             <button class="button button--small button--primary" type="button" data-manual-match-link="${activityId}">
               Link
+            </button>
+            <button class="button button--small" type="button" data-mark-extra="${activityId}">
+              Mark as Extra
             </button>
           </div>
         </article>
@@ -2601,6 +2623,26 @@ function applyManualActivityMatch(activityId, sessionId) {
   renderActivityMatchQueue();
   ActivityManager.renderActivityList(syncedActivities);
   showToast(`Linked to ${session.title}`);
+}
+
+function markActivityAsExtra(activityId) {
+  const activity = syncedActivities.find((a) => String(a.id) === activityId);
+  if (!activity) {
+    showToast("Could not find activity.");
+    return;
+  }
+
+  const extra = loadExtraWorkouts();
+  extra[activityId] = {
+    activity,
+    markedAt: new Date().toISOString(),
+  };
+  saveExtraWorkouts(extra);
+
+  renderCalendar();
+  renderActivityMatchQueue();
+  ActivityManager.renderActivityList(syncedActivities);
+  showToast(`Marked "${activity.name}" as extra workout`);
 }
 
 function setUnresolvedMatchQueue(syncResult) {
@@ -4293,6 +4335,31 @@ function renderCalendarDay(day) {
   if (day.dateKey === todayKey) classes.push("is-today");
   if (!visibleSessions.length && hasActiveCalendarFilters()) classes.push("is-filtered-empty");
 
+  // Get extra workouts for this day
+  const extra = loadExtraWorkouts();
+  const extraForDay = Object.values(extra).filter((entry) => getActivityDateKey(entry.activity) === day.dateKey);
+  const extraHtml = extraForDay
+    .map((entry) => {
+      const activity = entry.activity;
+      const activityType = escapeHtml(activity.type ?? "Activity");
+      const duration = activity.duration ? `${Math.round(activity.duration / 60)} min` : "—";
+      return `
+        <article class="calendar-session calendar-session--extra">
+          <span class="calendar-session__extra-badge">Extra</span>
+          <button class="calendar-session__open" type="button" title="Extra workout: ${activityType}">
+            <span class="calendar-session__content">
+              <strong>${escapeHtml(activity.name ?? "Extra activity")}</strong>
+              <span class="calendar-session__compact-summary">
+                <span class="calendar-session__discipline">${activityType}</span>
+                <span class="calendar-session__descriptor">${duration}</span>
+              </span>
+            </span>
+          </button>
+        </article>
+      `;
+    })
+    .join("");
+
   return `
     <section class="${classes.join(" ")}" data-calendar-day="${day.dateKey}">
       <div class="calendar-day__header">
@@ -4303,6 +4370,7 @@ function renderCalendarDay(day) {
       ${renderCalendarDayCorosMetrics(day)}
       <div class="calendar-day__sessions">
         ${visibleSessions.map((session) => renderCalendarSession(session)).join("")}
+        ${extraHtml}
         ${!visibleSessions.length && hasActiveCalendarFilters() ? `<span class="calendar-day__empty">No match</span>` : ""}
         ${hiddenCount > 0 && hasActiveCalendarFilters() ? `<span class="calendar-day__hidden">+${hiddenCount} hidden</span>` : ""}
       </div>
@@ -5377,6 +5445,13 @@ const ActivityManager = {
           return;
         }
         applyManualActivityMatch(activityId, sessionId);
+      });
+
+      sidebar.addEventListener("click", (event) => {
+        const extraButton = event.target.closest("[data-mark-extra]");
+        if (!extraButton) return;
+        const activityId = extraButton.dataset.markExtra;
+        markActivityAsExtra(activityId);
       });
     }
   },
