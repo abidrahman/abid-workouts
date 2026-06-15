@@ -5234,9 +5234,19 @@ const ActivityManager = {
   activities: [],
 
   async fetchSyncedActivities() {
-    this.activities = [];
-    syncedActivities = [];
-    return [];
+    try {
+      const res = await fetch("data/activities.json");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      this.activities = Array.isArray(data) ? data : [];
+      syncedActivities = this.activities;
+      return this.activities;
+    } catch (error) {
+      console.warn("Could not load activities.json:", error);
+      this.activities = [];
+      syncedActivities = [];
+      return [];
+    }
   },
 
   async fetchAndRender() {
@@ -5803,13 +5813,9 @@ function initAuth() {
   AuthManager.init();
   ActivityManager.init();
 
-  AuthManager.getAuthStatus().then(() => {
-    AuthManager.renderStatus();
-    if (AuthManager.currentStatus?.connected) {
-      ActivityManager.fetchAndRender().then(() => {
-        syncActivities().catch((error) => console.warn("Sync activities failed:", error));
-      });
-    }
+  // Always load activities from the static JSON (updated hourly by GitHub Actions)
+  ActivityManager.fetchAndRender().then(() => {
+    syncActivities().catch((error) => console.warn("Sync activities failed:", error));
   });
 }
 
