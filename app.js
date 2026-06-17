@@ -308,6 +308,13 @@ const monthOneCalendarSessions = {
   ],
   "2026-06-17": [
     {
+      id: "jun-w3-wed-swim-form-speed",
+      title: "Swim form + speed control",
+      duration: "1,500–1,800 yd",
+      categories: ["swim"],
+      note: "Moved up from Thursday to keep the swim in place this week. Short relaxed form repeats after scull/single-arm/fingertip-drag drills. Fast-looking technique, not hard swimming.",
+    },
+    {
       id: "jun-w3-wed-uphill-intervals",
       title: "Controlled uphill intervals / stairs",
       duration: "45–60 min",
@@ -317,11 +324,11 @@ const monthOneCalendarSessions = {
   ],
   "2026-06-18": [
     {
-      id: "jun-w3-thu-swim-form-speed",
-      title: "Swim form + speed control",
-      duration: "1,500–1,800 yd",
-      categories: ["swim"],
-      note: "Short relaxed form repeats after scull/single-arm/fingertip-drag drills. Fast-looking technique, not hard swimming.",
+      id: "jun-w3-thu-recovery-spin-flush",
+      title: "Recovery spin flush",
+      duration: "20–30 min",
+      categories: ["bike", "recovery"],
+      note: "Add easy aerobic volume after strength so Thursday is a double-workout day without compromising Friday's swim rhythm. Keep this fully conversational.",
     },
     {
       id: "jun-w3-thu-strength-pullup",
@@ -333,6 +340,13 @@ const monthOneCalendarSessions = {
     },
   ],
   "2026-06-19": [
+    {
+      id: "jun-w3-fri-swim-technique-reset",
+      title: "Swim technique reset",
+      duration: "1,400–1,700 yd",
+      categories: ["swim"],
+      note: "Start the M/W/F swim rhythm with a relaxed technique-focused session. Keep it aerobic and leave enough freshness for Saturday's long hike.",
+    },
     {
       id: "jun-w3-fri-strength-split-squat-light",
       title: "Strength C — split squat light",
@@ -360,6 +374,13 @@ const monthOneCalendarSessions = {
   ],
   "2026-06-21": [
     {
+      id: "jun-w3-sun-long-bike",
+      title: "Long Zone 2 bike ride",
+      duration: "60–90 min",
+      categories: ["bike"],
+      note: "Add a steady long aerobic ride on Sundays moving forward. Keep cadence smooth and effort mostly conversational after Saturday's hike.",
+    },
+    {
       id: "jun-w3-sun-long-swim",
       title: "Long continuous swim checkpoint",
       duration: "1,700–2,000 yd",
@@ -385,6 +406,14 @@ const monthOneCalendarSessions = {
     },
   ],
   "2026-06-23": [
+    {
+      id: "jun-w4-tue-pull-core-primer",
+      title: "Pull/core primer",
+      duration: "15–20 min",
+      categories: ["strength"],
+      note: "Add a short upper-body and trunk support session before the bike: hangs, scapular pulls, dead bugs, pulldowns, and planks. Keep it crisp, not fatiguing.",
+      compactDescriptor: "pull/core",
+    },
     {
       id: "jun-w4-tue-easy-bike",
       title: "Easy Zone 2 bike",
@@ -428,6 +457,13 @@ const monthOneCalendarSessions = {
   ],
   "2026-06-26": [
     {
+      id: "jun-w4-fri-easy-spin-flush",
+      title: "Easy spin flush",
+      duration: "20–30 min",
+      categories: ["bike", "recovery"],
+      note: "Pair the long swim with a low-stress recovery spin to make Friday a double-workout day while keeping Saturday's hike controlled.",
+    },
+    {
       id: "jun-w4-fri-long-swim-consolidation",
       title: "Long swim consolidation checkpoint",
       duration: "1,400–1,700 yd",
@@ -445,6 +481,13 @@ const monthOneCalendarSessions = {
     },
   ],
   "2026-06-28": [
+    {
+      id: "jun-w4-sun-long-bike",
+      title: "Long Zone 2 bike ride",
+      duration: "60–90 min",
+      categories: ["bike"],
+      note: "Sunday long bike stays in the plan even during consolidation week. Ride steady and controlled so Monday's swim and strength still feel good.",
+    },
     {
       id: "jun-w4-sun-full-recovery",
       title: "Full recovery, walk, or mobility",
@@ -471,6 +514,14 @@ const monthOneCalendarSessions = {
     },
   ],
   "2026-06-30": [
+    {
+      id: "jun-w5-tue-core-maintenance",
+      title: "Core + mobility maintenance",
+      duration: "20–25 min",
+      categories: ["strength", "recovery"],
+      note: "Add trunk stability, hips, calves, and thoracic mobility so Tuesday becomes a double-workout day without turning it into a fatigue spike.",
+      compactDescriptor: "core/mobility",
+    },
     {
       id: "jun-w5-tue-aerobic-choice",
       title: "Aerobic choice: bike or easy uphill",
