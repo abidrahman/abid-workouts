@@ -1,5 +1,14 @@
 [
   {
+    "id": "18951314096",
+    "name": "Afternoon Ride",
+    "type": "Ride",
+    "startTime": "2026-06-16T16:06:13Z",
+    "duration": 3779,
+    "distance": 22014,
+    "elevationGain": 85
+  },
+  {
     "id": "18938248923",
     "name": "Night Weight Training",
     "type": "WeightTraining",
@@ -1788,15 +1797,6 @@
     "startTime": "2026-02-24T09:28:52Z",
     "duration": 2392,
     "distance": 6047.8,
-    "elevationGain": 0
-  },
-  {
-    "id": "17500060371",
-    "name": "Afternoon Swim",
-    "type": "Swim",
-    "startTime": "2026-02-23T14:21:56Z",
-    "duration": 1018,
-    "distance": 685.8,
     "elevationGain": 0
   }
 ]
