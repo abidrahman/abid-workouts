@@ -4511,12 +4511,83 @@ function getWorkoutSpecificBlocks(detailedWorkout, session, day) {
   return matchedBlocks;
 }
 
+function parseSwimYardRange(duration) {
+  const match = String(duration ?? "").match(/(\d{1,3}(?:,\d{3})?)\s*[–-]\s*(\d{1,3}(?:,\d{3})?)\s*yd/i);
+  if (!match) return null;
+  const low = Number(match[1].replace(/,/g, ""));
+  const high = Number(match[2].replace(/,/g, ""));
+  if (!Number.isFinite(low) || !Number.isFinite(high) || low <= 0 || high <= 0) return null;
+  return { low: Math.min(low, high), high: Math.max(low, high) };
+}
+
+function getSwimProgressionWeek(session) {
+  const plannedDateKey = session.plannedDateKey ?? session.dateKey;
+  const startKey = dateToKey(calendarStartDate);
+  return Math.max(1, Math.floor(getDaysBetweenDateKeys(startKey, plannedDateKey) / 7) + 1);
+}
+
 function getSwimFallbackBlocks(session) {
+  const plannedDateKey = session.plannedDateKey ?? session.dateKey;
+  const weekday = parseCalendarDateKey(plannedDateKey).getDay();
+  const range = parseSwimYardRange(session.duration) ?? { low: 1400, high: 1700 };
+  const weekNumber = getSwimProgressionWeek(session);
+  const enduranceSetDistance = 150 + Math.min(150, Math.floor(weekNumber / 2) * 25);
+  const enduranceReps = Math.max(4, Math.round((range.low * 0.55) / enduranceSetDistance));
+  const skillsReps = 8 + (weekNumber % 4) * 2;
+  const longContinuous = Math.max(700, Math.round(range.low * 0.72 / 50) * 50);
   const descriptor = String(session.title ?? "")
     .replace(/^swim\s*(?:[—:-]\s*)?/i, "")
     .trim();
   const swimFocus = descriptor || "technique session";
   const title = `Swim — ${swimFocus}, ${session.duration}`;
+
+  if (weekday === 1) {
+    return [
+      {
+        title,
+        items: [
+          "Pre-swim shoulder prep: 5 min bands and relaxed mobility.",
+          `Warm-up: 300 yd easy with 4 × 25 yd drill/swim by 25.`,
+          "Drill set: 4 × 25 yd side kick + 4 × 25 yd catch-up + 4 × 25 yd fingertip drag, 20 sec rest.",
+          `Main endurance set: ${enduranceReps} × ${enduranceSetDistance} yd at controlled aerobic effort with 25–35 sec rest.`,
+          `Progression cue (week ${weekNumber}): hold ${range.low}–${range.high} yd total while keeping stroke count and breathing stable across the last two repeats.`,
+          "Cool-down: 100–200 yd easy.",
+        ],
+      },
+    ];
+  }
+
+  if (weekday === 3) {
+    return [
+      {
+        title,
+        items: [
+          "Pre-swim shoulder prep: 5 min bands plus thoracic and lat mobility.",
+          "Warm-up: 250–300 yd easy with calm bilateral breathing.",
+          "Drill block: 8 × 25 yd alternating catch-up, single-arm, scull, and fingertip drag (15–20 sec rest).",
+          `Main skills set: ${skillsReps} × 100 yd smooth with every odd rep including 1–2 sighting looks and every even rep focused on no-wall turn rhythm.`,
+          `Progression cue (week ${weekNumber}): keep the session in the ${range.low}–${range.high} yd range while quality of drills stays higher than speed.`,
+          "Cool-down: 100–200 yd easy.",
+        ],
+      },
+    ];
+  }
+
+  if (weekday === 5) {
+    return [
+      {
+        title,
+        items: [
+          "Pre-swim shoulder prep: 5 min bands and relaxed mobility.",
+          "Warm-up: 300 yd easy, then 4 × 50 yd drill/swim by 25.",
+          "Primer: 4 × 100 yd smooth aerobic with 20–25 sec rest to settle rhythm.",
+          `Long check-in: ${longContinuous} yd continuous at calm effort (or split as 2 × ${Math.round(longContinuous / 2 / 50) * 50} yd with 30 sec rest if form drops).`,
+          `Progression cue (week ${weekNumber}): finish inside ${range.low}–${range.high} yd total with stable form in the final 300 yd.`,
+          "Cool-down: 100–200 yd easy.",
+        ],
+      },
+    ];
+  }
 
   return [
     {
@@ -4537,7 +4608,7 @@ function renderCalendarDetailBlocks(blocks) {
   if (!blocks.length) {
     return `
       <p class="calendar-detail__note">
-        No separate detailed day block matched this calendar item, so use the plan note above as the source of truth.
+        No separate detailed workout block matched this calendar item, so use the plan note above as the source of truth.
       </p>
     `;
   }
@@ -4928,7 +4999,6 @@ function renderCalendarSessionDetail(sessionId) {
   const completed = getCalendarSessionCompleted(session);
   const plannedDateKey = session.plannedDateKey ?? session.dateKey;
   const detailedWorkout = getDetailedWorkoutForDate(plannedDateKey);
-  const trackingId = weekOneTrackingIdsByDate[plannedDateKey];
   const detailInputId = `calendar-detail-${session.id}-complete`;
   const phaseLabel = calendarPhaseLabels[day.phaseKey] ?? "Training block";
   const sessionContext = getCalendarSessionMilestoneContext(session);
@@ -5025,12 +5095,9 @@ function renderCalendarSessionDetail(sessionId) {
       detailedWorkout
         ? `
           <section class="calendar-detail__section">
-            <h4>This workout only</h4>
+            <h4>Workout details</h4>
             <p>${escapeHtml(workoutSpecificIntro)}</p>
             ${renderCalendarDetailBlocks(detailBlocks)}
-            <a class="button button--primary calendar-detail__link" href="#workout-${trackingId}" data-calendar-dialog-close>
-              Open June day card
-            </a>
           </section>
         `
         : `
@@ -5038,7 +5105,7 @@ function renderCalendarSessionDetail(sessionId) {
             ${
               isSwimSession
                 ? `
-                  <h4>This workout only</h4>
+                  <h4>Workout details</h4>
                   <p>Use the structured swim plan below as the source of truth for this session.</p>
                   ${renderCalendarDetailBlocks(detailBlocks)}
                 `
