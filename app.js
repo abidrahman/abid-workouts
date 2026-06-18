@@ -2849,9 +2849,11 @@ function renderMatchingTab() {
 
   // Section A: Needs Review
   const reviewItems = [];
+  const todayKey = dateToKey(new Date());
   for (const session of sessions) {
     if (linkedSessionIds.has(session.id)) continue;
     if (skippedReviewSessions.has(session.id)) continue;
+    if (session.dateKey > todayKey) continue;
     const candidates = activities
       .filter(
         (a) =>
