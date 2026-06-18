@@ -2023,9 +2023,9 @@ const calendarPhaseTemplates = {
     3: [
       {
         title: "Open-water skills or pool sighting",
-        duration: "35–60 min",
+        duration: "1,700–1,900 yd (35–60 min)",
         categories: ["swim"],
-        note: "Practice sighting, calm starts, no-wall turns, and breathing rhythm.",
+        note: "Practice sighting, calm starts, and no-wall turns inside ~1,700–1,900 yd of controlled aerobic swimming.",
       },
       {
         title: "Easy mobility",
