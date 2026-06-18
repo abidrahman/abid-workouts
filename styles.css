@@ -2115,6 +2115,40 @@ main {
   font-weight: 900;
 }
 
+.calendar-detail__complete-link {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.8rem;
+  margin-top: 0.8rem;
+  background: #fbfdfb;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.calendar-detail__complete-link-title {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.calendar-detail__complete-link-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.calendar-detail__complete-link-controls select {
+  flex: 1;
+  min-width: 0;
+  min-height: 2.25rem;
+  padding: 0.45rem 0.6rem;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
 .calendar-detail__context {
   display: grid;
   gap: 0.6rem;
@@ -3185,6 +3219,7 @@ body.has-calendar-drag .calendar-day--blank {
 
   .calendar-detail__meta,
   .calendar-detail__complete,
+  .calendar-detail__complete-link-controls,
   .calendar-reschedule__quick,
   .calendar-reschedule__custom {
     align-items: stretch;
@@ -3192,6 +3227,8 @@ body.has-calendar-drag .calendar-day--blank {
 
   .calendar-detail__complete,
   .calendar-detail__link,
+  .calendar-detail__complete-link-controls .button,
+  .calendar-detail__complete-link-controls select,
   .calendar-reschedule__custom .button,
   .calendar-reschedule__custom .field {
     width: 100%;
@@ -3205,6 +3242,10 @@ body.has-calendar-drag .calendar-day--blank {
   .calendar-detail__complete input {
     width: 1.25rem;
     height: 1.25rem;
+  }
+
+  .calendar-detail__complete-link-controls {
+    flex-direction: column;
   }
 
   .calendar-detail__context,

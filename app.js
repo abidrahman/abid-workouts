@@ -2616,6 +2616,26 @@ function getLinkedSessionForActivity(activityId) {
   return null;
 }
 
+function getAvailableActivitiesForSession(session, limit = 12) {
+  return syncedActivities
+    .filter((activity) => {
+      const activityId = String(activity.id);
+      return (
+        !getLinkedSessionForActivity(activityId) &&
+        !isActivityMarkedAsExtra(activityId) &&
+        !isActivityDismissed(activityId)
+      );
+    })
+    .map((activity) => ({
+      activity,
+      score: scoreSessionCandidate(activity, session),
+      dateKey: getActivityDateKey(activity) ?? "",
+    }))
+    .sort((a, b) => b.score - a.score || b.dateKey.localeCompare(a.dateKey))
+    .slice(0, limit)
+    .map((item) => item.activity);
+}
+
 function isActivityMarkedAsExtra(activityId) {
   const extra = loadExtraWorkouts();
   return !!extra[activityId];
@@ -4820,6 +4840,8 @@ function renderCalendarSessionDetail(sessionId) {
   const coachingCue = getCalendarSessionCoachingCue(session);
   const workoutBlocks = getWorkoutSpecificBlocks(detailedWorkout, session, day);
   const isStrengthSession = session.categories.includes("strength");
+  const linkedActivity = getLinkedActivityForSession(session.id);
+  const availableActivitiesForLink = !completed && !linkedActivity ? getAvailableActivitiesForSession(session) : [];
 
   contentEl.innerHTML = `
     <p class="eyebrow">${escapeHtml(formatCalendarDate(day))}</p>
@@ -4840,6 +4862,38 @@ function renderCalendarSessionDetail(sessionId) {
       />
       <span>${completed ? "Completed" : "Mark this workout complete"}</span>
     </label>
+
+    ${
+      !completed && !linkedActivity
+        ? `
+          <div class="calendar-detail__complete-link">
+            <p class="calendar-detail__complete-link-title">Or complete + link Strava</p>
+            <div class="calendar-detail__complete-link-controls">
+              <select data-calendar-complete-link-select="${escapeHtml(session.id)}">
+                <option value="">Choose activity…</option>
+                ${availableActivitiesForLink
+                  .map((activity) => {
+                    const activityId = escapeHtml(String(activity.id));
+                    const activityName = escapeHtml(activity.name || normalizeActivityTypeDisplay(activity.type));
+                    const activityDate = escapeHtml(formatMatchingDate(getActivityDateKey(activity)));
+                    const activityDuration = activity.duration ? `${Math.round(activity.duration / 60)} min` : "";
+                    return `<option value="${activityId}">${activityName}${activityDate ? ` · ${activityDate}` : ""}${activityDuration ? ` · ${activityDuration}` : ""}</option>`;
+                  })
+                  .join("")}
+              </select>
+              <button
+                class="button button--primary button--small"
+                type="button"
+                data-calendar-complete-link="${escapeHtml(session.id)}"
+                ${availableActivitiesForLink.length ? "" : "disabled"}
+              >
+                Complete + Link
+              </button>
+            </div>
+          </div>
+        `
+        : ""
+    }
 
     ${isStrengthSession ? `
       <button 
@@ -4915,12 +4969,6 @@ function renderCalendarSessionDetail(sessionId) {
     }
 
     ${(() => {
-      const autoMatched = getAutoMatchedActivities();
-      const manualMatches = loadManualActivityMatches();
-      const autoEntry = autoMatched[session.id];
-      const manualEntry = Object.entries(manualMatches).find(([, v]) => v?.workoutId === session.id || v?.sessionId === session.id);
-      const linkedActivityId = autoEntry?.activityId ?? (manualEntry ? manualEntry[0] : null);
-      const linkedActivity = linkedActivityId ? syncedActivities.find((a) => String(a.id) === String(linkedActivityId)) : null;
       if (!linkedActivity) return "";
       const duration = linkedActivity.duration ? `${Math.round(linkedActivity.duration / 60)} min` : null;
       const distance = linkedActivity.distance ? `${(linkedActivity.distance / 1000).toFixed(1)} km` : null;
@@ -5441,6 +5489,26 @@ function attachCalendarEvents() {
     const resetDateTrigger = target.closest("[data-calendar-reset-date]");
     if (resetDateTrigger) {
       resetCalendarSessionDate(resetDateTrigger.dataset.calendarResetDate);
+      return;
+    }
+
+    const completeAndLinkTrigger = target.closest("[data-calendar-complete-link]");
+    if (completeAndLinkTrigger) {
+      const sessionId = completeAndLinkTrigger.dataset.calendarCompleteLink;
+      const dialog = document.querySelector("#calendar-detail-dialog");
+      const select = sessionId
+        ? dialog?.querySelector(`[data-calendar-complete-link-select="${CSS.escape(sessionId)}"]`)
+        : null;
+      const activityId = select?.value;
+      if (!sessionId || !activityId) {
+        showToast("Select a Strava activity first.");
+        return;
+      }
+
+      applyManualActivityMatch(activityId, sessionId);
+      if (dialog?.dataset.calendarSessionId === sessionId && !dialog.hidden) {
+        renderCalendarSessionDetail(sessionId);
+      }
       return;
     }
 
