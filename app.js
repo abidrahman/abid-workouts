@@ -12,7 +12,7 @@ const summaryCards = [
   {
     label: "Swim target",
     value: "1,600 yd",
-    detail: "Lake Union supported swim around Jul 25/26",
+    detail: "Lake Union supported swim target: Sat Aug 29",
   },
   {
     label: "Month 1 focus",
@@ -29,22 +29,22 @@ const phases = [
       "Establish the weekly rhythm, build swim confidence, introduce controlled uphill work, and avoid load spikes.",
   },
   {
-    date: "Jun 15–Jul 5",
+    date: "Jun 15–Jul 19",
     title: "Mountain capacity + swim endurance",
     detail:
-      "Progress pack work, longer hikes/stairs, and move continuous pool swimming toward 1,400–1,600 yd.",
+      "Keep the current 4-week swim ramp intact while progressing pack work, longer hikes/stairs, and continuous pool confidence.",
   },
   {
-    date: "Jul 6–20",
-    title: "Specificity + open-water transition",
+    date: "Jul 20–Aug 23",
+    title: "Sustained volume + race-specific skills",
     detail:
-      "Reach race-distance pool swims, start open-water exposure, and complete a Baker-style simulation.",
+      "Hold M/W/F swim consistency at roughly 6,000 yd per week with sighting, no-wall turns, and controlled aerobic pacing.",
   },
   {
-    date: "Jul 21–Aug 1",
+    date: "Aug 24–31",
     title: "Taper + execution",
     detail:
-      "Reduce fatigue, complete the Lake Union swim if ready, sharpen lightly, and arrive fresh for Baker.",
+      "Reduce fatigue in race week, keep light feel-for-water sessions, and execute the Lake Union supported swim on Aug 29.",
   },
 ];
 
@@ -129,9 +129,12 @@ const longSwimTargets = [
   { week: "Week 5", dates: "Jun 29–Jul 5", target: "1,100–1,250 yd", focus: "Extend nonstop swim only if shoulder stays calm." },
   { week: "Week 6", dates: "Jul 6–12", target: "1,250–1,400 yd", focus: "Add light sighting practice after the main block." },
   { week: "Week 7", dates: "Jul 13–19", target: "1,400–1,600 yd", focus: "Pool race-distance rehearsal with controlled effort." },
-  { week: "Week 8", dates: "Jul 20–26", target: "1,600 yd", focus: "Lake Union attempt if readiness gates and conditions pass." },
-  { week: "Week 9", dates: "Jul 27–Aug 2", target: "800–1,200 yd", focus: "Recovery swim only; protect Baker freshness." },
-  { week: "Weeks 10–13", dates: "Aug 3–31", target: "1,200–1,700 yd", focus: "Maintain confidence with one easy long swim most weeks." },
+  { week: "Week 8", dates: "Jul 20–26", target: "1,600–1,850 yd", focus: "Start the post-ramp block while holding technique and calm aerobic pacing." },
+  { week: "Week 9", dates: "Jul 27–Aug 2", target: "1,700–1,900 yd", focus: "Maintain weekly swim load and reinforce sighting/no-wall transfer skills." },
+  { week: "Week 10", dates: "Aug 3–9", target: "1,700–1,950 yd", focus: "Sustain volume with shoulder-safe form and even pacing under mild fatigue." },
+  { week: "Week 11", dates: "Aug 10–16", target: "1,800–2,000 yd", focus: "Keep the long swim steady and controlled without turning it into a race effort." },
+  { week: "Week 12", dates: "Aug 17–23", target: "1,800–2,100 yd", focus: "Final high-volume week before taper; lock in confidence and rhythm." },
+  { week: "Week 13", dates: "Aug 24–31", target: "1,200–1,600 yd", focus: "Race-week taper and Lake Union execution on Sat Aug 29." },
 ];
 
 const monthOneWeeklyGoals = [
@@ -382,10 +385,10 @@ const monthOneCalendarSessions = {
     },
     {
       id: "jun-w3-sun-long-swim",
-      title: "Long continuous swim checkpoint",
-      duration: "1,700–2,000 yd",
-      categories: ["swim", "recovery"],
-      note: "Target 1,000–1,100 yd nonstop if shoulders and post-hike fatigue are calm. Otherwise make it easy technique volume.",
+      title: "Post-hike mobility reset",
+      duration: "20–40 min",
+      categories: ["recovery"],
+      note: "Keep Sunday non-swim: light shoulder/thoracic mobility, calf/foot care, and easy walking only if it improves Monday readiness.",
     },
   ],
   "2026-06-22": [
@@ -1904,10 +1907,10 @@ const calendarPhaseTemplates = {
   build: {
     0: [
       {
-        title: "Recovery swim + mobility",
-        duration: "40–60 min",
-        categories: ["recovery", "swim"],
-        note: "Easy technique, breathing drills, and shoulder mobility reset.",
+        title: "Recovery mobility + easy spin",
+        duration: "35–60 min",
+        categories: ["recovery", "bike"],
+        note: "Keep Sunday non-swim: use easy mobility, breath-led shoulder work, and optional low-resistance spin to absorb the week.",
       },
     ],
     1: [
@@ -1935,6 +1938,12 @@ const calendarPhaseTemplates = {
     ],
     3: [
       {
+        title: "Swim technique + pace control",
+        duration: "1,500–1,850 yd",
+        categories: ["swim"],
+        note: "Warm-up 300 easy, then 8 × 50 as 25 drill/25 swim, then 6 × 100 steady with controlled breathing and consistent stroke count, finish with 4 × 50 sighting/no-wall skills.",
+      },
+      {
         title: "Uphill intervals / stairs",
         duration: "45–60 min",
         categories: ["hike"],
@@ -1949,12 +1958,6 @@ const calendarPhaseTemplates = {
     ],
     4: [
       {
-        title: "Swim technique / speed control",
-        duration: "1,400–1,800 yd",
-        categories: ["swim"],
-        note: "Short relaxed form repeats with scull, single-arm, or fingertip-drag drills.",
-      },
-      {
         title: "Strength B — weighted pull-up",
         duration: "35–45 min",
         categories: ["strength"],
@@ -1964,10 +1967,16 @@ const calendarPhaseTemplates = {
     ],
     5: [
       {
-        title: "Easy bike or full recovery",
-        duration: "30–50 min",
+        title: "Long continuous swim checkpoint",
+        duration: "1,700–2,100 yd",
+        categories: ["swim"],
+        note: "Warm-up 300 easy, drill primer 4 × 50, then continuous target of 1,100–1,300 yd at calm effort; finish with 100–200 easy and stop if shoulders exceed 2/10.",
+      },
+      {
+        title: "Optional easy spin flush",
+        duration: "20–35 min",
         categories: ["bike", "recovery"],
-        note: "Keep freshness for the long climb day.",
+        note: "Optional post-swim blood flow only. Skip if Saturday hike quality would improve with full rest.",
       },
     ],
     6: [
@@ -1982,10 +1991,10 @@ const calendarPhaseTemplates = {
   specific: {
     0: [
       {
-        title: "Recovery swim / easy spin",
-        duration: "35–60 min",
-        categories: ["recovery", "swim", "bike"],
-        note: "Flush the legs after specific work.",
+        title: "Recovery spin + mobility",
+        duration: "30–50 min",
+        categories: ["recovery", "bike"],
+        note: "Keep Sunday non-swim: easy spin, shoulder mobility, calf/foot reset, and no load chasing.",
       },
     ],
     1: [
@@ -2036,10 +2045,10 @@ const calendarPhaseTemplates = {
     ],
     5: [
       {
-        title: "Recovery day / optional easy swim",
-        duration: "20–45 min",
-        categories: ["recovery", "swim"],
-        note: "Err on the side of absorbing training.",
+        title: "Recovery technique swim",
+        duration: "1,200–1,600 yd",
+        categories: ["swim", "recovery"],
+        note: "Friday swim stays low stress: 300 easy, 6 × 50 drill/swim, 4–6 × 100 smooth aerobic, 100 easy. End feeling better than when you started.",
       },
     ],
     6: [
@@ -2136,10 +2145,10 @@ const calendarPhaseTemplates = {
     ],
     3: [
       {
-        title: "Easy bike flush",
-        duration: "30–50 min",
-        categories: ["bike", "recovery"],
-        note: "Low resistance; no metrics chasing.",
+        title: "Easy technique swim reset",
+        duration: "1,000–1,400 yd",
+        categories: ["swim", "recovery"],
+        note: "Wednesday swim focus: relaxed breathing, short drill block, and smooth aerobic repeats. Keep shoulder load minimal after Baker week.",
       },
     ],
     4: [
@@ -2170,10 +2179,10 @@ const calendarPhaseTemplates = {
   maintenance: {
     0: [
       {
-        title: "Recovery swim or mobility",
-        duration: "30–50 min",
-        categories: ["recovery", "swim"],
-        note: "Keep the rhythm without load spikes.",
+        title: "Recovery mobility or easy walk",
+        duration: "25–45 min",
+        categories: ["recovery"],
+        note: "Keep Sunday non-swim: mobility, walk, and tissue care so Monday starts fresh.",
       },
     ],
     1: [
@@ -2200,6 +2209,12 @@ const calendarPhaseTemplates = {
       },
     ],
     3: [
+      {
+        title: "Swim skills + aerobic control",
+        duration: "1,400–1,700 yd",
+        categories: ["swim"],
+        note: "Warm-up 300 easy, 8 × 50 drill/swim by 25, main set 5 × 150 relaxed with even pacing, then 4 × 50 sighting/no-wall turn practice.",
+      },
       {
         title: "Uphill hike / stairs",
         duration: "45–75 min",
@@ -2230,10 +2245,10 @@ const calendarPhaseTemplates = {
     ],
     5: [
       {
-        title: "Easy swim or rest",
-        duration: "30–45 min",
+        title: "Long aerobic swim maintenance",
+        duration: "1,500–1,900 yd",
         categories: ["swim", "recovery"],
-        note: "Keep shoulders happy and effort low.",
+        note: "Friday long swim: 300 warm-up, 1,000–1,400 continuous relaxed, optional 4 × 50 form resets, and 100–200 cool-down.",
       },
     ],
     6: [
@@ -2248,108 +2263,164 @@ const calendarPhaseTemplates = {
 };
 
 const calendarSpecialDays = {
-  "2026-07-21": [
+  "2026-07-20": [
     {
-      title: "Taper bike + mobility",
-      duration: "35–50 min",
-      categories: ["bike", "recovery"],
-      note: "Reduce load; keep legs loose.",
+      title: "Post-ramp endurance swim anchor",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300 easy, drill primer 6 × 50 (25 drill/25 swim), main 3 × 500 steady aerobic (30 sec rest), then 4 × 50 sighting/no-wall and 100 easy.",
     },
   ],
   "2026-07-22": [
     {
-      title: "Final pool race-distance check",
-      duration: "1,600–1,900 yd",
+      title: "Midweek skills + threshold-control swim",
+      duration: "1,900–2,100 yd",
       categories: ["swim"],
-      note: "Smooth confidence swim, not a test set.",
-    },
-  ],
-  "2026-07-23": [
-    {
-      title: "Strength maintenance + easy aerobic",
-      duration: "30–45 min",
-      categories: ["strength", "recovery"],
-      note: "Light full-body movement only.",
+      note: "Warm-up 300, drills 8 × 50, main 10 × 100 at controlled effort with even splits, then 4 × 50 sighting cadence and 100–200 easy.",
     },
   ],
   "2026-07-24": [
     {
-      title: "Rest + Lake Union logistics",
-      duration: "As needed",
-      categories: ["recovery"],
-      note: "Confirm support, route, gear, and conditions.",
-    },
-  ],
-  "2026-07-25": [
-    {
-      title: "Lake Union supported swim",
-      duration: "1,600 yd target",
-      categories: ["swim"],
-      note: "Use support plan; abort if shoulder or conditions require.",
-    },
-  ],
-  "2026-07-26": [
-    {
-      title: "Backup swim day or full recovery",
-      duration: "Optional",
+      title: "Long aerobic swim checkpoint",
+      duration: "1,900–2,100 yd",
       categories: ["swim", "recovery"],
-      note: "If swim is complete, prioritize recovery.",
+      note: "Warm-up 300, then continuous 1,400–1,700 yd relaxed with form discipline, finish with 4 × 50 form resets and 100 easy.",
     },
   ],
   "2026-07-27": [
     {
-      title: "Easy technique swim",
-      duration: "800–1,200 yd",
-      categories: ["swim", "recovery"],
-      note: "Relaxed feel for the water after Lake Union.",
-    },
-  ],
-  "2026-07-28": [
-    {
-      title: "Light stairs / uphill legs",
-      duration: "25–40 min",
-      categories: ["hike", "recovery"],
-      note: "Keep it short; no fatigue debt.",
+      title: "Sustained-volume Monday swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, drills 6 × 50, main 4 × 300 steady + 4 × 100 pull buoy body-line focus, then 100–200 cool-down.",
     },
   ],
   "2026-07-29": [
     {
-      title: "Mobility + optional easy spin",
-      duration: "20–40 min",
-      categories: ["recovery", "bike"],
-      note: "Move enough to feel fresh.",
-    },
-  ],
-  "2026-07-30": [
-    {
-      title: "Short shakeout swim or walk",
-      duration: "20–35 min",
-      categories: ["swim", "recovery"],
-      note: "Confidence only; stop while feeling good.",
+      title: "Sighting + pace-control swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, 8 × 50 drill/swim, main 5 × 200 negative-split focus with calm breathing, then 6 × 50 sighting every 6–8 strokes.",
     },
   ],
   "2026-07-31": [
     {
-      title: "Rest, pack, hydrate",
-      duration: "As needed",
-      categories: ["recovery"],
-      note: "Finalize Baker gear, food, and sleep plan.",
+      title: "Friday long aerobic swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim", "recovery"],
+      note: "Warm-up 300, continuous 1,500 yd target at easy/moderate effort, then 4 × 50 technical resets and 100–200 easy.",
     },
   ],
-  "2026-08-01": [
+  "2026-08-03": [
     {
-      title: "Mt. Baker summit attempt",
-      duration: "Guide schedule",
-      categories: ["hike"],
-      note: "Execute calmly: fuel, hydrate, pace, communicate.",
+      title: "Monday endurance swim anchor",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, drills 6 × 50, main 3 × 500 steady + 2 × 200 relaxed with excellent form, then 100 easy.",
     },
   ],
-  "2026-08-02": [
+  "2026-08-05": [
     {
-      title: "Post-summit rest / travel recovery",
+      title: "Wednesday skills + pacing swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, drills 8 × 50, main 12 × 100 controlled aerobic/threshold crossover, then 4 × 50 sighting/no-wall and 100 easy.",
+    },
+  ],
+  "2026-08-07": [
+    {
+      title: "Friday long continuous swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim", "recovery"],
+      note: "Warm-up 300, continuous 1,500–1,700 yd at calm effort, then 4 × 50 technique finishers and 100 easy.",
+    },
+  ],
+  "2026-08-10": [
+    {
+      title: "Monday aerobic efficiency swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, drills 6 × 50, main 4 × 400 steady with controlled stroke count, then 100–200 easy.",
+    },
+  ],
+  "2026-08-12": [
+    {
+      title: "Wednesday race-skill rehearsal swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, 8 × 50 drill/swim, main 6 × 200 with sighting inserts, then 4 × 50 no-wall turns and 100 easy.",
+    },
+  ],
+  "2026-08-14": [
+    {
+      title: "Friday long aerobic swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim", "recovery"],
+      note: "Warm-up 300, continuous 1,500–1,700 yd relaxed, then 4 × 50 form resets and 100–200 cool-down.",
+    },
+  ],
+  "2026-08-17": [
+    {
+      title: "Final high-volume Monday swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, drills 6 × 50, main 3 × 500 + 3 × 100 smooth build, then 100–200 easy.",
+    },
+  ],
+  "2026-08-19": [
+    {
+      title: "Wednesday quality-control swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, 8 × 50 drill/swim, main 10 × 100 controlled, then 4 × 50 sighting rhythm and 100 easy.",
+    },
+  ],
+  "2026-08-21": [
+    {
+      title: "Final full-load long swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim", "recovery"],
+      note: "Warm-up 300, continuous 1,500–1,700 yd comfortable with stable form, then short cool-down. Finish feeling controlled, not depleted.",
+    },
+  ],
+  "2026-08-24": [
+    {
+      title: "Race-week Monday tune-up swim",
+      duration: "1,400–1,700 yd",
+      categories: ["swim", "recovery"],
+      note: "Keep this lighter: 300 warm-up, 6 × 50 drills, 6 × 100 smooth aerobic, 4 × 50 sighting cues, then easy cool-down.",
+    },
+  ],
+  "2026-08-26": [
+    {
+      title: "Race-week confidence swim",
+      duration: "1,100–1,400 yd",
+      categories: ["swim", "recovery"],
+      note: "Short and smooth: 300 warm-up, 4 × 50 drills, 4 × 100 controlled, a few 25 yd pickups, then easy cool-down.",
+    },
+  ],
+  "2026-08-28": [
+    {
+      title: "Full rest + Lake Union logistics",
       duration: "As needed",
       categories: ["recovery"],
-      note: "Sleep, food, feet, and gentle walking only.",
+      note: "No swim on Friday race eve. Confirm support, route, weather, fueling, and gear.",
+    },
+  ],
+  "2026-08-29": [
+    {
+      title: "Lake Union supported swim",
+      duration: "1,600 yd target",
+      categories: ["swim"],
+      note: "Execute calmly with support plan. Keep early pacing conservative and abort if conditions or shoulder status require.",
+    },
+  ],
+  "2026-08-30": [
+    {
+      title: "Post-race recovery",
+      duration: "20–40 min optional walk/mobility",
+      categories: ["recovery"],
+      note: "Prioritize sleep, hydration, nutrition, and easy mobility only.",
     },
   ],
 };
@@ -2424,7 +2495,7 @@ const calendarPhaseLabels = {
   maintenance: "Maintenance",
 };
 const calendarMilestones = {
-  swim: { dateKey: "2026-07-25", label: "Lake Union" },
+  swim: { dateKey: "2026-08-29", label: "Lake Union" },
   bike: { dateKey: "2026-08-01", label: "Mt. Baker" },
   strength: { dateKey: "2026-08-01", label: "Mt. Baker" },
   hike: { dateKey: "2026-08-01", label: "Mt. Baker" },
@@ -3594,9 +3665,9 @@ function dateToKey(date) {
 function getCalendarPhaseKey(dateKey) {
   if (dateKey <= "2026-06-14") return "base";
   if (dateKey <= "2026-07-05") return "build";
-  if (dateKey <= "2026-07-20") return "specific";
-  if (dateKey <= "2026-08-02") return "taper";
-  if (dateKey <= "2026-08-09") return "recovery";
+  if (dateKey <= "2026-08-23") return "specific";
+  if (dateKey <= "2026-08-30") return "taper";
+  if (dateKey <= "2026-08-31") return "recovery";
   return "maintenance";
 }
 
