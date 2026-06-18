@@ -3700,8 +3700,8 @@ function getCalendarSessionMoveWindow(session = {}) {
   return session.rescheduleWindowDays ?? CALENDAR_RESCHEDULE_WINDOW_DAYS;
 }
 
-function isCalendarSessionLocked(session = {}, plannedDateKey = session.plannedDateKey) {
-  return Boolean(session.rescheduleLocked ?? session.locked ?? calendarSpecialDays[plannedDateKey]);
+function isCalendarSessionLocked(session = {}) {
+  return Boolean(session.rescheduleLocked ?? session.locked);
 }
 
 function isDateAllowedForCalendarSession(dateKey, plannedDateKey, session = {}) {
@@ -4511,6 +4511,28 @@ function getWorkoutSpecificBlocks(detailedWorkout, session, day) {
   return matchedBlocks;
 }
 
+function getSwimFallbackBlocks(session) {
+  const descriptor = String(session.title ?? "")
+    .replace(/^swim\s*(?:[—:-]\s*)?/i, "")
+    .trim();
+  const swimFocus = descriptor || "technique session";
+  const title = `Swim — ${swimFocus}, ${session.duration}`;
+
+  return [
+    {
+      title,
+      items: [
+        "Pre-swim shoulder prep: 5 min bands and relaxed mobility.",
+        "Warm-up: 250–300 yd easy.",
+        "Drill set: 4 × 25 yd side kick + 4 × 25 yd catch-up + 4 × 25 yd scull or fingertip drag, 20 sec rest.",
+        "Main: 6 × 100 yd easy/moderate with 20–30 sec rest, aiming for smoother strokes rather than faster splits.",
+        "Finish: 4 × 50 yd easy with calm exhale and low head position.",
+        "Cool-down: 100–200 yd easy.",
+      ],
+    },
+  ];
+}
+
 function renderCalendarDetailBlocks(blocks) {
   if (!blocks.length) {
     return `
@@ -4912,6 +4934,14 @@ function renderCalendarSessionDetail(sessionId) {
   const sessionContext = getCalendarSessionMilestoneContext(session);
   const coachingCue = getCalendarSessionCoachingCue(session);
   const workoutBlocks = getWorkoutSpecificBlocks(detailedWorkout, session, day);
+  const isSwimSession = session.categories.includes("swim");
+  const fallbackSwimBlocks = !workoutBlocks.length && isSwimSession ? getSwimFallbackBlocks(session) : [];
+  const detailBlocks = workoutBlocks.length ? workoutBlocks : fallbackSwimBlocks;
+  const workoutSpecificIntro = workoutBlocks.length
+    ? detailedWorkout?.purpose
+    : isSwimSession
+      ? "Use the structured swim plan below as the source of truth for this session."
+      : detailedWorkout?.purpose;
   const isStrengthSession = session.categories.includes("strength");
   const linkedActivity = getLinkedActivityForSession(session.id);
   const availableActivitiesForLink = !completed && !linkedActivity ? getAvailableActivitiesForSession(session) : [];
@@ -4996,8 +5026,8 @@ function renderCalendarSessionDetail(sessionId) {
         ? `
           <section class="calendar-detail__section">
             <h4>This workout only</h4>
-            <p>${escapeHtml(detailedWorkout.purpose)}</p>
-            ${renderCalendarDetailBlocks(workoutBlocks)}
+            <p>${escapeHtml(workoutSpecificIntro)}</p>
+            ${renderCalendarDetailBlocks(detailBlocks)}
             <a class="button button--primary calendar-detail__link" href="#workout-${trackingId}" data-calendar-dialog-close>
               Open June day card
             </a>
@@ -5005,8 +5035,18 @@ function renderCalendarSessionDetail(sessionId) {
         `
         : `
           <section class="calendar-detail__section">
-            <h4>Tracking tip</h4>
-            <p>Use the checkbox here or in the calendar grid to keep this session synced with your monthly progress.</p>
+            ${
+              isSwimSession
+                ? `
+                  <h4>This workout only</h4>
+                  <p>Use the structured swim plan below as the source of truth for this session.</p>
+                  ${renderCalendarDetailBlocks(detailBlocks)}
+                `
+                : `
+                  <h4>Tracking tip</h4>
+                  <p>Use the checkbox here or in the calendar grid to keep this session synced with your monthly progress.</p>
+                `
+            }
           </section>
         `
     }
