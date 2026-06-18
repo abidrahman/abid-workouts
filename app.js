@@ -2164,7 +2164,7 @@ const calendarPhaseTemplates = {
         title: "Optional easy swim",
         duration: "20–40 min",
         categories: ["swim", "recovery"],
-        note: "Technique only, stop if flat.",
+        note: "Keep this fully recovery-focused: 200 easy warm-up, 4 × 50 drill/swim by 25, 4 × 100 smooth aerobic with full control, and 100 easy cool-down. Stop early if shoulders or energy feel flat.",
       },
     ],
     6: [
