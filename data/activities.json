@@ -1,5 +1,14 @@
 [
   {
+    "id": "19001429909",
+    "name": "Lunch Ride",
+    "type": "Ride",
+    "startTime": "2026-06-20T11:25:05Z",
+    "duration": 4655,
+    "distance": 27501.5,
+    "elevationGain": 224
+  },
+  {
     "id": "18989540287",
     "name": "Afternoon Weight Training",
     "type": "WeightTraining",
@@ -1788,15 +1797,6 @@
     "startTime": "2026-02-26T15:54:46Z",
     "duration": 593,
     "distance": 365.8,
-    "elevationGain": 0
-  },
-  {
-    "id": "17536043781",
-    "name": "Afternoon Weight Training",
-    "type": "WeightTraining",
-    "startTime": "2026-02-26T14:52:39Z",
-    "duration": 2823,
-    "distance": 0,
     "elevationGain": 0
   }
 ]
