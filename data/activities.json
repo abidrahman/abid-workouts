@@ -1,5 +1,23 @@
 [
   {
+    "id": "19027715887",
+    "name": "Afternoon Ride",
+    "type": "Ride",
+    "startTime": "2026-06-22T13:58:01Z",
+    "duration": 3221,
+    "distance": 0,
+    "elevationGain": 0
+  },
+  {
+    "id": "19027251949",
+    "name": "Afternoon Weight Training",
+    "type": "WeightTraining",
+    "startTime": "2026-06-22T13:03:30Z",
+    "duration": 3169,
+    "distance": 0,
+    "elevationGain": 0
+  },
+  {
     "id": "19017019094",
     "name": "Afternoon Ride",
     "type": "Ride",
@@ -1779,24 +1797,6 @@
     "startTime": "2026-02-28T15:41:05Z",
     "duration": 652,
     "distance": 457.2,
-    "elevationGain": 0
-  },
-  {
-    "id": "17557092649",
-    "name": "Morning Alpine Ski",
-    "type": "AlpineSki",
-    "startTime": "2026-02-28T09:07:24Z",
-    "duration": 2028,
-    "distance": 5518,
-    "elevationGain": 1073
-  },
-  {
-    "id": "17547550675",
-    "name": "Afternoon Weight Training",
-    "type": "WeightTraining",
-    "startTime": "2026-02-27T16:45:58Z",
-    "duration": 4478,
-    "distance": 0,
     "elevationGain": 0
   }
 ]
