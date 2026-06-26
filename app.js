@@ -4733,6 +4733,7 @@ function renderTodaySession(session) {
   const primaryCategory = calendarSessionPrimaryCategory(session);
   const compactCategory = getCalendarSessionCompactCategory(session);
   const compactDescriptor = getCalendarSessionCompactDescriptor(session);
+  const detailPreview = renderTodaySessionDetails(session);
 
   return `
     <article class="today-session calendar-session--${primaryCategory} calendar-session--compact-${compactCategory} ${completed ? "is-complete" : ""}">
@@ -4754,6 +4755,7 @@ function renderTodaySession(session) {
         </div>
         <h3>${escapeHtml(session.title)}</h3>
         <p>${escapeHtml(session.note)}</p>
+        ${detailPreview}
         <div class="today-session__footer">
           <span>${escapeHtml(getCalendarSessionCompactLabel(session))} · ${escapeHtml(compactDescriptor)}</span>
           <button class="button button--secondary today-session__detail" type="button" data-calendar-session-open="${session.id}">
@@ -4763,6 +4765,92 @@ function renderTodaySession(session) {
       </div>
     </article>
   `;
+}
+
+function extractStrengthLoadValue(weight) {
+  const match = String(weight ?? "").match(/(\d+(?:\.\d+)?)/);
+  return match ? Number(match[1]) : null;
+}
+
+function formatStrengthSetSummary(set) {
+  const weight = set.weight ? set.weight : "—";
+  const reps = set.reps ? set.reps : "—";
+  let summary = `${weight} × ${reps}`;
+  if (set.rpe) summary += ` @ RPE ${set.rpe}`;
+  if (set.notes) summary += ` · ${set.notes}`;
+  return summary;
+}
+
+function renderStrengthProgressSnapshot(exercises) {
+  if (!exercises.length) return "";
+
+  return `
+    <section class="today-session__detail-section">
+      <h4>Strength progress</h4>
+      <div class="strength-progress-grid">
+        ${exercises
+          .map((exercise) => {
+            const snapshot = StrengthWorkoutManager.getExerciseProgressSnapshot(exercise.key);
+            return `
+              <article class="strength-progress-card">
+                <span>${escapeHtml(exercise.name)}</span>
+                <strong>${escapeHtml(snapshot.summary)}</strong>
+                <p>${escapeHtml(snapshot.trend)}</p>
+              </article>
+            `;
+          })
+          .join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderTodaySessionDetails(session) {
+  const detailedWorkout = getDetailedWorkoutForDate(session.dateKey);
+  const detailBlocks = detailedWorkout ? detailedWorkout.blocks.filter((block) => blockMatchesCalendarSession(block, session)) : [];
+  const parts = [];
+
+  if (detailedWorkout) {
+    parts.push(`
+      <section class="today-session__detail-section">
+        <h4>Workout details</h4>
+        ${renderCalendarDetailBlocks(detailBlocks)}
+      </section>
+    `);
+  }
+
+  if (session.categories.includes("strength") && detailedWorkout) {
+    const exercises = StrengthWorkoutManager.extractExercisesFromWorkout(detailedWorkout, session);
+    parts.push(renderStrengthProgressSnapshot(exercises));
+  }
+
+  if (session.categories.includes("strength") && !detailedWorkout) {
+    const latestLog = StrengthWorkoutManager.getLatestLogForDate(session.dateKey);
+    if (latestLog && Object.keys(latestLog.exerciseLogs).length > 0) {
+      const exerciseRows = Object.entries(latestLog.exerciseLogs)
+        .map(([key, sets]) => {
+          const exerciseName = key.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+          return `
+            <div class="today-session__strength-row">
+              <strong>${escapeHtml(exerciseName)}</strong>
+              <span>${escapeHtml(formatStrengthSetSummary(sets[sets.length - 1]))}</span>
+            </div>
+          `;
+        })
+        .join("");
+
+      parts.push(`
+        <section class="today-session__detail-section">
+          <h4>Latest strength log</h4>
+          <div class="today-session__strength-log">
+            ${exerciseRows}
+          </div>
+        </section>
+      `);
+    }
+  }
+
+  return parts.join("");
 }
 
 function renderCalendarProgress() {
@@ -5827,8 +5915,16 @@ const ActivityManager = {
 
   async fetchSyncedActivities() {
     try {
-      const res = await fetch("https://raw.githubusercontent.com/abidrahman/abid-workouts/main/data/activities.json");
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const sources = [
+        "data/activities.json",
+        "https://raw.githubusercontent.com/abidrahman/abid-workouts/main/data/activities.json",
+      ];
+      let res = null;
+      for (const source of sources) {
+        res = await fetch(source);
+        if (res.ok) break;
+      }
+      if (!res || !res.ok) throw new Error(`HTTP ${res?.status ?? "unknown"}`);
       const data = await res.json();
       // Filter to the training block window using the app's canonical date constants
       const startKey = dateToKey(calendarStartDate);
@@ -5978,6 +6074,53 @@ const StrengthWorkoutManager = {
     api.saveStrengthLogs(dateKey, this.workoutLogs).catch(() => {});
   },
 
+  getWorkoutLogList() {
+    return Object.values(this.workoutLogs).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  },
+
+  getExerciseLogHistory(exerciseKey) {
+    return this.getWorkoutLogList().filter((log) => log.exerciseLogs?.[exerciseKey]?.length);
+  },
+
+  getExerciseProgressSnapshot(exerciseKey) {
+    const history = this.getExerciseLogHistory(exerciseKey);
+    if (!history.length) {
+      return {
+        summary: "No logged sessions yet",
+        trend: "Log the first set to start tracking progress.",
+      };
+    }
+
+    const latest = history[0];
+    const latestSet = latest.exerciseLogs[exerciseKey][latest.exerciseLogs[exerciseKey].length - 1];
+    const bestSet = history.reduce((best, log) => {
+      const sets = log.exerciseLogs[exerciseKey] || [];
+      sets.forEach((set) => {
+        const load = extractStrengthLoadValue(set.weight) ?? 0;
+        const reps = Number.parseFloat(String(set.reps).match(/(\d+(?:\.\d+)?)/)?.[1] ?? "0");
+        const score = load * Math.max(reps, 1);
+        const bestScore = best ? best.score : -1;
+        if (score > bestScore) {
+          best = { score, set, log };
+        }
+      });
+      return best;
+    }, null);
+
+    return {
+      summary: latestSet ? formatStrengthSetSummary(latestSet) : "Latest session logged",
+      trend: `${history.length} session${history.length === 1 ? "" : "s"} · Last ${latest.dateDisplay || latest.date}${bestSet?.set ? ` · Best ${formatStrengthSetSummary(bestSet.set)}` : ""}`,
+    };
+  },
+
+  applyLatestExerciseLog(exerciseKey) {
+    const latest = this.getExerciseLogHistory(exerciseKey)[0];
+    if (!latest) return;
+
+    this.currentWorkout.exerciseLogs[exerciseKey] = latest.exerciseLogs[exerciseKey].map((set) => ({ ...set }));
+    this.renderWorkoutModal();
+  },
+
   getWorkoutDate(sessionId) {
     const context = getCalendarSessionContext(sessionId);
     return context ? context.day : null;
@@ -6050,6 +6193,16 @@ const StrengthWorkoutManager = {
       });
     });
 
+    exerciseListEl.querySelectorAll("[data-exercise-action]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const action = btn.dataset.exerciseAction;
+        const exerciseKey = btn.dataset.exerciseKey;
+        if (action === "copy-latest") {
+          this.applyLatestExerciseLog(exerciseKey);
+        }
+      });
+    });
+
     // Attach input listeners for auto-save
     exerciseListEl.querySelectorAll("input, textarea").forEach((input) => {
       input.addEventListener("change", () => this.autoSaveForm());
@@ -6102,12 +6255,59 @@ const StrengthWorkoutManager = {
   renderExerciseForm(exercise, idx) {
     const sets = this.currentWorkout.exerciseLogs[exercise.key] || [{ weight: "", reps: "", rpe: "", notes: "" }];
     const exerciseKey = exercise.key;
+    const progress = this.getExerciseProgressSnapshot(exerciseKey);
+    const history = this.getExerciseLogHistory(exerciseKey).slice(0, 3);
+    const hasHistory = this.getExerciseLogHistory(exerciseKey).length > 0;
 
     return `
       <div class="exercise-form">
-        <h3 class="exercise-form-title">${escapeHtml(exercise.name)}</h3>
-        <p style="color: var(--muted); font-size: 0.9rem; margin: 0 0 0.8rem;">${escapeHtml(exercise.description)}</p>
-        
+        <div class="exercise-form__header">
+          <div>
+            <h3 class="exercise-form-title">${escapeHtml(exercise.name)}</h3>
+            <p class="exercise-form__description">${escapeHtml(exercise.description)}</p>
+          </div>
+          <button
+            type="button"
+            class="button button--ghost exercise-form__action"
+            data-exercise-action="copy-latest"
+            data-exercise-key="${exerciseKey}"
+            ${hasHistory ? "" : "disabled"}
+          >
+            Use last workout
+          </button>
+        </div>
+
+        <section class="exercise-form__progress">
+          <div class="strength-performance-grid">
+            <article class="strength-performance-card">
+              <span>Latest</span>
+              <strong>${escapeHtml(progress.summary)}</strong>
+            </article>
+            <article class="strength-performance-card">
+              <span>Trend</span>
+              <strong>${escapeHtml(progress.trend)}</strong>
+            </article>
+          </div>
+          ${
+            history.length
+              ? `
+                <div class="exercise-history-list">
+                  ${history
+                    .map(
+                      (log) => `
+                        <div class="exercise-history-item">
+                          <span>${escapeHtml(log.dateDisplay || log.date)}</span>
+                          <strong>${escapeHtml(formatStrengthSetSummary(log.exerciseLogs[exerciseKey][log.exerciseLogs[exerciseKey].length - 1]))}</strong>
+                        </div>
+                      `,
+                    )
+                    .join("")}
+                </div>
+              `
+              : `<p class="exercise-form__empty-history">No prior logs yet. Your first logged set will show progress here.</p>`
+          }
+        </section>
+
         <div class="exercise-sets">
           ${sets
             .map(
@@ -6119,6 +6319,7 @@ const StrengthWorkoutManager = {
                       <input 
                         type="text" 
                         placeholder="e.g., 185 lb or BW" 
+                        inputmode="decimal"
                         value="${escapeHtml(set.weight)}"
                         data-exercise-key="${exerciseKey}"
                         data-set-index="${setIdx}"
@@ -6131,6 +6332,7 @@ const StrengthWorkoutManager = {
                       <input 
                         type="text" 
                         placeholder="e.g., 6 or 90 sec" 
+                        inputmode="numeric"
                         value="${escapeHtml(set.reps)}"
                         data-exercise-key="${exerciseKey}"
                         data-set-index="${setIdx}"
@@ -6145,6 +6347,7 @@ const StrengthWorkoutManager = {
                         min="1" 
                         max="10" 
                         placeholder="7" 
+                        inputmode="numeric"
                         value="${set.rpe}"
                         data-exercise-key="${exerciseKey}"
                         data-set-index="${setIdx}"
