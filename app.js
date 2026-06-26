@@ -502,35 +502,35 @@ const monthOneCalendarSessions = {
   "2026-06-29": [
     {
       id: "jun-w5-mon-swim-endurance",
-      title: "Swim pyramid main set",
-      duration: "1,900–2,100 yd",
+      title: "Swim endurance restart",
+      duration: "1,700–2,000 yd",
       categories: ["swim"],
-      note: "Warm-up 300 yd + drills, then main set pyramid 50/100/200/400/200/100/50 (repeat as needed), finish with easy cooldown to lock form.",
+      note: "Begin the next build week with smooth catch work and relaxed aerobic volume toward the next long-swim progression.",
     },
     {
       id: "jun-w5-mon-strength-rdl",
       title: "Strength A — RDL hamstring/glute",
-      duration: "40–55 min",
+      duration: "35–45 min",
       categories: ["strength"],
-      note: "RDL-first hamstring/hip session: RDL, hinge accessory, glute/ham work, plus calves and tibialis.",
+      note: "Return to normal volume only if Week 4 lowered fatigue. RDL, posterior chain, core, lower-leg prehab.",
       compactDescriptor: "RDL",
     },
   ],
   "2026-06-30": [
     {
       id: "jun-w5-tue-core-maintenance",
-      title: "Strength B — pull day",
-      duration: "35–50 min",
-      categories: ["strength"],
-      note: "Pull-day template first: pull-ups, row/pulldown, biceps, and scap stability.",
-      compactDescriptor: "weighted pull-up",
+      title: "Core + mobility maintenance",
+      duration: "20–25 min",
+      categories: ["strength", "recovery"],
+      note: "Add trunk stability, hips, calves, and thoracic mobility so Tuesday becomes a double-workout day without turning it into a fatigue spike.",
+      compactDescriptor: "core/mobility",
     },
     {
       id: "jun-w5-tue-aerobic-choice",
-      title: "Bike intervals",
-      duration: "50–75 min",
-      categories: ["bike"],
-      note: "Midweek bike template: structured interval work (example 6–10 x 2-4 min hard with easy recovery), then cooldown spin.",
+      title: "Aerobic choice: bike or easy uphill",
+      duration: "45–75 min",
+      categories: ["bike", "hike"],
+      note: "Choose based on recovery: bike if legs/shins need low impact, easy incline/stairs if everything is calm.",
     },
   ],
 };
@@ -1907,461 +1907,523 @@ const calendarPhaseTemplates = {
   build: {
     0: [
       {
-        title: "Long outdoor bike ride",
-        duration: "2.5–4 hr",
-        categories: ["bike"],
-        note: "Weekend bike template: long mostly unstructured outdoor endurance ride. Keep fueling and cadence steady.",
+        title: "Recovery mobility + easy spin",
+        duration: "35–60 min",
+        categories: ["recovery", "bike"],
+        note: "Keep Sunday non-swim: use easy mobility, breath-led shoulder work, and optional low-resistance spin to absorb the week.",
       },
     ],
     1: [
       {
-        title: "Swim pyramid main set",
-        duration: "1,900–2,100 yd",
+        title: "Swim endurance + drill progression",
+        duration: "1,600–2,000 yd",
         categories: ["swim"],
-        note: "Monday swim template: warm-up + drills, then pyramid main set (50/100/200/400/200/100/50) with quality pacing and clean form.",
+        note: "Catch drills plus longer aerobic set toward race distance.",
       },
       {
         title: "Strength A — RDL hamstring/glute",
-        duration: "40–55 min",
+        duration: "35–45 min",
         categories: ["strength"],
-        note: "RDL day template: hamstrings/hips first, posterior chain accessory, then calves and tibialis.",
+        note: "RDL-led posterior chain strength without soreness chase.",
         compactDescriptor: "RDL",
       },
     ],
     2: [
       {
-        title: "Strength B — pull day",
-        duration: "35–50 min",
-        categories: ["strength"],
-        note: "Pull-day template first: pull-ups, row/pulldown, biceps, and scap stability.",
-        compactDescriptor: "weighted pull-up",
-      },
-      {
-        title: "Bike intervals",
-        duration: "50–75 min",
+        title: "Bike aerobic build",
+        duration: "60–80 min",
         categories: ["bike"],
-        note: "Midweek bike template: structured interval work (example 6–10 x 2-4 min hard with easy recovery), then cooldown.",
+        note: "Zone 2 with a few steady controlled blocks.",
       },
     ],
     3: [
       {
-        title: "Swim speed session",
-        duration: "1,800–2,000 yd",
+        title: "Swim technique + pace control",
+        duration: "1,500–1,850 yd",
         categories: ["swim"],
-        note: "Wednesday swim template: warm-up + technique primer, then speed main set around 20 x 50 yd on controlled send-off, easy cooldown.",
+        note: "Warm-up 300 easy, then 8 × 50 as 25 drill/25 swim, then 6 × 100 steady with controlled breathing and consistent stroke count, finish with 4 × 50 sighting/no-wall skills.",
       },
       {
-        title: "Core/abs/stretch session",
-        duration: "20–35 min",
-        categories: ["recovery"],
-        note: "Core template: trunk circuit + mobility/stretch emphasis; keep fatigue manageable for Thursday double.",
+        title: "Uphill intervals / stairs",
+        duration: "45–60 min",
+        categories: ["hike"],
+        note: "Controlled vertical; add light pack only if pain-free.",
+      },
+      {
+        title: "Core + carries",
+        duration: "15–20 min",
+        categories: ["strength"],
+        note: "Farmer carry, plank, anti-rotation.",
       },
     ],
     4: [
       {
-        title: "Strength C — Bulgarian split squat + quads",
-        duration: "40–55 min",
+        title: "Strength B — weighted pull-up",
+        duration: "35–45 min",
         categories: ["strength"],
-        note: "Quad day template: Bulgarian split squat first, quad accessory, plus calves and tibialis.",
-        compactDescriptor: "split squat",
-      },
-      {
-        title: "Stairmaster intervals",
-        duration: "35–50 min",
-        categories: ["hike"],
-        note: "Thursday stairmaster template: structured interval climbs (example 8-12 hard repeats) to build vertical capacity.",
+        note: "Weighted pull-ups or bodyweight pull-ups with rows, curls, and core; keep reps crisp.",
+        compactDescriptor: "weighted pull-up",
       },
     ],
     5: [
       {
-        title: "Long continuous swim day",
-        duration: "2,100–2,400 yd",
+        title: "Long continuous swim checkpoint",
+        duration: "1,700–2,100 yd",
         categories: ["swim"],
-        note: "Friday swim template: warm-up + optional drill prep, then long continuous main set beginning at 1 x 1000 yd and extending over time.",
+        note: "Warm-up 300 easy, drill primer 4 × 50, then continuous target of 1,100–1,300 yd at calm effort; finish with 100–200 easy and stop if shoulders exceed 2/10.",
       },
       {
-        title: "Core/abs/stretch session + lower leg",
+        title: "Optional easy spin flush",
         duration: "20–35 min",
-        categories: ["recovery"],
-        note: "Second core template: trunk + mobility with added calves/tibialis to ensure at least three weekly lower-leg touchpoints.",
+        categories: ["bike", "recovery"],
+        note: "Optional post-swim blood flow only. Skip if Saturday hike quality would improve with full rest.",
       },
     ],
     6: [
       {
-        title: "Long hike / uphill simulation",
-        duration: "3–4.5 hr",
+        title: "Long hike with pack progression",
+        duration: "3–5 hr",
         categories: ["hike"],
-        note: "Weekend hike template: long sustained vertical day with fueling practice and steady pacing.",
+        note: "Build vertical gradually; practice fueling.",
       },
     ],
   },
   specific: {
     0: [
       {
-        title: "Long outdoor bike ride",
-        duration: "3–5 hr",
-        categories: ["bike"],
-        note: "Weekend bike template: long mostly unstructured outdoor endurance ride with sustained aerobic focus.",
+        title: "Recovery spin + mobility",
+        duration: "30–50 min",
+        categories: ["recovery", "bike"],
+        note: "Keep Sunday non-swim: easy spin, shoulder mobility, calf/foot reset, and no load chasing.",
       },
     ],
     1: [
       {
-        title: "Swim pyramid main set",
-        duration: "2,000–2,200 yd",
+        title: "Pool race-distance rehearsal",
+        duration: "1,800–2,200 yd",
         categories: ["swim"],
-        note: "Monday swim template: warm-up + drills, then pyramid main set (50/100/200/400/200/100/50) with controlled pacing.",
+        note: "Include continuous 1,400–1,600 yd plus no-wall/sighting practice.",
       },
       {
-        title: "Strength A — RDL hamstring/glute",
-        duration: "40–55 min",
+        title: "Strength maintenance",
+        duration: "25–35 min",
         categories: ["strength"],
-        note: "RDL day template: hamstrings/hips first, posterior chain accessory, then calves and tibialis.",
-        compactDescriptor: "RDL",
+        note: "Low volume; rotate RDL, weighted pull-up, or Bulgarian split squat as the first lift and keep quality high.",
+        compactDescriptor: "main lift",
       },
     ],
     2: [
       {
-        title: "Strength B — pull day",
-        duration: "35–50 min",
-        categories: ["strength"],
-        note: "Pull-day template first: pull-ups, row/pulldown, biceps, and scap stability.",
-        compactDescriptor: "weighted pull-up",
-      },
-      {
-        title: "Bike intervals",
-        duration: "55–80 min",
-        categories: ["bike"],
-        note: "Midweek bike template: structured interval work with quality hard efforts and full recoveries.",
+        title: "Mountain uphill intervals",
+        duration: "60–75 min",
+        categories: ["hike"],
+        note: "Sustain steady vertical without shin flare.",
       },
     ],
     3: [
       {
-        title: "Swim speed session",
-        duration: "1,900–2,100 yd",
+        title: "Open-water skills or pool sighting",
+        duration: "1,700–1,900 yd (35–60 min)",
         categories: ["swim"],
-        note: "Wednesday swim template: warm-up + technique primer, then speed main set around 20 x 50 yd on controlled send-off.",
+        note: "Practice sighting, calm starts, and no-wall turns inside ~1,700–1,900 yd of controlled aerobic swimming.",
       },
       {
-        title: "Core/abs/stretch session",
-        duration: "20–35 min",
+        title: "Easy mobility",
+        duration: "10–20 min",
         categories: ["recovery"],
-        note: "Core template: trunk circuit + mobility/stretch emphasis; keep fatigue manageable for Thursday double.",
+        note: "Shoulders, calves, hips, and thoracic spine.",
       },
     ],
     4: [
       {
-        title: "Strength C — Bulgarian split squat + quads",
-        duration: "40–55 min",
-        categories: ["strength"],
-        note: "Quad day template: Bulgarian split squat first, quad accessory, plus calves and tibialis.",
-        compactDescriptor: "split squat",
-      },
-      {
-        title: "Stairmaster intervals",
-        duration: "40–55 min",
-        categories: ["hike"],
-        note: "Thursday stairmaster template: structured interval climbs for vertical specificity.",
+        title: "Bike Zone 2 + pull/core strength",
+        duration: "60–80 min",
+        categories: ["bike", "strength"],
+        note: "Aerobic maintenance plus pull-up, trunk, and lower-leg basics.",
+        compactDescriptor: "pull/core",
       },
     ],
     5: [
       {
-        title: "Long continuous swim day",
-        duration: "2,300–2,500 yd",
-        categories: ["swim"],
-        note: "Friday swim template: warm-up + optional drill prep, then long continuous main set beginning at 1 x 1000 yd and extending over time.",
-      },
-      {
-        title: "Core/abs/stretch session + lower leg",
-        duration: "20–35 min",
-        categories: ["recovery"],
-        note: "Second core template: trunk + mobility with added calves/tibialis to ensure at least three weekly lower-leg touchpoints.",
+        title: "Recovery technique swim",
+        duration: "1,200–1,600 yd",
+        categories: ["swim", "recovery"],
+        note: "Friday swim stays low stress: 300 easy, 6 × 50 drill/swim, 4–6 × 100 smooth aerobic, 100 easy. End feeling better than when you started.",
       },
     ],
     6: [
       {
-        title: "Long hike / uphill simulation",
+        title: "Baker simulation hike",
         duration: "4–6 hr",
         categories: ["hike"],
-        note: "Weekend hike template: long sustained vertical day with fueling and downhill durability practice.",
+        note: "Long steady climb, pack system, fueling rehearsal.",
       },
     ],
   },
   taper: {
     0: [
       {
-        title: "Long outdoor bike ride",
-        duration: "3–4.5 hr",
-        categories: ["bike"],
-        note: "Weekend bike template remains long and aerobic with steady fueling and pacing.",
+        title: "Recovery and mobility",
+        duration: "20–40 min",
+        categories: ["recovery"],
+        note: "Reduce fatigue; protect sleep.",
       },
     ],
     1: [
       {
-        title: "Swim pyramid main set",
-        duration: "2,000–2,200 yd",
-        categories: ["swim"],
-        note: "Monday swim template: warm-up + drills, then pyramid main set (50/100/200/400/200/100/50) with controlled pacing.",
-      },
-      {
-        title: "Strength A — RDL hamstring/glute",
-        duration: "40–55 min",
-        categories: ["strength"],
-        note: "RDL day template: hamstrings/hips first, posterior chain accessory, then calves and tibialis.",
-        compactDescriptor: "RDL",
+        title: "Easy technique swim",
+        duration: "1,000–1,400 yd",
+        categories: ["swim", "recovery"],
+        note: "Stay sharp with easy drills; do not accumulate fatigue.",
       },
     ],
     2: [
       {
-        title: "Strength B — pull day",
-        duration: "35–50 min",
-        categories: ["strength"],
-        note: "Pull-day template first: pull-ups, row/pulldown, biceps, and scap stability.",
-        compactDescriptor: "weighted pull-up",
-      },
-      {
-        title: "Bike intervals",
-        duration: "55–80 min",
-        categories: ["bike"],
-        note: "Midweek bike template: structured interval work with quality hard efforts and full recoveries.",
+        title: "Light aerobic maintenance",
+        duration: "30–45 min",
+        categories: ["bike", "recovery"],
+        note: "Easy spin or walk only.",
       },
     ],
     3: [
       {
-        title: "Swim speed session",
-        duration: "1,900–2,100 yd",
+        title: "Short swim tune-up",
+        duration: "1,000–1,500 yd",
         categories: ["swim"],
-        note: "Wednesday swim template: warm-up + technique primer, then speed main set around 20 x 50 yd on controlled send-off.",
-      },
-      {
-        title: "Core/abs/stretch session",
-        duration: "20–35 min",
-        categories: ["recovery"],
-        note: "Core template: trunk circuit + mobility/stretch emphasis; keep fatigue manageable for Thursday double.",
+        note: "A few relaxed pickups and sighting cues; no fatigue.",
       },
     ],
     4: [
       {
-        title: "Strength C — Bulgarian split squat + quads",
-        duration: "40–55 min",
+        title: "Strength maintenance micro-dose",
+        duration: "20–30 min",
         categories: ["strength"],
-        note: "Quad day template: Bulgarian split squat first, quad accessory, plus calves and tibialis.",
-        compactDescriptor: "split squat",
-      },
-      {
-        title: "Stairmaster intervals",
-        duration: "40–55 min",
-        categories: ["hike"],
-        note: "Thursday stairmaster template: structured interval climbs for vertical specificity.",
+        note: "Light full-body patterning.",
       },
     ],
     5: [
       {
-        title: "Long continuous swim day",
-        duration: "2,300–2,500 yd",
-        categories: ["swim"],
-        note: "Friday swim template: warm-up + optional drill prep, then long continuous main set beginning at 1 x 1000 yd and extending over time.",
-      },
-      {
-        title: "Core/abs/stretch session + lower leg",
-        duration: "20–35 min",
+        title: "Rest / logistics",
+        duration: "As needed",
         categories: ["recovery"],
-        note: "Second core template: trunk + mobility with added calves/tibialis to ensure at least three weekly lower-leg touchpoints.",
+        note: "Gear, hydration, sleep, and food prep.",
       },
     ],
     6: [
       {
-        title: "Long hike / uphill simulation",
-        duration: "4–5.5 hr",
-        categories: ["hike"],
-        note: "Weekend hike template: long sustained vertical day with fueling and downhill durability practice.",
+        title: "Short shakeout",
+        duration: "20–40 min",
+        categories: ["recovery", "hike"],
+        note: "Easy legs; keep confidence high.",
       },
     ],
   },
   recovery: {
     0: [
       {
-        title: "Long outdoor bike ride",
-        duration: "3–4.5 hr",
-        categories: ["bike"],
-        note: "Weekend bike template remains long and aerobic with steady fueling and pacing.",
+        title: "Full rest / travel recovery",
+        duration: "As needed",
+        categories: ["recovery"],
+        note: "Sleep, food, feet, and easy walking only.",
       },
     ],
     1: [
       {
-        title: "Swim pyramid main set",
-        duration: "2,000–2,200 yd",
-        categories: ["swim"],
-        note: "Monday swim template: warm-up + drills, then pyramid main set (50/100/200/400/200/100/50) with controlled pacing.",
-      },
-      {
-        title: "Strength A — RDL hamstring/glute",
-        duration: "40–55 min",
-        categories: ["strength"],
-        note: "RDL day template: hamstrings/hips first, posterior chain accessory, then calves and tibialis.",
-        compactDescriptor: "RDL",
+        title: "Easy swim reset",
+        duration: "20–40 min",
+        categories: ["swim", "recovery"],
+        note: "Only if shoulders and energy feel good; technique only.",
       },
     ],
     2: [
       {
-        title: "Strength B — pull day",
-        duration: "35–50 min",
-        categories: ["strength"],
-        note: "Pull-day template first: pull-ups, row/pulldown, biceps, and scap stability.",
-        compactDescriptor: "weighted pull-up",
-      },
-      {
-        title: "Bike intervals",
-        duration: "55–80 min",
-        categories: ["bike"],
-        note: "Midweek bike template: structured interval work with quality hard efforts and full recoveries.",
+        title: "Mobility + easy walk",
+        duration: "20–45 min",
+        categories: ["recovery"],
+        note: "Restore range of motion and tissue quality.",
       },
     ],
     3: [
       {
-        title: "Swim speed session",
-        duration: "1,900–2,100 yd",
-        categories: ["swim"],
-        note: "Wednesday swim template: warm-up + technique primer, then speed main set around 20 x 50 yd on controlled send-off.",
-      },
-      {
-        title: "Core/abs/stretch session",
-        duration: "20–35 min",
-        categories: ["recovery"],
-        note: "Core template: trunk circuit + mobility/stretch emphasis; keep fatigue manageable for Thursday double.",
+        title: "Easy technique swim reset",
+        duration: "1,000–1,400 yd",
+        categories: ["swim", "recovery"],
+        note: "Wednesday swim focus: relaxed breathing, short drill block, and smooth aerobic repeats. Keep shoulder load minimal after Baker week.",
       },
     ],
     4: [
       {
-        title: "Strength C — Bulgarian split squat + quads",
-        duration: "40–55 min",
-        categories: ["strength"],
-        note: "Quad day template: Bulgarian split squat first, quad accessory, plus calves and tibialis.",
-        compactDescriptor: "split squat",
-      },
-      {
-        title: "Stairmaster intervals",
-        duration: "40–55 min",
-        categories: ["hike"],
-        note: "Thursday stairmaster template: structured interval climbs for vertical specificity.",
+        title: "Light pull/core rebuild",
+        duration: "20–30 min",
+        categories: ["strength", "recovery"],
+        note: "Gentle rows, carries, and trunk work.",
       },
     ],
     5: [
       {
-        title: "Long continuous swim day",
-        duration: "2,300–2,500 yd",
-        categories: ["swim"],
-        note: "Friday swim template: warm-up + optional drill prep, then long continuous main set beginning at 1 x 1000 yd and extending over time.",
-      },
-      {
-        title: "Core/abs/stretch session + lower leg",
-        duration: "20–35 min",
-        categories: ["recovery"],
-        note: "Second core template: trunk + mobility with added calves/tibialis to ensure at least three weekly lower-leg touchpoints.",
+        title: "Optional easy swim",
+        duration: "20–40 min",
+        categories: ["swim", "recovery"],
+        note: "Keep this fully recovery-focused: 200 easy warm-up, 4 × 50 drill/swim by 25, 4 × 100 smooth aerobic with full control, and 100 easy cool-down. Stop early if shoulders or energy feel flat.",
       },
     ],
     6: [
       {
-        title: "Long hike / uphill simulation",
-        duration: "4–5.5 hr",
-        categories: ["hike"],
-        note: "Weekend hike template: long sustained vertical day with fueling and downhill durability practice.",
+        title: "Easy hike / long walk",
+        duration: "45–90 min",
+        categories: ["hike", "recovery"],
+        note: "Low stakes movement; no pack pressure.",
       },
     ],
   },
   maintenance: {
     0: [
       {
-        title: "Long outdoor bike ride",
-        duration: "3–4.5 hr",
-        categories: ["bike"],
-        note: "Weekend bike template remains long and aerobic with steady fueling and pacing.",
+        title: "Recovery mobility or easy walk",
+        duration: "25–45 min",
+        categories: ["recovery"],
+        note: "Keep Sunday non-swim: mobility, walk, and tissue care so Monday starts fresh.",
       },
     ],
     1: [
       {
-        title: "Swim pyramid main set",
-        duration: "2,000–2,200 yd",
+        title: "Swim endurance maintenance",
+        duration: "1,400–1,800 yd",
         categories: ["swim"],
-        note: "Monday swim template: warm-up + drills, then pyramid main set (50/100/200/400/200/100/50) with controlled pacing.",
+        note: "Comfortable continuous or broken volume with a short drill primer.",
       },
       {
-        title: "Strength A — RDL hamstring/glute",
-        duration: "40–55 min",
+        title: "Strength A — RDL + lower leg",
+        duration: "35–45 min",
         categories: ["strength"],
-        note: "RDL day template: hamstrings/hips first, posterior chain accessory, then calves and tibialis.",
+        note: "Rebuild with RDLs, core, calves, and tibialis after the peak events.",
         compactDescriptor: "RDL",
       },
     ],
     2: [
       {
-        title: "Strength B — pull day",
-        duration: "35–50 min",
-        categories: ["strength"],
-        note: "Pull-day template first: pull-ups, row/pulldown, biceps, and scap stability.",
-        compactDescriptor: "weighted pull-up",
-      },
-      {
-        title: "Bike intervals",
-        duration: "55–80 min",
+        title: "Bike aerobic maintenance",
+        duration: "50–75 min",
         categories: ["bike"],
-        note: "Midweek bike template: structured interval work with quality hard efforts and full recoveries.",
+        note: "Steady Zone 2 base work.",
       },
     ],
     3: [
       {
-        title: "Swim speed session",
-        duration: "1,900–2,100 yd",
+        title: "Swim skills + aerobic control",
+        duration: "1,400–1,700 yd",
         categories: ["swim"],
-        note: "Wednesday swim template: warm-up + technique primer, then speed main set around 20 x 50 yd on controlled send-off.",
+        note: "Warm-up 300 easy, 8 × 50 drill/swim by 25, main set 5 × 150 relaxed with even pacing, then 4 × 50 sighting/no-wall turn practice.",
       },
       {
-        title: "Core/abs/stretch session",
-        duration: "20–35 min",
-        categories: ["recovery"],
-        note: "Core template: trunk circuit + mobility/stretch emphasis; keep fatigue manageable for Thursday double.",
+        title: "Uphill hike / stairs",
+        duration: "45–75 min",
+        categories: ["hike"],
+        note: "Maintain vertical economy without overreaching.",
+      },
+      {
+        title: "Core + carries",
+        duration: "10–20 min",
+        categories: ["strength"],
+        note: "Short trunk and grip work.",
       },
     ],
     4: [
       {
-        title: "Strength C — Bulgarian split squat + quads",
-        duration: "40–55 min",
+        title: "Strength B — weighted pull-up + core",
+        duration: "35–45 min",
         categories: ["strength"],
-        note: "Quad day template: Bulgarian split squat first, quad accessory, plus calves and tibialis.",
-        compactDescriptor: "split squat",
+        note: "Weighted pull-up or bodyweight pull-up focus with rows, curls, core, and lower-leg prehab.",
+        compactDescriptor: "weighted pull-up",
       },
       {
-        title: "Stairmaster intervals",
-        duration: "40–55 min",
-        categories: ["hike"],
-        note: "Thursday stairmaster template: structured interval climbs for vertical specificity.",
+        title: "Optional easy spin",
+        duration: "20–35 min",
+        categories: ["bike", "recovery"],
+        note: "Only if it helps recovery.",
       },
     ],
     5: [
       {
-        title: "Long continuous swim day",
-        duration: "2,300–2,500 yd",
-        categories: ["swim"],
-        note: "Friday swim template: warm-up + optional drill prep, then long continuous main set beginning at 1 x 1000 yd and extending over time.",
-      },
-      {
-        title: "Core/abs/stretch session + lower leg",
-        duration: "20–35 min",
-        categories: ["recovery"],
-        note: "Second core template: trunk + mobility with added calves/tibialis to ensure at least three weekly lower-leg touchpoints.",
+        title: "Long aerobic swim maintenance",
+        duration: "1,500–1,900 yd",
+        categories: ["swim", "recovery"],
+        note: "Friday long swim: 300 warm-up, 1,000–1,400 continuous relaxed, optional 4 × 50 form resets, and 100–200 cool-down.",
       },
     ],
     6: [
       {
-        title: "Long hike / uphill simulation",
-        duration: "4–5.5 hr",
+        title: "Long hike / adventure day",
+        duration: "2–4 hr",
         categories: ["hike"],
-        note: "Weekend hike template: long sustained vertical day with fueling and downhill durability practice.",
+        note: "Maintain mountain durability and enjoyment.",
       },
     ],
   },
 };
 
-const calendarSpecialDays = {};
+const calendarSpecialDays = {
+  "2026-07-20": [
+    {
+      title: "Post-ramp endurance swim anchor",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300 easy, drill primer 6 × 50 (25 drill/25 swim), main 3 × 500 steady aerobic (30 sec rest), then 4 × 50 sighting/no-wall and 100 easy.",
+    },
+  ],
+  "2026-07-22": [
+    {
+      title: "Midweek skills + threshold-control swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, drills 8 × 50, main 10 × 100 at controlled effort with even splits, then 4 × 50 sighting cadence and 100–200 easy.",
+    },
+  ],
+  "2026-07-24": [
+    {
+      title: "Long aerobic swim checkpoint",
+      duration: "1,900–2,100 yd",
+      categories: ["swim", "recovery"],
+      note: "Warm-up 300, then continuous 1,400–1,700 yd relaxed with form discipline, finish with 4 × 50 form resets and 100 easy.",
+    },
+  ],
+  "2026-07-27": [
+    {
+      title: "Sustained-volume Monday swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, drills 6 × 50, main 4 × 300 steady + 4 × 100 pull buoy body-line focus, then 100–200 cool-down.",
+    },
+  ],
+  "2026-07-29": [
+    {
+      title: "Sighting + pace-control swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, 8 × 50 drill/swim, main 5 × 200 negative-split focus with calm breathing, then 6 × 50 sighting every 6–8 strokes.",
+    },
+  ],
+  "2026-07-31": [
+    {
+      title: "Friday long aerobic swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim", "recovery"],
+      note: "Warm-up 300, continuous 1,500 yd target at easy/moderate effort, then 4 × 50 technical resets and 100–200 easy.",
+    },
+  ],
+  "2026-08-03": [
+    {
+      title: "Monday endurance swim anchor",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, drills 6 × 50, main 3 × 500 steady + 2 × 200 relaxed with excellent form, then 100 easy.",
+    },
+  ],
+  "2026-08-05": [
+    {
+      title: "Wednesday skills + pacing swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, drills 8 × 50, main 12 × 100 controlled aerobic/threshold crossover, then 4 × 50 sighting/no-wall and 100 easy.",
+    },
+  ],
+  "2026-08-07": [
+    {
+      title: "Friday long continuous swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim", "recovery"],
+      note: "Warm-up 300, continuous 1,500–1,700 yd at calm effort, then 4 × 50 technique finishers and 100 easy.",
+    },
+  ],
+  "2026-08-10": [
+    {
+      title: "Monday aerobic efficiency swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, drills 6 × 50, main 4 × 400 steady with controlled stroke count, then 100–200 easy.",
+    },
+  ],
+  "2026-08-12": [
+    {
+      title: "Wednesday race-skill rehearsal swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, 8 × 50 drill/swim, main 6 × 200 with sighting inserts, then 4 × 50 no-wall turns and 100 easy.",
+    },
+  ],
+  "2026-08-14": [
+    {
+      title: "Friday long aerobic swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim", "recovery"],
+      note: "Warm-up 300, continuous 1,500–1,700 yd relaxed, then 4 × 50 form resets and 100–200 cool-down.",
+    },
+  ],
+  "2026-08-17": [
+    {
+      title: "Final high-volume Monday swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, drills 6 × 50, main 3 × 500 + 3 × 100 smooth build, then 100–200 easy.",
+    },
+  ],
+  "2026-08-19": [
+    {
+      title: "Wednesday quality-control swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim"],
+      note: "Warm-up 300, 8 × 50 drill/swim, main 10 × 100 controlled, then 4 × 50 sighting rhythm and 100 easy.",
+    },
+  ],
+  "2026-08-21": [
+    {
+      title: "Final full-load long swim",
+      duration: "1,900–2,100 yd",
+      categories: ["swim", "recovery"],
+      note: "Warm-up 300, continuous 1,500–1,700 yd comfortable with stable form, then short cool-down. Finish feeling controlled, not depleted.",
+    },
+  ],
+  "2026-08-24": [
+    {
+      title: "Race-week Monday tune-up swim",
+      duration: "1,400–1,700 yd",
+      categories: ["swim", "recovery"],
+      note: "Keep this lighter: 300 warm-up, 6 × 50 drills, 6 × 100 smooth aerobic, 4 × 50 sighting cues, then easy cool-down.",
+    },
+  ],
+  "2026-08-26": [
+    {
+      title: "Race-week confidence swim",
+      duration: "1,100–1,400 yd",
+      categories: ["swim", "recovery"],
+      note: "Short and smooth: 300 warm-up, 4 × 50 drills, 4 × 100 controlled, a few 25 yd pickups, then easy cool-down.",
+    },
+  ],
+  "2026-08-28": [
+    {
+      title: "Full rest + Lake Union logistics",
+      duration: "As needed",
+      categories: ["recovery"],
+      note: "No swim on Friday race eve. Confirm support, route, weather, fueling, and gear.",
+    },
+  ],
+  "2026-08-29": [
+    {
+      title: "Lake Union supported swim",
+      duration: "1,600 yd target",
+      categories: ["swim"],
+      note: "Execute calmly with support plan. Keep early pacing conservative and abort if conditions or shoulder status require.",
+    },
+  ],
+  "2026-08-30": [
+    {
+      title: "Post-race recovery",
+      duration: "20–40 min optional walk/mobility",
+      categories: ["recovery"],
+      note: "Prioritize sleep, hydration, nutrition, and easy mobility only.",
+    },
+  ],
+};
 
 const weekOneTrackingIdsByDate = {
   "2026-06-01": "mon-jun-1",
@@ -4697,7 +4759,6 @@ function renderTodaySession(session) {
   const primaryCategory = calendarSessionPrimaryCategory(session);
   const compactCategory = getCalendarSessionCompactCategory(session);
   const compactDescriptor = getCalendarSessionCompactDescriptor(session);
-  const detailPreview = renderTodaySessionDetails(session);
 
   return `
     <article class="today-session calendar-session--${primaryCategory} calendar-session--compact-${compactCategory} ${completed ? "is-complete" : ""}">
@@ -4719,7 +4780,6 @@ function renderTodaySession(session) {
         </div>
         <h3>${escapeHtml(session.title)}</h3>
         <p>${escapeHtml(session.note)}</p>
-        ${detailPreview}
         <div class="today-session__footer">
           <span>${escapeHtml(getCalendarSessionCompactLabel(session))} · ${escapeHtml(compactDescriptor)}</span>
           <button class="button button--secondary today-session__detail" type="button" data-calendar-session-open="${session.id}">
@@ -4729,92 +4789,6 @@ function renderTodaySession(session) {
       </div>
     </article>
   `;
-}
-
-function extractStrengthLoadValue(weight) {
-  const match = String(weight ?? "").match(/(\d+(?:\.\d+)?)/);
-  return match ? Number(match[1]) : null;
-}
-
-function formatStrengthSetSummary(set) {
-  const weight = set.weight ? set.weight : "—";
-  const reps = set.reps ? set.reps : "—";
-  let summary = `${weight} × ${reps}`;
-  if (set.rpe) summary += ` @ RPE ${set.rpe}`;
-  if (set.notes) summary += ` · ${set.notes}`;
-  return summary;
-}
-
-function renderStrengthProgressSnapshot(exercises) {
-  if (!exercises.length) return "";
-
-  return `
-    <section class="today-session__detail-section">
-      <h4>Strength progress</h4>
-      <div class="strength-progress-grid">
-        ${exercises
-          .map((exercise) => {
-            const snapshot = StrengthWorkoutManager.getExerciseProgressSnapshot(exercise.key);
-            return `
-              <article class="strength-progress-card">
-                <span>${escapeHtml(exercise.name)}</span>
-                <strong>${escapeHtml(snapshot.summary)}</strong>
-                <p>${escapeHtml(snapshot.trend)}</p>
-              </article>
-            `;
-          })
-          .join("")}
-      </div>
-    </section>
-  `;
-}
-
-function renderTodaySessionDetails(session) {
-  const detailedWorkout = getDetailedWorkoutForDate(session.dateKey);
-  const detailBlocks = detailedWorkout ? detailedWorkout.blocks.filter((block) => blockMatchesCalendarSession(block, session)) : [];
-  const parts = [];
-
-  if (detailedWorkout) {
-    parts.push(`
-      <section class="today-session__detail-section">
-        <h4>Workout details</h4>
-        ${renderCalendarDetailBlocks(detailBlocks)}
-      </section>
-    `);
-  }
-
-  if (session.categories.includes("strength") && detailedWorkout) {
-    const exercises = StrengthWorkoutManager.extractExercisesFromWorkout(detailedWorkout, session);
-    parts.push(renderStrengthProgressSnapshot(exercises));
-  }
-
-  if (session.categories.includes("strength") && !detailedWorkout) {
-    const latestLog = StrengthWorkoutManager.getLatestLogForDate(session.dateKey);
-    if (latestLog && Object.keys(latestLog.exerciseLogs).length > 0) {
-      const exerciseRows = Object.entries(latestLog.exerciseLogs)
-        .map(([key, sets]) => {
-          const exerciseName = key.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
-          return `
-            <div class="today-session__strength-row">
-              <strong>${escapeHtml(exerciseName)}</strong>
-              <span>${escapeHtml(formatStrengthSetSummary(sets[sets.length - 1]))}</span>
-            </div>
-          `;
-        })
-        .join("");
-
-      parts.push(`
-        <section class="today-session__detail-section">
-          <h4>Latest strength log</h4>
-          <div class="today-session__strength-log">
-            ${exerciseRows}
-          </div>
-        </section>
-      `);
-    }
-  }
-
-  return parts.join("");
 }
 
 function renderCalendarProgress() {
@@ -5879,16 +5853,8 @@ const ActivityManager = {
 
   async fetchSyncedActivities() {
     try {
-      const sources = [
-        "data/activities.json",
-        "https://raw.githubusercontent.com/abidrahman/abid-workouts/main/data/activities.json",
-      ];
-      let res = null;
-      for (const source of sources) {
-        res = await fetch(source);
-        if (res.ok) break;
-      }
-      if (!res || !res.ok) throw new Error(`HTTP ${res?.status ?? "unknown"}`);
+      const res = await fetch("https://raw.githubusercontent.com/abidrahman/abid-workouts/main/data/activities.json");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       // Filter to the training block window using the app's canonical date constants
       const startKey = dateToKey(calendarStartDate);
@@ -6038,53 +6004,6 @@ const StrengthWorkoutManager = {
     api.saveStrengthLogs(dateKey, this.workoutLogs).catch(() => {});
   },
 
-  getWorkoutLogList() {
-    return Object.values(this.workoutLogs).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-  },
-
-  getExerciseLogHistory(exerciseKey) {
-    return this.getWorkoutLogList().filter((log) => log.exerciseLogs?.[exerciseKey]?.length);
-  },
-
-  getExerciseProgressSnapshot(exerciseKey) {
-    const history = this.getExerciseLogHistory(exerciseKey);
-    if (!history.length) {
-      return {
-        summary: "No logged sessions yet",
-        trend: "Log the first set to start tracking progress.",
-      };
-    }
-
-    const latest = history[0];
-    const latestSet = latest.exerciseLogs[exerciseKey][latest.exerciseLogs[exerciseKey].length - 1];
-    const bestSet = history.reduce((best, log) => {
-      const sets = log.exerciseLogs[exerciseKey] || [];
-      sets.forEach((set) => {
-        const load = extractStrengthLoadValue(set.weight) ?? 0;
-        const reps = Number.parseFloat(String(set.reps).match(/(\d+(?:\.\d+)?)/)?.[1] ?? "0");
-        const score = load * Math.max(reps, 1);
-        const bestScore = best ? best.score : -1;
-        if (score > bestScore) {
-          best = { score, set, log };
-        }
-      });
-      return best;
-    }, null);
-
-    return {
-      summary: latestSet ? formatStrengthSetSummary(latestSet) : "Latest session logged",
-      trend: `${history.length} session${history.length === 1 ? "" : "s"} · Last ${latest.dateDisplay || latest.date}${bestSet?.set ? ` · Best ${formatStrengthSetSummary(bestSet.set)}` : ""}`,
-    };
-  },
-
-  applyLatestExerciseLog(exerciseKey) {
-    const latest = this.getExerciseLogHistory(exerciseKey)[0];
-    if (!latest) return;
-
-    this.currentWorkout.exerciseLogs[exerciseKey] = latest.exerciseLogs[exerciseKey].map((set) => ({ ...set }));
-    this.renderWorkoutModal();
-  },
-
   getWorkoutDate(sessionId) {
     const context = getCalendarSessionContext(sessionId);
     return context ? context.day : null;
@@ -6157,16 +6076,6 @@ const StrengthWorkoutManager = {
       });
     });
 
-    exerciseListEl.querySelectorAll("[data-exercise-action]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const action = btn.dataset.exerciseAction;
-        const exerciseKey = btn.dataset.exerciseKey;
-        if (action === "copy-latest") {
-          this.applyLatestExerciseLog(exerciseKey);
-        }
-      });
-    });
-
     // Attach input listeners for auto-save
     exerciseListEl.querySelectorAll("input, textarea").forEach((input) => {
       input.addEventListener("change", () => this.autoSaveForm());
@@ -6219,59 +6128,12 @@ const StrengthWorkoutManager = {
   renderExerciseForm(exercise, idx) {
     const sets = this.currentWorkout.exerciseLogs[exercise.key] || [{ weight: "", reps: "", rpe: "", notes: "" }];
     const exerciseKey = exercise.key;
-    const progress = this.getExerciseProgressSnapshot(exerciseKey);
-    const history = this.getExerciseLogHistory(exerciseKey).slice(0, 3);
-    const hasHistory = this.getExerciseLogHistory(exerciseKey).length > 0;
 
     return `
       <div class="exercise-form">
-        <div class="exercise-form__header">
-          <div>
-            <h3 class="exercise-form-title">${escapeHtml(exercise.name)}</h3>
-            <p class="exercise-form__description">${escapeHtml(exercise.description)}</p>
-          </div>
-          <button
-            type="button"
-            class="button button--ghost exercise-form__action"
-            data-exercise-action="copy-latest"
-            data-exercise-key="${exerciseKey}"
-            ${hasHistory ? "" : "disabled"}
-          >
-            Use last workout
-          </button>
-        </div>
-
-        <section class="exercise-form__progress">
-          <div class="strength-performance-grid">
-            <article class="strength-performance-card">
-              <span>Latest</span>
-              <strong>${escapeHtml(progress.summary)}</strong>
-            </article>
-            <article class="strength-performance-card">
-              <span>Trend</span>
-              <strong>${escapeHtml(progress.trend)}</strong>
-            </article>
-          </div>
-          ${
-            history.length
-              ? `
-                <div class="exercise-history-list">
-                  ${history
-                    .map(
-                      (log) => `
-                        <div class="exercise-history-item">
-                          <span>${escapeHtml(log.dateDisplay || log.date)}</span>
-                          <strong>${escapeHtml(formatStrengthSetSummary(log.exerciseLogs[exerciseKey][log.exerciseLogs[exerciseKey].length - 1]))}</strong>
-                        </div>
-                      `,
-                    )
-                    .join("")}
-                </div>
-              `
-              : `<p class="exercise-form__empty-history">No prior logs yet. Your first logged set will show progress here.</p>`
-          }
-        </section>
-
+        <h3 class="exercise-form-title">${escapeHtml(exercise.name)}</h3>
+        <p style="color: var(--muted); font-size: 0.9rem; margin: 0 0 0.8rem;">${escapeHtml(exercise.description)}</p>
+        
         <div class="exercise-sets">
           ${sets
             .map(
@@ -6283,7 +6145,6 @@ const StrengthWorkoutManager = {
                       <input 
                         type="text" 
                         placeholder="e.g., 185 lb or BW" 
-                        inputmode="decimal"
                         value="${escapeHtml(set.weight)}"
                         data-exercise-key="${exerciseKey}"
                         data-set-index="${setIdx}"
@@ -6296,7 +6157,6 @@ const StrengthWorkoutManager = {
                       <input 
                         type="text" 
                         placeholder="e.g., 6 or 90 sec" 
-                        inputmode="numeric"
                         value="${escapeHtml(set.reps)}"
                         data-exercise-key="${exerciseKey}"
                         data-set-index="${setIdx}"
@@ -6311,7 +6171,6 @@ const StrengthWorkoutManager = {
                         min="1" 
                         max="10" 
                         placeholder="7" 
-                        inputmode="numeric"
                         value="${set.rpe}"
                         data-exercise-key="${exerciseKey}"
                         data-set-index="${setIdx}"
