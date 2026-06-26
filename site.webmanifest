@@ -1,7 +1,7 @@
 {
   "name": "Abid Workouts",
   "short_name": "Workouts",
-  "description": "Mt. Baker and Lake Union training plan and progress tracker.",
+  "description": "Summer 2026 training plan and progress tracker.",
   "start_url": "/abid-workouts/",
   "scope": "/abid-workouts/",
   "display": "standalone",

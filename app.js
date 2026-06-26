@@ -3360,14 +3360,15 @@ async function syncActivities() {
   renderActivityMatchQueue();
 }
 
-const tabIds = ["calendar", "overview", "matching"];
+const tabIds = ["calendar", "matching"];
 const tabAliases = {
   dashboard: "calendar",
+  overview: "calendar",
   "today-panel": "calendar",
   "today-workouts": "calendar",
   "calendar-tracker": "calendar",
-  phases: "overview",
-  "phase-timeline": "overview",
+  phases: "calendar",
+  "phase-timeline": "calendar",
   "match-activities": "matching",
   "tracking-summary": "calendar",
 };
@@ -3903,8 +3904,16 @@ function syncDetailedTrackingFromCalendar(dateKey) {
   saveTracking();
 }
 
-function escapeHtml(value) {
+function normalizeBrandingText(value) {
   return String(value)
+    .replaceAll(/Mt\.?\s*Baker\s*\+\s*Lake\s+Union/gi, "Summer 2026")
+    .replaceAll(/Baker\s*\+\s*Lake\s+Union/gi, "Summer 2026")
+    .replaceAll(/Mt\.?\s*Baker/gi, "Summer 2026 peak event")
+    .replaceAll(/Lake\s+Union/gi, "Summer 2026 swim event");
+}
+
+function escapeHtml(value) {
+  return normalizeBrandingText(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
@@ -4456,7 +4465,7 @@ function getCalendarSessionCoachingCue(session) {
     return "Recovery cue: finish feeling better than when you started; optional means optional.";
   }
 
-  return "Use this session to support the larger Baker + Lake Union progression.";
+  return "Use this session to support the larger Summer 2026 progression.";
 }
 
 function getBlockCategoryKeywords(category) {
@@ -6450,7 +6459,6 @@ function initAuth() {
 }
 
 function init() {
-  renderPhases();
   renderCalendar();
   renderTrackingSummary();
   attachCalendarEvents();
