@@ -3388,7 +3388,12 @@ api.initializeAPI(_userId);
 async function hydrateFromFirestore() {
   try {
     const { activityMatches, extraWorkouts } = await api.loadAllUserData();
+    const calendarReschedulesCloud = await api.loadCalendarReschedules();
+    const todayDateKey = new Date().toISOString().slice(0, 10);
+    const calendarTrackingCloud = await api.loadCalendarTracking(todayDateKey);
+    
     let changed = false;
+    
     // Merge cloud activity matches into localStorage (cloud wins for new keys)
     if (activityMatches && Object.keys(activityMatches).length) {
       const local = loadManualActivityMatches();
@@ -3396,6 +3401,7 @@ async function hydrateFromFirestore() {
       window.localStorage.setItem(MANUAL_MATCH_STORAGE_KEY, JSON.stringify(merged));
       changed = true;
     }
+    
     // Merge cloud extra workouts into localStorage
     if (extraWorkouts && Object.keys(extraWorkouts).length) {
       const local = loadExtraWorkouts();
@@ -3403,6 +3409,26 @@ async function hydrateFromFirestore() {
       window.localStorage.setItem(EXTRA_WORKOUTS_STORAGE_KEY, JSON.stringify(merged));
       changed = true;
     }
+    
+    // Merge cloud calendar reschedules (cloud wins if cloud has newer data)
+    if (calendarReschedulesCloud && Object.keys(calendarReschedulesCloud).length) {
+      const local = loadCalendarReschedules();
+      const merged = { ...local, ...calendarReschedulesCloud };
+      window.localStorage.setItem(CALENDAR_RESCHEDULE_STORAGE_KEY, JSON.stringify(merged));
+      calendarReschedules = merged;
+      changed = true;
+    }
+    
+    // Merge cloud calendar tracking for today
+    if (calendarTrackingCloud && Object.keys(calendarTrackingCloud).length > 1) {
+      // Only sync if cloud has more than just the date field
+      const local = loadCalendarTracking();
+      const merged = { ...local, ...calendarTrackingCloud };
+      window.localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(merged));
+      calendarTracking = merged;
+      changed = true;
+    }
+    
     // Re-render so Firestore data shows up without a page reload
     if (changed) {
       renderCalendar();

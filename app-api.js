@@ -199,6 +199,25 @@ export async function loadAllUserData() {
   return { activityMatches, extraWorkouts };
 }
 
+// ── Startup Sync ──────────────────────────────────────────────────────────────
+
+/**
+ * Sync all user data from Firestore on app startup.
+ * Ensures workout states, activity matches, and extra workouts are current across devices.
+ * Called once during app initialization.
+ */
+export async function syncDataOnStartup() {
+  try {
+    console.log('[Firebase] Starting startup sync...');
+    const result = await loadAllUserData();
+    console.log('[Firebase] Startup sync complete:', result);
+    return { success: true, ...result };
+  } catch (e) {
+    console.error('[Firebase] Startup sync failed:', e);
+    return { success: false, error: e.message };
+  }
+}
+
 // ── Compat stubs ──────────────────────────────────────────────────────────────
 
 export function getSyncStatus() { return { status: 'synced', lastSync: new Date().toISOString() }; }
@@ -212,7 +231,7 @@ export function clearSyncQueue() {}
 
 export default {
   initializeAPI, getCurrentUserId, getSyncStatus, isOnline,
-  startBackgroundSync, stopBackgroundSync, syncNow,
+  startBackgroundSync, stopBackgroundSync, syncNow, syncDataOnStartup,
   saveTracking, loadTracking,
   saveCalendarTracking, loadCalendarTracking,
   saveCalendarReschedules, loadCalendarReschedules,
