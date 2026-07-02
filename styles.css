@@ -1418,6 +1418,7 @@ main {
 }
 
 .field input,
+.field select,
 .field textarea {
   width: 100%;
   padding: 0.65rem;
@@ -1429,6 +1430,7 @@ main {
 }
 
 .field input:focus,
+.field select:focus,
 .field textarea:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 4px rgba(17, 106, 92, 0.1);
@@ -2481,6 +2483,15 @@ body.has-calendar-dialog {
   min-width: min(14rem, 100%);
 }
 
+.calendar-detail__workout-mode {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.calendar-detail__workout-mode .button {
+  width: fit-content;
+}
+
 .calendar-reschedule .field span {
   color: var(--muted);
   font-size: 0.78rem;
@@ -2631,6 +2642,91 @@ body.has-calendar-dialog {
 .exercise-list {
   display: grid;
   gap: 1.5rem;
+}
+
+.workout-mode-toolbar,
+.workout-mode-entry,
+.workout-mode-sets,
+.workout-mode-summary {
+  padding: 1rem;
+  background: rgba(238, 245, 239, 0.42);
+  border: 1px solid rgba(220, 230, 223, 0.8);
+  border-radius: 16px;
+}
+
+.workout-mode-entry h3,
+.workout-mode-sets h3,
+.workout-mode-summary h3 {
+  margin: 0 0 0.8rem;
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.workout-mode-entry__inputs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  gap: 0.7rem;
+  align-items: end;
+}
+
+.workout-mode-entry__inputs .button {
+  min-height: 2.55rem;
+  white-space: nowrap;
+}
+
+.workout-mode-set-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.workout-mode-set-row {
+  display: grid;
+  grid-template-columns: 4.4rem 1fr 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.65rem;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(220, 230, 223, 0.9);
+  border-radius: 12px;
+}
+
+.workout-mode-set-row strong {
+  color: var(--primary-2);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+
+.workout-mode-set-row input {
+  width: 100%;
+  min-height: 2.2rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+
+.workout-mode-summary ul {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.workout-mode-summary li {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.55rem 0.6rem;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(220, 230, 223, 0.9);
+  border-radius: 10px;
+}
+
+.workout-mode-summary li strong {
+  color: var(--primary-2);
+  font-size: 0.82rem;
 }
 
 .exercise-form {
@@ -2826,6 +2922,16 @@ body.has-calendar-dialog {
 }
 
 @media (max-width: 768px) {
+  .workout-mode-entry__inputs,
+  .workout-mode-set-row {
+    grid-template-columns: 1fr;
+  }
+
+  .workout-mode-entry__inputs .button,
+  .set-delete-btn {
+    width: 100%;
+  }
+
   .exercise-set-row {
     grid-template-columns: 1fr 1fr;
   }
