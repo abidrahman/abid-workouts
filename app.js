@@ -3383,6 +3383,11 @@ hydrateFromFirestore();
 // ─────────────────────────────────────────────────────────────────────────────
 
 let activeFilter = "all";
+const defaultCalendarUiState = Object.freeze({
+  categoryFilter: "all",
+  statusFilter: "all",
+  view: "compact",
+});
 let calendarUiState = loadCalendarUiState();
 let tracking = loadTracking();
 let calendarTracking = loadCalendarTracking();
@@ -3454,27 +3459,21 @@ function saveCalendarReschedules() {
 }
 
 function loadCalendarUiState() {
-  const defaults = {
-    categoryFilter: "all",
-    statusFilter: "all",
-    view: "compact",
-  };
-
   try {
     const raw = window.localStorage.getItem(CALENDAR_UI_STORAGE_KEY);
     const saved = raw ? JSON.parse(raw) : {};
     return {
       categoryFilter: calendarCategoryFilters.includes(saved.categoryFilter)
         ? saved.categoryFilter
-        : defaults.categoryFilter,
+        : defaultCalendarUiState.categoryFilter,
       statusFilter: calendarStatusFilters.includes(saved.statusFilter)
         ? saved.statusFilter
-        : defaults.statusFilter,
-      view: calendarViewModes.includes(saved.view) ? saved.view : defaults.view,
+        : defaultCalendarUiState.statusFilter,
+      view: calendarViewModes.includes(saved.view) ? saved.view : defaultCalendarUiState.view,
     };
   } catch (error) {
     console.warn("Could not load calendar UI state", error);
-    return defaults;
+    return defaultCalendarUiState;
   }
 }
 
@@ -3994,6 +3993,22 @@ function setCalendarUiState(nextState) {
   calendarUiState = { ...calendarUiState, ...nextState };
   saveCalendarUiState();
   renderCalendar();
+}
+
+function recoverCalendarFiltersIfEverythingHidden() {
+  const totalSessions = getAllCalendarSessions().length;
+  if (!totalSessions || getVisibleCalendarSessionCount() > 0) return;
+
+  const hasRestrictiveFilter = calendarUiState.categoryFilter !== "all" || calendarUiState.statusFilter !== "all";
+  if (!hasRestrictiveFilter) return;
+
+  calendarUiState = {
+    ...calendarUiState,
+    categoryFilter: defaultCalendarUiState.categoryFilter,
+    statusFilter: defaultCalendarUiState.statusFilter,
+  };
+  saveCalendarUiState();
+  showToast("Calendar filters were reset so workouts are visible.");
 }
 
 function renderCalendarControls() {
@@ -4725,6 +4740,165 @@ function renderCalendarDetailBlocks(blocks) {
   `;
 }
 
+const strengthExerciseAliases = [
+  { regex: /\bweighted pull-?ups?\b/i, name: "Weighted pull-up" },
+  { regex: /\bpull-?ups?\b/i, name: "Pull-up" },
+  { regex: /\blat pulldowns?\b/i, name: "Lat pulldown" },
+  { regex: /\b(barbell|dumbbell|cable|seated)\s+rows?\b/i, name: "Row" },
+  { regex: /\brows?\b/i, name: "Row" },
+  { regex: /\bface pulls?\b/i, name: "Face pull" },
+  { regex: /\bhammer curls?\b/i, name: "Hammer curl" },
+  { regex: /\bcurls?\b/i, name: "Biceps curl" },
+  { regex: /\brdl\b|\bromanian deadlifts?\b/i, name: "Romanian deadlift" },
+  { regex: /\bdeadlifts?\b/i, name: "Deadlift" },
+  { regex: /\bhip thrusts?\b/i, name: "Hip thrust" },
+  { regex: /\bhamstring curls?\b/i, name: "Hamstring curl" },
+  { regex: /\b(back extension|hyperextension)s?\b/i, name: "Back extension" },
+  { regex: /\bbulgarian split squats?\b/i, name: "Bulgarian split squat" },
+  { regex: /\bsplit squats?\b/i, name: "Split squat" },
+  { regex: /\bgoblet squats?\b/i, name: "Goblet squat" },
+  { regex: /\bcalf raises?\b/i, name: "Calf raise" },
+  { regex: /\btibialis raises?\b/i, name: "Tibialis raise" },
+  { regex: /\bplanks?\b/i, name: "Plank" },
+  { regex: /\bdead bugs?\b/i, name: "Dead bug" },
+  { regex: /\bpallof press(?:es)?\b/i, name: "Pallof press" },
+  { regex: /\bscapular pulls?\b/i, name: "Scapular pull-up" },
+];
+
+const strengthExerciseTemplates = [
+  {
+    matcher: /\bpull|biceps|row|pull-?up|lat|scap/i,
+    exercises: [
+      "Weighted pull-up",
+      "Pull-up",
+      "Row",
+      "Lat pulldown",
+      "Face pull",
+      "Biceps curl",
+      "Hammer curl",
+    ],
+  },
+  {
+    matcher: /\brdl|hinge|hamstring|posterior|deadlift|glute/i,
+    exercises: [
+      "Romanian deadlift",
+      "Hip thrust",
+      "Hamstring curl",
+      "Back extension",
+      "Calf raise",
+      "Tibialis raise",
+      "Plank",
+    ],
+  },
+  {
+    matcher: /\bbulgarian|split squat|quad/i,
+    exercises: [
+      "Bulgarian split squat",
+      "Split squat",
+      "Goblet squat",
+      "Calf raise",
+      "Tibialis raise",
+      "Plank",
+    ],
+  },
+  {
+    matcher: /\bcore|abs|primer|mobility|recovery/i,
+    exercises: ["Dead bug", "Plank", "Pallof press", "Scapular pull-up"],
+  },
+];
+
+function normalizeExerciseName(name) {
+  return String(name ?? "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function toExerciseKey(name) {
+  return normalizeExerciseName(name)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function addExerciseOption(optionMap, name, source = "") {
+  const normalizedName = normalizeExerciseName(name);
+  if (!normalizedName) return;
+  const key = toExerciseKey(normalizedName);
+  if (!key) return;
+  if (!optionMap.has(key)) {
+    optionMap.set(key, { key, name: normalizedName, source });
+  }
+}
+
+function parseStrengthExercisesFromBlocks(blocks = []) {
+  const optionMap = new Map();
+  const ignorePrefixes = new Set([
+    "warm-up",
+    "warm up",
+    "main lift",
+    "main block",
+    "main set",
+    "accessory",
+    "support",
+    "finish",
+    "cooldown",
+    "cool-down",
+    "progression cue",
+    "pre-swim shoulder prep",
+    "lower leg",
+  ]);
+
+  blocks.forEach((block) => {
+    block.items.forEach((item) => {
+      const line = String(item ?? "").trim();
+      if (!line) return;
+
+      const headingMatch = line.match(/^([^:]+):/);
+      if (headingMatch) {
+        const heading = normalizeExerciseName(headingMatch[1]);
+        if (heading && !ignorePrefixes.has(heading.toLowerCase())) {
+          addExerciseOption(optionMap, heading, "block-heading");
+        }
+      }
+
+      strengthExerciseAliases.forEach((alias) => {
+        if (alias.regex.test(line)) addExerciseOption(optionMap, alias.name, "block-item");
+      });
+    });
+  });
+
+  return [...optionMap.values()];
+}
+
+function getStrengthExerciseOptions(day, session) {
+  const text = `${session.title ?? ""} ${session.note ?? ""}`;
+  const detailedWorkout = getDetailedWorkoutForDate(day.dateKey);
+  const workoutBlocks = getWorkoutSpecificBlocks(detailedWorkout, session, day);
+  const detailBlocks = getSessionDetailBlocks(session, workoutBlocks);
+  const parsedOptions = parseStrengthExercisesFromBlocks(detailBlocks);
+  const optionMap = new Map(parsedOptions.map((option) => [option.key, option]));
+
+  strengthExerciseTemplates.forEach((template) => {
+    if (template.matcher.test(text)) {
+      template.exercises.forEach((exerciseName) => addExerciseOption(optionMap, exerciseName, "template"));
+    }
+  });
+
+  if (!optionMap.size) {
+    ["Primary strength set", "Accessory set", "Core set"].forEach((exerciseName) =>
+      addExerciseOption(optionMap, exerciseName, "fallback"),
+    );
+  }
+
+  return [...optionMap.values()];
+}
+
+function getExerciseNameFromOptions(workout, exerciseKey) {
+  const match = workout?.availableExercises?.find((exercise) => exercise.key === exerciseKey);
+  if (match?.name) return match.name;
+  return exerciseKey.replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
 function getCalendarJumpTargetDateKey() {
   const todayKey = dateToKey(new Date());
   if (getCalendarDayByDateKey(todayKey)) return todayKey;
@@ -5101,6 +5275,7 @@ function renderCalendarSessionDetail(sessionId) {
   const workoutSpecificIntro = session.note || "Use this as the source of truth for today's execution.";
   const linkedActivity = getLinkedActivityForSession(session.id);
   const availableActivitiesForLink = !completed && !linkedActivity ? getAvailableActivitiesForSession(session) : [];
+  const isStrengthSession = session.categories.includes("strength");
 
   contentEl.innerHTML = `
     <p class="eyebrow">${escapeHtml(formatCalendarDate(day))}</p>
@@ -5121,6 +5296,24 @@ function renderCalendarSessionDetail(sessionId) {
       />
       <span>${completed ? "Completed" : "Mark this workout complete"}</span>
     </label>
+
+    ${
+      isStrengthSession
+        ? `
+          <section class="calendar-detail__section calendar-detail__workout-mode">
+            <h4>Workout mode</h4>
+            <p>Track this strength session one set at a time with exercise-specific logging.</p>
+            <button
+              class="button button--primary"
+              type="button"
+              data-strength-workout-start="${escapeHtml(session.id)}"
+            >
+              Start Workout
+            </button>
+          </section>
+        `
+        : ""
+    }
 
     ${
       !completed && !linkedActivity
@@ -5973,6 +6166,8 @@ const StrengthWorkoutManager = {
   currentSessionId: null,
   currentDateKey: null,
   currentLogKey: null,
+  selectedExerciseKey: "",
+  pendingSetInput: { weight: "", reps: "" },
   workoutLogs: {},
 
   init() {
@@ -5982,7 +6177,11 @@ const StrengthWorkoutManager = {
 
   loadLogsFromLocalStorage() {
     const stored = localStorage.getItem("strengthLogs");
-    this.workoutLogs = stored ? JSON.parse(stored) : {};
+    try {
+      this.workoutLogs = stored ? JSON.parse(stored) : {};
+    } catch {
+      this.workoutLogs = {};
+    }
   },
 
   saveLogsToLocalStorage() {
@@ -6004,6 +6203,12 @@ const StrengthWorkoutManager = {
     }
 
     const { day, session } = context;
+    if (!session.categories.includes("strength")) {
+      showToast("Workout mode is available for strength workouts.");
+      return;
+    }
+
+    const availableExercises = getStrengthExerciseOptions(day, session);
     this.currentSessionId = sessionId;
     this.currentDateKey = day.dateKey;
     this.currentWorkout = {
@@ -6011,245 +6216,258 @@ const StrengthWorkoutManager = {
       title: session.title,
       date: day.dateKey,
       dateDisplay: formatCalendarDate(day),
+      availableExercises,
       exerciseLogs: {},
       timestamp: Date.now(),
     };
+    this.selectedExerciseKey = availableExercises[0]?.key ?? "";
+    this.setPendingSetFromLastSet();
 
     this.renderWorkoutModal();
     this.openWorkoutModal();
   },
 
   renderWorkoutModal() {
-    const modal = document.querySelector("#strength-workout-modal");
     const titleEl = document.querySelector("#strength-workout-title");
     const dateEl = document.querySelector("#strength-workout-date");
     const exerciseListEl = document.querySelector("#strength-exercise-list");
+    if (!exerciseListEl || !this.currentWorkout) return;
 
     if (titleEl) titleEl.textContent = this.currentWorkout.title;
     if (dateEl) dateEl.textContent = this.currentWorkout.dateDisplay;
 
-    const sessionId = this.currentSessionId;
-    const context = getCalendarSessionContext(sessionId);
-    if (!context || !context.session.categories.includes("strength")) {
+    const exercises = this.currentWorkout.availableExercises ?? [];
+    if (!exercises.length) {
       exerciseListEl.innerHTML = "<p>No exercises found for this workout.</p>";
       return;
     }
 
-    const detailedWorkout = getDetailedWorkoutForDate(context.day.dateKey);
-    if (!detailedWorkout) {
-      exerciseListEl.innerHTML = "<p>No detailed workout found.</p>";
-      return;
+    if (!this.selectedExerciseKey || !exercises.some((exercise) => exercise.key === this.selectedExerciseKey)) {
+      this.selectedExerciseKey = exercises[0].key;
+      this.setPendingSetFromLastSet();
     }
 
-    const exercises = this.extractExercisesFromWorkout(detailedWorkout, context.session);
-    exerciseListEl.innerHTML = exercises
-      .map((exercise, idx) => this.renderExerciseForm(exercise, idx))
+    const selectedExercise = exercises.find((exercise) => exercise.key === this.selectedExerciseKey);
+    const selectedExerciseSets = this.currentWorkout.exerciseLogs[this.selectedExerciseKey] ?? [];
+    const logSummary = exercises
+      .map((exercise) => {
+        const count = this.currentWorkout.exerciseLogs[exercise.key]?.length ?? 0;
+        return `
+          <li>
+            <span>${escapeHtml(exercise.name)}</span>
+            <strong>${count} set${count === 1 ? "" : "s"}</strong>
+          </li>
+        `;
+      })
       .join("");
 
-    // Attach event listeners for add-set buttons
-    exerciseListEl.querySelectorAll(".add-set-btn").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const exerciseKey = btn.dataset.exerciseKey;
-        this.addSet(exerciseKey);
-      });
-    });
-
-    // Attach event listeners for delete buttons
-    exerciseListEl.querySelectorAll(".set-delete-btn").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const exerciseKey = btn.dataset.exerciseKey;
-        const setIndex = parseInt(btn.dataset.setIndex);
-        this.deleteSet(exerciseKey, setIndex);
-      });
-    });
-
-    // Attach input listeners for auto-save
-    exerciseListEl.querySelectorAll("input, textarea").forEach((input) => {
-      input.addEventListener("change", () => this.autoSaveForm());
-      input.addEventListener("blur", () => this.autoSaveForm());
-    });
-  },
-
-  extractExercisesFromWorkout(workout, session) {
-    const relevantBlocks = workout.blocks.filter((block) => {
-      const blockTitle = block.title.toLowerCase();
-      const blockText = `${block.title} ${block.items.join(" ")}`.toLowerCase();
-      const categoryKeywords = session.categories.flatMap((cat) => getBlockCategoryKeywords(cat));
-      return categoryKeywords.some((keyword) => blockTitle.includes(keyword) || blockText.includes(keyword));
-    });
-
-    const exercises = [];
-    relevantBlocks.forEach((block) => {
-      block.items.forEach((item) => {
-        const match = item.match(/^([^:]+):/);
-        if (match) {
-          const exerciseName = match[1].trim();
-          const exerciseKey = exerciseName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-          if (!exercises.find((e) => e.key === exerciseKey)) {
-            exercises.push({
-              key: exerciseKey,
-              name: exerciseName,
-              description: item,
-            });
-          }
-        }
-      });
-    });
-
-    return exercises.length > 0
-      ? exercises
-      : [
-          {
-            key: "exercise-1",
-            name: "Exercise 1",
-            description: session.title,
-          },
-          {
-            key: "exercise-2",
-            name: "Exercise 2",
-            description: "Additional exercise",
-          },
-        ];
-  },
-
-  renderExerciseForm(exercise, idx) {
-    const sets = this.currentWorkout.exerciseLogs[exercise.key] || [{ weight: "", reps: "", rpe: "", notes: "" }];
-    const exerciseKey = exercise.key;
-
-    return `
-      <div class="exercise-form">
-        <h3 class="exercise-form-title">${escapeHtml(exercise.name)}</h3>
-        <p style="color: var(--muted); font-size: 0.9rem; margin: 0 0 0.8rem;">${escapeHtml(exercise.description)}</p>
-        
-        <div class="exercise-sets">
-          ${sets
-            .map(
-              (set, setIdx) => `
-                <div style="border-bottom: 1px solid rgba(220, 230, 223, 0.5); padding-bottom: 0.8rem; margin-bottom: 0.8rem;">
-                  <div class="exercise-set-row">
-                    <div class="set-inputs">
-                      <label>Weight/Load</label>
-                      <input 
-                        type="text" 
-                        placeholder="e.g., 185 lb or BW" 
-                        value="${escapeHtml(set.weight)}"
-                        data-exercise-key="${exerciseKey}"
-                        data-set-index="${setIdx}"
-                        data-field="weight"
-                        class="weight-input"
-                      />
-                    </div>
-                    <div class="set-inputs">
-                      <label>Reps/Time</label>
-                      <input 
-                        type="text" 
-                        placeholder="e.g., 6 or 90 sec" 
-                        value="${escapeHtml(set.reps)}"
-                        data-exercise-key="${exerciseKey}"
-                        data-set-index="${setIdx}"
-                        data-field="reps"
-                        class="reps-input"
-                      />
-                    </div>
-                    <div class="set-inputs">
-                      <label>RPE (1-10)</label>
-                      <input 
-                        type="number" 
-                        min="1" 
-                        max="10" 
-                        placeholder="7" 
-                        value="${set.rpe}"
-                        data-exercise-key="${exerciseKey}"
-                        data-set-index="${setIdx}"
-                        data-field="rpe"
-                        class="rpe-input"
-                      />
-                    </div>
-                    ${setIdx > 0 ? `
-                      <button 
-                        type="button" 
-                        class="set-delete-btn" 
-                        data-exercise-key="${exerciseKey}"
-                        data-set-index="${setIdx}"
-                      >
-                        Delete
-                      </button>
-                    ` : '<div></div>'}
-                  </div>
-                  <div class="exercise-notes" style="margin-top: 0.5rem;">
-                    <label style="display: block; font-size: 0.75rem; margin-bottom: 0.3rem;">Notes (Set ${setIdx + 1})</label>
-                    <textarea 
-                      placeholder="How did this set feel?"
-                      data-exercise-key="${exerciseKey}"
-                      data-set-index="${setIdx}"
-                      data-field="notes"
-                      class="notes-input"
-                      style="min-height: 50px;"
-                    >${escapeHtml(set.notes || "")}</textarea>
-                  </div>
-                </div>
-              `,
-            )
-            .join("")}
+    exerciseListEl.innerHTML = `
+      <section class="workout-mode-toolbar">
+        <div class="field">
+          <label for="strength-exercise-select">Exercise</label>
+          <select id="strength-exercise-select" data-strength-exercise-select>
+            ${exercises
+              .map(
+                (exercise) => `
+                  <option value="${escapeHtml(exercise.key)}" ${exercise.key === this.selectedExerciseKey ? "selected" : ""}>
+                    ${escapeHtml(exercise.name)}
+                  </option>
+                `,
+              )
+              .join("")}
+          </select>
         </div>
+      </section>
 
-        <button 
-          type="button" 
-          class="add-set-btn" 
-          data-exercise-key="${exerciseKey}"
-        >
-          + Add Set
-        </button>
-      </div>
+      <section class="workout-mode-entry">
+        <h3>${escapeHtml(selectedExercise?.name ?? "Exercise")}</h3>
+        <div class="workout-mode-entry__inputs">
+          <div class="field">
+            <label for="strength-set-weight">Weight</label>
+            <input
+              id="strength-set-weight"
+              type="text"
+              placeholder="e.g., 185 lb"
+              value="${escapeHtml(this.pendingSetInput.weight)}"
+              data-strength-pending-field="weight"
+            />
+          </div>
+          <div class="field">
+            <label for="strength-set-reps">Reps</label>
+            <input
+              id="strength-set-reps"
+              type="text"
+              placeholder="e.g., 8"
+              value="${escapeHtml(this.pendingSetInput.reps)}"
+              data-strength-pending-field="reps"
+            />
+          </div>
+          <button type="button" class="button button--primary" data-strength-log-set>
+            Log Set
+          </button>
+        </div>
+      </section>
+
+      <section class="workout-mode-sets">
+        <h3>Logged sets for ${escapeHtml(selectedExercise?.name ?? "exercise")}</h3>
+        ${
+          selectedExerciseSets.length
+            ? `
+              <div class="workout-mode-set-list">
+                ${selectedExerciseSets
+                  .map(
+                    (set, setIndex) => `
+                      <div class="workout-mode-set-row">
+                        <strong>Set ${setIndex + 1}</strong>
+                        <input
+                          type="text"
+                          value="${escapeHtml(set.weight)}"
+                          placeholder="Weight"
+                          data-strength-set-field="weight"
+                          data-exercise-key="${escapeHtml(this.selectedExerciseKey)}"
+                          data-set-index="${setIndex}"
+                        />
+                        <input
+                          type="text"
+                          value="${escapeHtml(set.reps)}"
+                          placeholder="Reps"
+                          data-strength-set-field="reps"
+                          data-exercise-key="${escapeHtml(this.selectedExerciseKey)}"
+                          data-set-index="${setIndex}"
+                        />
+                        <button
+                          type="button"
+                          class="set-delete-btn"
+                          data-strength-delete-set
+                          data-exercise-key="${escapeHtml(this.selectedExerciseKey)}"
+                          data-set-index="${setIndex}"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    `,
+                  )
+                  .join("")}
+              </div>
+            `
+            : '<p class="small-note">No sets logged yet for this exercise.</p>'
+        }
+      </section>
+
+      <section class="workout-mode-summary">
+        <h3>Workout progress</h3>
+        <ul>${logSummary}</ul>
+      </section>
     `;
-  },
 
-  autoSaveForm() {
-    const exerciseListEl = document.querySelector("#strength-exercise-list");
-    if (!exerciseListEl) return;
-
-    const inputs = exerciseListEl.querySelectorAll("input, textarea");
-    inputs.forEach((input) => {
-      const exerciseKey = input.dataset.exerciseKey;
-      const setIndex = parseInt(input.dataset.setIndex) || 0;
-      const field = input.dataset.field;
-
-      if (!this.currentWorkout.exerciseLogs[exerciseKey]) {
-        this.currentWorkout.exerciseLogs[exerciseKey] = [];
-      }
-
-      if (!this.currentWorkout.exerciseLogs[exerciseKey][setIndex]) {
-        this.currentWorkout.exerciseLogs[exerciseKey][setIndex] = { weight: "", reps: "", rpe: "", notes: "" };
-      }
-
-      this.currentWorkout.exerciseLogs[exerciseKey][setIndex][field] = input.value;
+    exerciseListEl.querySelector("[data-strength-exercise-select]")?.addEventListener("change", (event) => {
+      this.selectExercise(event.target.value);
     });
 
-    this.saveLogsToLocalStorage();
+    exerciseListEl.querySelectorAll("[data-strength-pending-field]").forEach((input) => {
+      input.addEventListener("input", () => this.updatePendingField(input.dataset.strengthPendingField, input.value));
+    });
+
+    exerciseListEl.querySelector("[data-strength-log-set]")?.addEventListener("click", () => this.logSetForSelectedExercise());
+
+    exerciseListEl.querySelectorAll("[data-strength-set-field]").forEach((input) => {
+      input.addEventListener("change", () => {
+        const setIndex = Number.parseInt(input.dataset.setIndex, 10);
+        const exerciseKey = input.dataset.exerciseKey;
+        const field = input.dataset.strengthSetField;
+        this.updateLoggedSetField(exerciseKey, setIndex, field, input.value);
+      });
+    });
+
+    exerciseListEl.querySelectorAll("[data-strength-delete-set]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const setIndex = Number.parseInt(btn.dataset.setIndex, 10);
+        this.deleteSet(btn.dataset.exerciseKey, setIndex);
+      });
+    });
   },
 
-  addSet(exerciseKey) {
-    if (!this.currentWorkout.exerciseLogs[exerciseKey]) {
-      this.currentWorkout.exerciseLogs[exerciseKey] = [];
-    }
-    this.currentWorkout.exerciseLogs[exerciseKey].push({ weight: "", reps: "", rpe: "", notes: "" });
+  selectExercise(exerciseKey) {
+    this.selectedExerciseKey = exerciseKey;
+    this.setPendingSetFromLastSet();
     this.renderWorkoutModal();
   },
 
-  deleteSet(exerciseKey, setIndex) {
-    if (this.currentWorkout.exerciseLogs[exerciseKey]) {
-      this.currentWorkout.exerciseLogs[exerciseKey].splice(setIndex, 1);
-      this.renderWorkoutModal();
+  updatePendingField(field, value) {
+    if (!["weight", "reps"].includes(field)) return;
+    this.pendingSetInput[field] = value;
+  },
+
+  setPendingSetFromLastSet() {
+    const sets = this.currentWorkout?.exerciseLogs?.[this.selectedExerciseKey] ?? [];
+    const lastSet = sets[sets.length - 1];
+    this.pendingSetInput = {
+      weight: lastSet?.weight ?? "",
+      reps: lastSet?.reps ?? "",
+    };
+  },
+
+  ensureExerciseSetList(exerciseKey) {
+    if (!this.currentWorkout.exerciseLogs[exerciseKey]) {
+      this.currentWorkout.exerciseLogs[exerciseKey] = [];
     }
+    return this.currentWorkout.exerciseLogs[exerciseKey];
+  },
+
+  logSetForSelectedExercise() {
+    if (!this.currentWorkout || !this.selectedExerciseKey) {
+      showToast("Select an exercise first.");
+      return;
+    }
+
+    const weight = this.pendingSetInput.weight.trim();
+    const reps = this.pendingSetInput.reps.trim();
+    if (!weight || !reps) {
+      showToast("Enter both weight and reps before logging a set.");
+      return;
+    }
+
+    const sets = this.ensureExerciseSetList(this.selectedExerciseKey);
+    sets.push({ weight, reps });
+    this.setPendingSetFromLastSet();
+    this.saveLogsToLocalStorage();
+    this.renderWorkoutModal();
+  },
+
+  updateLoggedSetField(exerciseKey, setIndex, field, value) {
+    if (!exerciseKey || !["weight", "reps"].includes(field)) return;
+    const sets = this.ensureExerciseSetList(exerciseKey);
+    if (!sets[setIndex]) return;
+    sets[setIndex][field] = value.trim();
+    this.saveLogsToLocalStorage();
+  },
+
+  deleteSet(exerciseKey, setIndex) {
+    const sets = this.currentWorkout?.exerciseLogs?.[exerciseKey];
+    if (!sets || !sets[setIndex]) return;
+
+    sets.splice(setIndex, 1);
+    if (!sets.length) delete this.currentWorkout.exerciseLogs[exerciseKey];
+    this.setPendingSetFromLastSet();
+    this.saveLogsToLocalStorage();
+    this.renderWorkoutModal();
   },
 
   finishWorkout() {
-    this.autoSaveForm();
+    if (!this.currentWorkout) return;
+    const totalSets = Object.values(this.currentWorkout.exerciseLogs).reduce(
+      (count, sets) => count + sets.length,
+      0,
+    );
+    if (!totalSets) {
+      showToast("Log at least one set before finishing.");
+      return;
+    }
 
     const workout = this.currentWorkout;
     const logKey = `${workout.date}-${workout.workoutId}`;
     this.workoutLogs[logKey] = {
-      ...workout,
+      ...JSON.parse(JSON.stringify(workout)),
       timestamp: Date.now(),
       syncedToBackend: false,
       syncedAt: null,
@@ -6276,12 +6494,10 @@ const StrengthWorkoutManager = {
 
     const exercisesHtml = Object.entries(log.exerciseLogs)
       .map(([key, sets]) => {
-        const exerciseName = key.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+        const exerciseName = getExerciseNameFromOptions(log, key);
         const setsHtml = sets
           .map((set) => {
-            let display = `${set.weight} × ${set.reps}`;
-            if (set.rpe) display += ` @ RPE ${set.rpe}`;
-            if (set.notes) display += ` - ${set.notes}`;
+            const display = `${set.weight} × ${set.reps}`;
             return `<div class="summary-exercise-set">${escapeHtml(display)}</div>`;
           })
           .join("");
@@ -6311,6 +6527,8 @@ const StrengthWorkoutManager = {
       ...log,
       timestamp: Date.now(),
     };
+    this.selectedExerciseKey = Object.keys(log.exerciseLogs ?? {})[0] ?? log.availableExercises?.[0]?.key ?? "";
+    this.setPendingSetFromLastSet();
 
     this.renderWorkoutModal();
     this.openWorkoutModal();
@@ -6437,6 +6655,7 @@ function initAuth() {
 }
 
 function init() {
+  recoverCalendarFiltersIfEverythingHidden();
   renderCalendar();
   renderTrackingSummary();
   attachCalendarEvents();
