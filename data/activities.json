@@ -1,5 +1,14 @@
 [
   {
+    "id": "19275856773",
+    "name": "Afternoon Ride",
+    "type": "Ride",
+    "startTime": "2026-07-11T17:37:55Z",
+    "duration": 423,
+    "distance": 1843.5,
+    "elevationGain": 3
+  },
+  {
     "id": "19262908921",
     "name": "Evening Pilates",
     "type": "Workout",
@@ -1787,15 +1796,6 @@
     "type": "WeightTraining",
     "startTime": "2026-03-16T10:36:35Z",
     "duration": 2062,
-    "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "17736338469",
-    "name": "Lunch Ride",
-    "type": "Ride",
-    "startTime": "2026-03-15T11:41:50Z",
-    "duration": 7043,
     "distance": 0,
     "elevationGain": 0
   }
