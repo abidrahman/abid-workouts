@@ -1,5 +1,14 @@
 [
   {
+    "id": "19288636607",
+    "name": "Morning Hike",
+    "type": "Hike",
+    "startTime": "2026-07-12T09:29:43Z",
+    "duration": 18163,
+    "distance": 15686,
+    "elevationGain": 1054
+  },
+  {
     "id": "19275856773",
     "name": "Afternoon Ride",
     "type": "Ride",
@@ -1787,15 +1796,6 @@
     "type": "Ride",
     "startTime": "2026-03-16T11:13:17Z",
     "duration": 2526,
-    "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "17744900635",
-    "name": "Morning Weight Training",
-    "type": "WeightTraining",
-    "startTime": "2026-03-16T10:36:35Z",
-    "duration": 2062,
     "distance": 0,
     "elevationGain": 0
   }
