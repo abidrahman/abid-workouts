@@ -199,6 +199,32 @@ export async function loadAllUserData() {
   return { activityMatches, extraWorkouts };
 }
 
+// ── Sync Meta (seed-once coordination) ────────────────────────────────────────
+
+/**
+ * Read the sync-meta doc that records whether the shared cloud tree has been
+ * seeded yet. Returns { ok } so callers can distinguish "confirmed absent"
+ * (ok:true, exists:false) from "couldn't read" (ok:false) — important so an
+ * offline/failed read never causes a device to wrongly re-seed and clobber cloud.
+ */
+export async function loadSyncMeta() {
+  try {
+    const snap = await getDoc(userDoc('meta', 'sync'));
+    return { ok: true, exists: snap.exists(), data: snap.exists() ? snap.data() : null };
+  } catch (e) {
+    console.error('[Firebase] loadSyncMeta:', e);
+    return { ok: false, exists: false, data: null };
+  }
+}
+
+/** Mark the shared cloud tree as seeded so every other device switches to pull-only. */
+export async function markSeeded(info = {}) {
+  try {
+    await setDoc(userDoc('meta', 'sync'), { seeded: true, seededAt: serverTimestamp(), ...info }, { merge: true });
+    return { success: true };
+  } catch (e) { console.error('[Firebase] markSeeded:', e); return { success: false }; }
+}
+
 // ── Startup Sync ──────────────────────────────────────────────────────────────
 
 /**
@@ -239,5 +265,6 @@ export default {
   saveActivityMatch, loadActivityMatches, removeActivityMatch,
   saveExtraWorkout, loadExtraWorkouts, removeExtraWorkout,
   saveStrengthLogs, loadStrengthLogs,
+  loadSyncMeta, markSeeded,
   loadAllUserData, shutdown, getDebugInfo, clearSyncQueue
 };

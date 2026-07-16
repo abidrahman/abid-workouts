@@ -3314,71 +3314,136 @@ const tabAliases = {
 // ── Firebase / cross-device sync ──────────────────────────────────────────────
 import * as api from './app-api.js';
 
-// Stable per-user ID — survives page reloads, shared across devices via Firestore
+// Single-user personal app: every device shares ONE Firestore document tree, which
+// is the source of truth for cross-device sync. The id MUST be identical on every
+// device, so it is a fixed constant — NOT a per-device random value. (A random
+// per-device id was the reason changes on mobile never showed up on the laptop:
+// each device wrote to its own users/{id}/... tree.)
 const APP_USER_ID_KEY = 'abid-workouts-user-id';
-let _userId = localStorage.getItem(APP_USER_ID_KEY);
-if (!_userId) {
-  _userId = 'user-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
-  localStorage.setItem(APP_USER_ID_KEY, _userId);
-}
+const SHARED_USER_ID = 'abid-primary';
+// Stable Firestore document id under which the full-state blobs (workout tracking,
+// calendar tracking, strength logs) are stored. A single fixed doc keeps reads
+// deterministic across days and devices instead of scattering blobs under per-day
+// date keys.
+const SYNC_DOC_KEY = 'current';
+const _userId = SHARED_USER_ID;
+// Mirror to localStorage for reference/debugging, overriding any legacy per-device id.
+try { localStorage.setItem(APP_USER_ID_KEY, _userId); } catch { /* ignore */ }
 api.initializeAPI(_userId);
 
-// On first load pull cloud data and merge it in (runs asynchronously, won't block render)
-async function hydrateFromFirestore() {
+// ── Startup sync: seed once, then pull-only ───────────────────────────────────
+// Model (no merge conflicts, single source of truth):
+//   • The FIRST device opened after this ships finds an un-seeded cloud tree and
+//     PUSHES its local data up, then marks the tree seeded.
+//   • Every device after that finds a seeded tree and PULLS cloud down, REPLACING
+//     its local copy. It never merges its own local state up on load, so there is
+//     nothing to conflict-resolve. (Ongoing edits still sync normally afterward.)
+// Runs asynchronously so it never blocks the initial render.
+
+async function seedCloudFromLocal() {
+  const localTracking = loadTracking();
+  const localCalendar = loadCalendarTracking();
+  const localReschedules = loadCalendarReschedules();
+  const localUi = loadCalendarUiState();
+  const localMatches = loadManualActivityMatches();
+  const localExtras = loadExtraWorkouts();
+  let localStrength = {};
+  try { localStrength = JSON.parse(localStorage.getItem('strengthLogs')) || {}; } catch { localStrength = {}; }
+
+  const ops = [
+    api.saveTracking(SYNC_DOC_KEY, localTracking),
+    api.saveCalendarTracking(SYNC_DOC_KEY, localCalendar),
+    api.saveStrengthLogs(SYNC_DOC_KEY, localStrength),
+    api.saveCalendarReschedules(localReschedules),
+    api.saveCalendarUiState(localUi),
+  ];
+  for (const [activityId, data] of Object.entries(localMatches)) {
+    ops.push(api.saveActivityMatch(activityId, data.sessionId || data.workoutId, data));
+  }
+  for (const [activityId, data] of Object.entries(localExtras)) {
+    ops.push(api.saveExtraWorkout(activityId, data));
+  }
+  await Promise.all(ops);
+  console.log('[Sync] Seeded Firestore from this device — it is now the source of truth.');
+}
+
+async function pullCloudReplaceLocal() {
+  const [bulk, reschedulesCloud, trackingCloud, calendarTrackingCloud, strengthLogsCloud, uiStateCloud] =
+    await Promise.all([
+      api.loadAllUserData(),
+      api.loadCalendarReschedules(),
+      api.loadTracking(SYNC_DOC_KEY),
+      api.loadCalendarTracking(SYNC_DOC_KEY),
+      api.loadStrengthLogs(SYNC_DOC_KEY),
+      api.loadCalendarUiState(),
+    ]);
+  const { activityMatches = {}, extraWorkouts = {} } = bulk || {};
+
+  // Replace manual activity matches + extra workouts (cloud is authoritative)
+  window.localStorage.setItem(MANUAL_MATCH_STORAGE_KEY, JSON.stringify(activityMatches || {}));
+  window.localStorage.setItem(EXTRA_WORKOUTS_STORAGE_KEY, JSON.stringify(extraWorkouts || {}));
+
+  // Replace calendar reschedules
+  calendarReschedules = reschedulesCloud || {};
+  window.localStorage.setItem(CALENDAR_RESCHEDULE_STORAGE_KEY, JSON.stringify(calendarReschedules));
+
+  // Replace daily workout tracking (stored as the `sessions` blob)
+  tracking = (trackingCloud && trackingCloud.sessions) || {};
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tracking));
+
+  // Replace calendar tracking (strip sync metadata fields)
+  let cloudCalendar = {};
+  if (calendarTrackingCloud && Object.keys(calendarTrackingCloud).length) {
+    const { updatedAt, date, ...rest } = calendarTrackingCloud;
+    cloudCalendar = rest;
+  }
+  calendarTracking = cloudCalendar;
+  window.localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(calendarTracking));
+
+  // Replace calendar UI state (reuse local validation)
+  if (uiStateCloud && Object.keys(uiStateCloud).length) {
+    const { updatedAt, ...cloudUi } = uiStateCloud;
+    window.localStorage.setItem(CALENDAR_UI_STORAGE_KEY, JSON.stringify(cloudUi));
+    calendarUiState = loadCalendarUiState();
+  }
+
+  // Replace strength logs
+  const cloudStrength = strengthLogsCloud || {};
+  localStorage.setItem('strengthLogs', JSON.stringify(cloudStrength));
+  if (typeof StrengthWorkoutManager !== 'undefined' && StrengthWorkoutManager) {
+    StrengthWorkoutManager.workoutLogs = cloudStrength;
+  }
+
+  // Re-render so pulled data shows up without a manual reload
+  calendarDays = buildCalendarDays();
+  renderCalendar();
+  renderTrackingSummary();
+  renderActivityMatchQueue();
+  if (isMatchingTabActive()) renderMatchingTab();
+  console.log('[Sync] Pulled Firestore state and replaced local (cloud is source of truth).');
+}
+
+async function initSync() {
   try {
-    const { activityMatches, extraWorkouts } = await api.loadAllUserData();
-    const calendarReschedulesCloud = await api.loadCalendarReschedules();
-    const todayDateKey = new Date().toISOString().slice(0, 10);
-    const calendarTrackingCloud = await api.loadCalendarTracking(todayDateKey);
-    
-    let changed = false;
-    
-    // Merge cloud activity matches into localStorage (cloud wins for new keys)
-    if (activityMatches && Object.keys(activityMatches).length) {
-      const local = loadManualActivityMatches();
-      const merged = { ...local, ...activityMatches };
-      window.localStorage.setItem(MANUAL_MATCH_STORAGE_KEY, JSON.stringify(merged));
-      changed = true;
+    const meta = await api.loadSyncMeta();
+    if (!meta.ok) {
+      // Couldn't reach Firestore (offline / transient). Leave local untouched and
+      // let normal background writes reconcile once connectivity returns — never
+      // re-seed on an unconfirmed read, or we could clobber good cloud data.
+      console.warn('[Sync] Could not reach Firestore on startup; using local data for now.');
+      return;
     }
-    
-    // Merge cloud extra workouts into localStorage
-    if (extraWorkouts && Object.keys(extraWorkouts).length) {
-      const local = loadExtraWorkouts();
-      const merged = { ...local, ...extraWorkouts };
-      window.localStorage.setItem(EXTRA_WORKOUTS_STORAGE_KEY, JSON.stringify(merged));
-      changed = true;
-    }
-    
-    // Merge cloud calendar reschedules (cloud wins if cloud has newer data)
-    if (calendarReschedulesCloud && Object.keys(calendarReschedulesCloud).length) {
-      const local = loadCalendarReschedules();
-      const merged = { ...local, ...calendarReschedulesCloud };
-      window.localStorage.setItem(CALENDAR_RESCHEDULE_STORAGE_KEY, JSON.stringify(merged));
-      calendarReschedules = merged;
-      changed = true;
-    }
-    
-    // Merge cloud calendar tracking for today
-    if (calendarTrackingCloud && Object.keys(calendarTrackingCloud).length > 1) {
-      // Only sync if cloud has more than just the date field
-      const local = loadCalendarTracking();
-      const merged = { ...local, ...calendarTrackingCloud };
-      window.localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(merged));
-      calendarTracking = merged;
-      changed = true;
-    }
-    
-    // Re-render so Firestore data shows up without a page reload
-    if (changed) {
-      renderCalendar();
-      renderActivityMatchQueue();
-      if (isMatchingTabActive()) renderMatchingTab();
+    if (meta.exists && meta.data && meta.data.seeded) {
+      await pullCloudReplaceLocal();
+    } else {
+      await seedCloudFromLocal();
+      await api.markSeeded({ seededBy: _userId });
     }
   } catch (e) {
-    console.warn('[Sync] Could not hydrate from Firestore:', e);
+    console.warn('[Sync] Startup sync failed:', e);
   }
 }
-hydrateFromFirestore();
+initSync();
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -3413,9 +3478,8 @@ function loadTracking() {
 
 function saveTracking() {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tracking));
-  // Background cloud sync — dateKey is today's date
-  const dateKey = new Date().toISOString().slice(0, 10);
-  api.saveTracking(dateKey, tracking).catch(() => {});
+  // Background cloud sync under a stable doc so all devices read the same blob
+  api.saveTracking(SYNC_DOC_KEY, tracking).catch(() => {});
 }
 
 function getDayTracking(id) {
@@ -3438,8 +3502,7 @@ function loadCalendarTracking() {
 
 function saveCalendarTracking() {
   window.localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(calendarTracking));
-  const dateKey = new Date().toISOString().slice(0, 10);
-  api.saveCalendarTracking(dateKey, calendarTracking).catch(() => {});
+  api.saveCalendarTracking(SYNC_DOC_KEY, calendarTracking).catch(() => {});
 }
 
 function loadCalendarReschedules() {
@@ -6186,8 +6249,7 @@ const StrengthWorkoutManager = {
 
   saveLogsToLocalStorage() {
     localStorage.setItem("strengthLogs", JSON.stringify(this.workoutLogs));
-    const dateKey = this.currentDateKey || new Date().toISOString().slice(0, 10);
-    api.saveStrengthLogs(dateKey, this.workoutLogs).catch(() => {});
+    api.saveStrengthLogs(SYNC_DOC_KEY, this.workoutLogs).catch(() => {});
   },
 
   getWorkoutDate(sessionId) {
