@@ -1742,6 +1742,62 @@ main {
   animation: calendar-jump-pulse 1.5s ease;
 }
 
+.calendar-fab {
+  position: fixed;
+  right: 1rem;
+  bottom: calc(1.15rem + env(safe-area-inset-bottom, 0px));
+  z-index: 60;
+  display: none;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.72rem 1.05rem;
+  color: #fff;
+  background: var(--primary);
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 10px 26px rgba(17, 106, 92, 0.32);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(1rem) scale(0.96);
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.calendar-fab.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.calendar-fab:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.calendar-fab__icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+@media (max-width: 820px) {
+  .calendar-fab {
+    display: inline-flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calendar-fab {
+    transition: opacity 180ms ease;
+    transform: none;
+  }
+
+  .calendar-fab.is-visible {
+    transform: none;
+  }
+}
+
 @keyframes calendar-jump-pulse {
   0%,
   100% {

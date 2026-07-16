@@ -131,6 +131,17 @@
 
         <div class="calendar-months" id="calendar-months"></div>
 
+        <button
+          class="calendar-fab"
+          type="button"
+          data-calendar-jump-today
+          data-calendar-fab
+          aria-label="Scroll to today"
+        >
+          <span class="calendar-fab__icon" data-calendar-fab-icon aria-hidden="true">↓</span>
+          <span class="calendar-fab__label">Today</span>
+        </button>
+
         <div class="calendar-dialog" id="calendar-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="calendar-detail-title" hidden>
           <div class="calendar-dialog__backdrop" data-calendar-dialog-close></div>
           <section class="calendar-dialog__panel" aria-label="Workout details">

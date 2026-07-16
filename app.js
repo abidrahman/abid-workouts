@@ -5174,6 +5174,44 @@ function renderCalendar() {
 
   monthsEl.innerHTML = months.map((month) => renderCalendarMonth(month)).join("");
   renderTodayPanel();
+  updateCalendarFab();
+}
+
+let calendarFabObserver = null;
+
+function updateCalendarFab() {
+  const fab = document.querySelector("[data-calendar-fab]");
+  if (!fab) return;
+
+  if (calendarFabObserver) {
+    calendarFabObserver.disconnect();
+    calendarFabObserver = null;
+  }
+
+  const targetDateKey = getCalendarJumpTargetDateKey();
+  const dayEl = targetDateKey ? document.querySelector(`[data-calendar-day="${targetDateKey}"]`) : null;
+
+  if (!dayEl || typeof IntersectionObserver === "undefined") {
+    fab.classList.remove("is-visible");
+    return;
+  }
+
+  const iconEl = fab.querySelector("[data-calendar-fab-icon]");
+
+  calendarFabObserver = new IntersectionObserver(
+    (entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const targetVisible = entry.isIntersecting;
+      fab.classList.toggle("is-visible", !targetVisible);
+      if (!targetVisible && iconEl) {
+        iconEl.textContent = entry.boundingClientRect.top > 0 ? "↓" : "↑";
+      }
+    },
+    { threshold: 0.35 },
+  );
+
+  calendarFabObserver.observe(dayEl);
 }
 
 function getTodayPanelTargetDay() {
