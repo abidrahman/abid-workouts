@@ -2742,6 +2742,7 @@ function applyManualActivityMatch(activityId, sessionId) {
   ActivityManager.renderActivityList(syncedActivities);
   showToast(`Linked to ${session.title}`);
   if (isMatchingTabActive()) renderMatchingTab();
+  if (isStrengthHistoryTabActive()) renderStrengthHistoryTab();
 }
 
 function markActivityAsExtra(activityId) {
@@ -2763,6 +2764,7 @@ function markActivityAsExtra(activityId) {
   ActivityManager.renderActivityList(syncedActivities);
   showToast(`Marked "${activity.name}" as extra workout`);
   if (isMatchingTabActive()) renderMatchingTab();
+  if (isStrengthHistoryTabActive()) renderStrengthHistoryTab();
 }
 
 let skippedReviewSessions = new Set();
@@ -2770,6 +2772,66 @@ let matchingTabEventsAttached = false;
 
 function isMatchingTabActive() {
   return !!document.querySelector('[data-tab-panel="matching"].is-active');
+}
+
+function isStrengthHistoryTabActive() {
+  return !!document.querySelector('[data-tab-panel="strength-history"].is-active');
+}
+
+function renderStrengthHistoryTab() {
+  const summaryEl = document.querySelector("#strength-history-summary");
+  const sectionEl = document.querySelector("#strength-history-section");
+  if (!summaryEl || !sectionEl) return;
+
+  const sessions = getStrengthWorkoutSessionsFromStorage();
+  const entries = getStrengthHistoryEntries();
+
+  if (!entries.length) {
+    summaryEl.textContent = "No strength sessions logged yet.";
+    sectionEl.innerHTML = '<p class="small-note">Finish a workout in Workout Mode to start building your history.</p>';
+    return;
+  }
+
+  const byExercise = entries.reduce((map, entry) => {
+    const key = entry.exerciseKey;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(entry);
+    return map;
+  }, new Map());
+
+  summaryEl.textContent = `${sessions.length} workout sessions · ${entries.length} logged sets · ${byExercise.size} exercises`;
+  sectionEl.innerHTML = `
+    <div class="strength-history">
+      ${[...byExercise.entries()]
+        .sort((a, b) => b[1][0].timestamp - a[1][0].timestamp)
+        .map(([exerciseKey, exerciseEntries]) => {
+          const exerciseName = exerciseEntries[0]?.exerciseName || getExerciseNameFromOptions(null, exerciseKey);
+          return `
+            <article class="strength-history-card">
+              <h3>${escapeHtml(exerciseName)}</h3>
+              <div class="strength-history-card__rows">
+                ${exerciseEntries
+                  .map((entry) => {
+                    const noteText = entry.note ? `<p class="strength-history-card__note">${escapeHtml(entry.note)}</p>` : "";
+                    return `
+                      <div class="strength-history-card__row">
+                        <div>
+                          <strong>${escapeHtml(`${entry.weight} × ${entry.reps}`)}</strong>
+                          <p>${escapeHtml(entry.sessionTitle)}</p>
+                          ${noteText}
+                        </div>
+                        <span>${escapeHtml(entry.date)}</span>
+                      </div>
+                    `;
+                  })
+                  .join("")}
+              </div>
+            </article>
+          `;
+        })
+        .join("")}
+    </div>
+  `;
 }
 
 function formatMatchingDate(dateKey) {
@@ -3298,7 +3360,7 @@ async function syncActivities() {
   renderActivityMatchQueue();
 }
 
-const tabIds = ["calendar", "matching"];
+const tabIds = ["calendar", "matching", "strength-history"];
 const tabAliases = {
   dashboard: "calendar",
   overview: "calendar",
@@ -3308,6 +3370,8 @@ const tabAliases = {
   phases: "calendar",
   "phase-timeline": "calendar",
   "match-activities": "matching",
+  "strength-history-tracker": "strength-history",
+  "strength-history": "strength-history",
   "tracking-summary": "calendar",
 };
 
@@ -3409,9 +3473,13 @@ async function pullCloudReplaceLocal() {
 
   // Replace strength logs
   const cloudStrength = strengthLogsCloud || {};
-  localStorage.setItem('strengthLogs', JSON.stringify(cloudStrength));
+  const normalizedStrengthLogs =
+    typeof StrengthWorkoutManager !== "undefined" && StrengthWorkoutManager?.migrateStrengthLogs
+      ? StrengthWorkoutManager.migrateStrengthLogs(cloudStrength)
+      : cloudStrength;
+  localStorage.setItem('strengthLogs', JSON.stringify(normalizedStrengthLogs));
   if (typeof StrengthWorkoutManager !== 'undefined' && StrengthWorkoutManager) {
-    StrengthWorkoutManager.workoutLogs = cloudStrength;
+    StrengthWorkoutManager.workoutLogs = normalizedStrengthLogs;
   }
 
   // Re-render so pulled data shows up without a manual reload
@@ -3420,6 +3488,7 @@ async function pullCloudReplaceLocal() {
   renderTrackingSummary();
   renderActivityMatchQueue();
   if (isMatchingTabActive()) renderMatchingTab();
+  if (isStrengthHistoryTabActive()) renderStrengthHistoryTab();
   console.log('[Sync] Pulled Firestore state and replaced local (cloud is source of truth).');
 }
 
@@ -4962,6 +5031,115 @@ function getExerciseNameFromOptions(workout, exerciseKey) {
   return exerciseKey.replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
+function readStrengthLogsFromStorage() {
+  try {
+    const raw = localStorage.getItem("strengthLogs");
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function getStrengthWorkoutSessionsFromStorage() {
+  const logs = readStrengthLogsFromStorage();
+  const sessions = Object.entries(logs)
+    .map(([logKey, log]) => {
+      if (!log || typeof log !== "object" || !log.exerciseLogs || typeof log.exerciseLogs !== "object") return null;
+      return {
+        logKey,
+        ...log,
+        timestamp: Number.isFinite(log.timestamp) ? log.timestamp : Date.parse(`${log.date ?? ""}T00:00:00`) || 0,
+      };
+    })
+    .filter(Boolean);
+
+  return sessions.sort((a, b) => b.timestamp - a.timestamp);
+}
+
+function getStrengthHistoryEntries() {
+  const sessions = getStrengthWorkoutSessionsFromStorage();
+  const entries = [];
+
+  sessions.forEach((session) => {
+    Object.entries(session.exerciseLogs || {}).forEach(([exerciseKey, sets]) => {
+      const exerciseName = getExerciseNameFromOptions(session, exerciseKey);
+      const note = session.exerciseNotes?.[exerciseKey] ?? "";
+      (sets || []).forEach((set, setIndex) => {
+        if (!set?.weight && !set?.reps) return;
+        entries.push({
+          sessionTitle: session.title || "Strength workout",
+          date: session.date || "",
+          dateDisplay: session.dateDisplay || session.date || "",
+          timestamp: session.timestamp || 0,
+          exerciseKey,
+          exerciseName,
+          note,
+          setIndex,
+          weight: set?.weight ?? "",
+          reps: set?.reps ?? "",
+        });
+      });
+    });
+  });
+
+  return entries.sort((a, b) => b.timestamp - a.timestamp || b.setIndex - a.setIndex);
+}
+
+function renderStrengthQuickHistory(session, day) {
+  const exerciseOptions = getStrengthExerciseOptions(day, session);
+  const entries = getStrengthHistoryEntries();
+  const exerciseKeys = new Set(exerciseOptions.map((exercise) => exercise.key));
+  const scopedEntries = entries.filter((entry) => exerciseKeys.has(entry.exerciseKey));
+
+  if (!scopedEntries.length) {
+    return `
+      <section class="calendar-detail__section strength-history-quick">
+        <h4>Recent strength history</h4>
+        <p class="calendar-detail__note">No previous logged sets yet for this workout’s exercises.</p>
+      </section>
+    `;
+  }
+
+  const grouped = exerciseOptions
+    .map((exercise) => ({
+      exercise,
+      entries: scopedEntries.filter((entry) => entry.exerciseKey === exercise.key).slice(0, 5),
+    }))
+    .filter((group) => group.entries.length);
+
+  if (!grouped.length) return "";
+
+  return `
+    <section class="calendar-detail__section strength-history-quick">
+      <h4>Recent strength history</h4>
+      <div class="strength-history-quick__groups">
+        ${grouped
+          .map(
+            (group) => `
+              <article class="strength-history-quick__group">
+                <h5>${escapeHtml(group.exercise.name)}</h5>
+                <ul>
+                  ${group.entries
+                    .map(
+                      (entry) => `
+                        <li>
+                          <span>${escapeHtml(entry.date)}</span>
+                          <strong>${escapeHtml(`${entry.weight} × ${entry.reps}`)}</strong>
+                        </li>
+                      `,
+                    )
+                    .join("")}
+                </ul>
+              </article>
+            `,
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+}
+
 function getCalendarJumpTargetDateKey() {
   const todayKey = dateToKey(new Date());
   if (getCalendarDayByDateKey(todayKey)) return todayKey;
@@ -5339,6 +5517,7 @@ function renderCalendarSessionDetail(sessionId) {
   const linkedActivity = getLinkedActivityForSession(session.id);
   const availableActivitiesForLink = !completed && !linkedActivity ? getAvailableActivitiesForSession(session) : [];
   const isStrengthSession = session.categories.includes("strength");
+  const strengthQuickHistorySection = isStrengthSession ? renderStrengthQuickHistory(session, day) : "";
 
   contentEl.innerHTML = `
     <p class="eyebrow">${escapeHtml(formatCalendarDate(day))}</p>
@@ -5411,6 +5590,7 @@ function renderCalendarSessionDetail(sessionId) {
     }
 
     ${renderCalendarRescheduleControls(session)}
+    ${strengthQuickHistorySection}
     <section class="calendar-detail__section">
       <h4>Workout details</h4>
       <p>${escapeHtml(workoutSpecificIntro)}</p>
@@ -5787,6 +5967,8 @@ function activateTab(tabId, options = {}) {
 
   if (nextTabId === "matching") {
     renderMatchingTab();
+  } else if (nextTabId === "strength-history") {
+    renderStrengthHistoryTab();
   }
 }
 
@@ -6122,6 +6304,7 @@ const ActivityManager = {
     this.renderActivityList(this.activities);
     renderActivityMatchQueue();
     if (isMatchingTabActive()) renderMatchingTab();
+    if (isStrengthHistoryTabActive()) renderStrengthHistoryTab();
   },
 
   renderActivityList(activities) {
@@ -6231,6 +6414,7 @@ const StrengthWorkoutManager = {
   currentLogKey: null,
   selectedExerciseKey: "",
   pendingSetInput: { weight: "", reps: "" },
+  pendingCustomExercise: "",
   workoutLogs: {},
 
   init() {
@@ -6241,7 +6425,8 @@ const StrengthWorkoutManager = {
   loadLogsFromLocalStorage() {
     const stored = localStorage.getItem("strengthLogs");
     try {
-      this.workoutLogs = stored ? JSON.parse(stored) : {};
+      const parsed = stored ? JSON.parse(stored) : {};
+      this.workoutLogs = this.migrateStrengthLogs(parsed);
     } catch {
       this.workoutLogs = {};
     }
@@ -6250,6 +6435,21 @@ const StrengthWorkoutManager = {
   saveLogsToLocalStorage() {
     localStorage.setItem("strengthLogs", JSON.stringify(this.workoutLogs));
     api.saveStrengthLogs(SYNC_DOC_KEY, this.workoutLogs).catch(() => {});
+  },
+
+  migrateStrengthLogs(logs) {
+    if (!logs || typeof logs !== "object") return {};
+
+    const migrated = {};
+    Object.entries(logs).forEach(([key, log]) => {
+      if (!log || typeof log !== "object" || !log.exerciseLogs || typeof log.exerciseLogs !== "object") return;
+      migrated[key] = {
+        ...log,
+        availableExercises: Array.isArray(log.availableExercises) ? log.availableExercises : [],
+        exerciseNotes: log.exerciseNotes && typeof log.exerciseNotes === "object" ? log.exerciseNotes : {},
+      };
+    });
+    return migrated;
   },
 
   getWorkoutDate(sessionId) {
@@ -6279,12 +6479,15 @@ const StrengthWorkoutManager = {
       date: day.dateKey,
       dateDisplay: formatCalendarDate(day),
       availableExercises,
+      exerciseNotes: {},
       exerciseLogs: {},
       timestamp: Date.now(),
     };
     this.selectedExerciseKey = availableExercises[0]?.key ?? "";
+    this.pendingCustomExercise = "";
     this.setPendingSetFromLastSet();
 
+    closeCalendarDetail();
     this.renderWorkoutModal();
     this.openWorkoutModal();
   },
@@ -6325,24 +6528,49 @@ const StrengthWorkoutManager = {
 
     exerciseListEl.innerHTML = `
       <section class="workout-mode-toolbar">
-        <div class="field">
-          <label for="strength-exercise-select">Exercise</label>
-          <select id="strength-exercise-select" data-strength-exercise-select>
-            ${exercises
-              .map(
-                (exercise) => `
-                  <option value="${escapeHtml(exercise.key)}" ${exercise.key === this.selectedExerciseKey ? "selected" : ""}>
-                    ${escapeHtml(exercise.name)}
-                  </option>
-                `,
-              )
-              .join("")}
-          </select>
+        <div class="workout-mode-toolbar__row">
+          <div class="field">
+            <label for="strength-exercise-select">Exercise</label>
+            <select id="strength-exercise-select" data-strength-exercise-select>
+              ${exercises
+                .map(
+                  (exercise) => `
+                    <option value="${escapeHtml(exercise.key)}" ${exercise.key === this.selectedExerciseKey ? "selected" : ""}>
+                      ${escapeHtml(exercise.name)}
+                    </option>
+                  `,
+                )
+                .join("")}
+            </select>
+          </div>
+        </div>
+        <div class="workout-mode-toolbar__row workout-mode-toolbar__row--custom">
+          <div class="field">
+            <label for="strength-custom-exercise">Add custom exercise</label>
+            <input
+              id="strength-custom-exercise"
+              type="text"
+              placeholder="e.g., Hamstring curl (machine 3)"
+              value="${escapeHtml(this.pendingCustomExercise)}"
+              data-strength-custom-exercise
+            />
+          </div>
+          <button type="button" class="button button--ghost" data-strength-add-custom-exercise>
+            Add
+          </button>
         </div>
       </section>
 
       <section class="workout-mode-entry">
         <h3>${escapeHtml(selectedExercise?.name ?? "Exercise")}</h3>
+        <div class="field">
+          <label for="strength-exercise-note">Exercise note (variation/machine)</label>
+          <textarea
+            id="strength-exercise-note"
+            placeholder="e.g., Hamstring curl machine #2, seat position 4"
+            data-strength-exercise-note
+          >${escapeHtml(this.currentWorkout.exerciseNotes?.[this.selectedExerciseKey] ?? "")}</textarea>
+        </div>
         <div class="workout-mode-entry__inputs">
           <div class="field">
             <label for="strength-set-weight">Weight</label>
@@ -6426,6 +6654,18 @@ const StrengthWorkoutManager = {
       this.selectExercise(event.target.value);
     });
 
+    exerciseListEl.querySelector("[data-strength-custom-exercise]")?.addEventListener("input", (event) => {
+      this.pendingCustomExercise = event.target.value;
+    });
+
+    exerciseListEl.querySelector("[data-strength-add-custom-exercise]")?.addEventListener("click", () => {
+      this.addCustomExercise(this.pendingCustomExercise);
+    });
+
+    exerciseListEl.querySelector("[data-strength-exercise-note]")?.addEventListener("change", (event) => {
+      this.updateExerciseNote(this.selectedExerciseKey, event.target.value);
+    });
+
     exerciseListEl.querySelectorAll("[data-strength-pending-field]").forEach((input) => {
       input.addEventListener("input", () => this.updatePendingField(input.dataset.strengthPendingField, input.value));
     });
@@ -6460,13 +6700,58 @@ const StrengthWorkoutManager = {
     this.pendingSetInput[field] = value;
   },
 
+  addCustomExercise(name) {
+    const normalized = normalizeExerciseName(name);
+    if (!normalized) {
+      showToast("Enter an exercise name first.");
+      return;
+    }
+
+    const exerciseKey = toExerciseKey(normalized);
+    const exists = this.currentWorkout.availableExercises.some((exercise) => exercise.key === exerciseKey);
+    if (!exists) {
+      this.currentWorkout.availableExercises.push({ key: exerciseKey, name: normalized, source: "custom" });
+    }
+    this.selectedExerciseKey = exerciseKey;
+    this.pendingCustomExercise = "";
+    this.setPendingSetFromLastSet();
+    this.saveLogsToLocalStorage();
+    this.renderWorkoutModal();
+  },
+
+  updateExerciseNote(exerciseKey, value) {
+    if (!exerciseKey) return;
+    if (!this.currentWorkout.exerciseNotes || typeof this.currentWorkout.exerciseNotes !== "object") {
+      this.currentWorkout.exerciseNotes = {};
+    }
+    const trimmed = value.trim();
+    if (trimmed) {
+      this.currentWorkout.exerciseNotes[exerciseKey] = trimmed;
+    } else {
+      delete this.currentWorkout.exerciseNotes[exerciseKey];
+    }
+    this.saveLogsToLocalStorage();
+    if (isStrengthHistoryTabActive()) renderStrengthHistoryTab();
+  },
+
   setPendingSetFromLastSet() {
     const sets = this.currentWorkout?.exerciseLogs?.[this.selectedExerciseKey] ?? [];
     const lastSet = sets[sets.length - 1];
+    const latestHistoricalSet = !lastSet ? this.getLatestSetForExercise(this.selectedExerciseKey) : null;
     this.pendingSetInput = {
-      weight: lastSet?.weight ?? "",
-      reps: lastSet?.reps ?? "",
+      weight: lastSet?.weight ?? latestHistoricalSet?.weight ?? "",
+      reps: lastSet?.reps ?? latestHistoricalSet?.reps ?? "",
     };
+  },
+
+  getLatestSetForExercise(exerciseKey) {
+    if (!exerciseKey) return null;
+    const sessions = Object.values(this.workoutLogs || {})
+      .filter((session) => session?.exerciseLogs && session.exerciseLogs[exerciseKey]?.length)
+      .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    if (!sessions.length) return null;
+    const sets = sessions[0].exerciseLogs[exerciseKey];
+    return sets[sets.length - 1] ?? null;
   },
 
   ensureExerciseSetList(exerciseKey) {
@@ -6527,15 +6812,17 @@ const StrengthWorkoutManager = {
     }
 
     const workout = this.currentWorkout;
-    const logKey = `${workout.date}-${workout.workoutId}`;
+    const completedAt = Date.now();
+    const logKey = `${workout.date}-${workout.workoutId}-${completedAt}`;
     this.workoutLogs[logKey] = {
       ...JSON.parse(JSON.stringify(workout)),
-      timestamp: Date.now(),
+      timestamp: completedAt,
       syncedToBackend: false,
       syncedAt: null,
     };
 
     this.saveLogsToLocalStorage();
+    if (isStrengthHistoryTabActive()) renderStrengthHistoryTab();
     this.closeWorkoutModal();
     this.showSummaryModal(logKey);
   },
@@ -6557,6 +6844,9 @@ const StrengthWorkoutManager = {
     const exercisesHtml = Object.entries(log.exerciseLogs)
       .map(([key, sets]) => {
         const exerciseName = getExerciseNameFromOptions(log, key);
+        const exerciseNote = log.exerciseNotes?.[key]
+          ? `<p class="summary-exercise-note">${escapeHtml(log.exerciseNotes[key])}</p>`
+          : "";
         const setsHtml = sets
           .map((set) => {
             const display = `${set.weight} × ${set.reps}`;
@@ -6567,6 +6857,7 @@ const StrengthWorkoutManager = {
         return `
           <div class="summary-exercise">
             <h4 class="summary-exercise-title">${escapeHtml(exerciseName)}</h4>
+            ${exerciseNote}
             ${setsHtml}
           </div>
         `;
@@ -6587,9 +6878,11 @@ const StrengthWorkoutManager = {
     this.currentDateKey = log.date;
     this.currentWorkout = {
       ...log,
+      exerciseNotes: log.exerciseNotes && typeof log.exerciseNotes === "object" ? log.exerciseNotes : {},
       timestamp: Date.now(),
     };
     this.selectedExerciseKey = Object.keys(log.exerciseLogs ?? {})[0] ?? log.availableExercises?.[0]?.key ?? "";
+    this.pendingCustomExercise = "";
     this.setPendingSetFromLastSet();
 
     this.renderWorkoutModal();

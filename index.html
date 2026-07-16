@@ -32,6 +32,7 @@
         <div class="site-nav__menu" id="site-nav-menu" data-site-nav-menu>
           <a class="is-active" href="#calendar" data-tab-link="calendar">Today + Calendar</a>
           <a href="#matching" data-tab-link="matching">Match Activities</a>
+          <a href="#strength-history" data-tab-link="strength-history">Strength History</a>
         </div>
       </nav>
 
@@ -58,6 +59,7 @@
         <div class="hero__actions">
           <a class="button button--primary" href="#calendar" data-tab-link="calendar">Open Calendar</a>
           <a class="button button--ghost" href="#matching" data-tab-link="matching">Match Activities</a>
+          <a class="button button--ghost" href="#strength-history" data-tab-link="strength-history">Strength History</a>
         </div>
       </section>
     </header>
@@ -198,6 +200,16 @@
           <div id="matching-needs-review"></div>
           <div id="matching-workouts-section"></div>
           <div id="matching-activities-section"></div>
+        </div>
+      </section>
+
+      <section class="section tab-panel" id="strength-history-tracker" data-tab-panel="strength-history" hidden>
+        <div class="section__inner">
+          <header class="matching-header">
+            <h2>Strength History</h2>
+            <p id="strength-history-summary" class="matching-summary__text"></p>
+          </header>
+          <div id="strength-history-section"></div>
         </div>
       </section>
     </main>
