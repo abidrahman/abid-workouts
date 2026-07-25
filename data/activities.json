@@ -1,5 +1,23 @@
 [
   {
+    "id": "19464230570",
+    "name": "Morning Hike",
+    "type": "Hike",
+    "startTime": "2026-07-25T10:42:21Z",
+    "duration": 8278,
+    "distance": 8343,
+    "elevationGain": 193
+  },
+  {
+    "id": "19463772355",
+    "name": "Afternoon Hike",
+    "type": "Hike",
+    "startTime": "2026-07-24T16:10:59Z",
+    "duration": 9410,
+    "distance": 8466,
+    "elevationGain": 731
+  },
+  {
     "id": "19439870482",
     "name": "Afternoon Swim",
     "type": "Swim",
@@ -1778,24 +1796,6 @@
     "type": "Ride",
     "startTime": "2026-04-01T13:02:38Z",
     "duration": 2701,
-    "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "17942358137",
-    "name": "Lunch Workout",
-    "type": "Workout",
-    "startTime": "2026-04-01T12:31:32Z",
-    "duration": 1802,
-    "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "17918360336",
-    "name": "Evening Ride",
-    "type": "Ride",
-    "startTime": "2026-03-30T18:23:36Z",
-    "duration": 2480,
     "distance": 0,
     "elevationGain": 0
   }
