@@ -12,7 +12,7 @@ const summaryCards = [
   {
     label: "Swim target",
     value: "1,600 yd",
-    detail: "Lake Union supported swim target: Sat Aug 29",
+    detail: "Continuous open-water readiness — swim it if the chance comes up",
   },
   {
     label: "Month 1 focus",
@@ -35,16 +35,22 @@ const phases = [
       "Keep the current 4-week swim ramp intact while progressing pack work, longer hikes/stairs, and continuous pool confidence.",
   },
   {
-    date: "Jul 20–Aug 23",
-    title: "Sustained volume + race-specific skills",
+    date: "Jul 20–26",
+    title: "Final specificity block",
     detail:
-      "Hold M/W/F swim consistency at roughly 6,000 yd per week with sighting, no-wall turns, and controlled aerobic pacing.",
+      "Last week of sustained M/W/F swim volume and race-specific skills before easing into the Mt. Baker summit taper.",
   },
   {
-    date: "Aug 24–31",
-    title: "Taper + execution",
+    date: "Jul 27–Aug 2",
+    title: "Mt. Baker summit week",
     detail:
-      "Reduce fatigue in race week, keep light feel-for-water sessions, and execute the Lake Union supported swim on Aug 29.",
+      "Taper Mon–Thu with easy swims, mobility, and one light spin — no lifting or strenuous work — then the three-day Mt. Baker summit attempt Fri–Sun.",
+  },
+  {
+    date: "Aug 3–31",
+    title: "Post-summit streamlined base",
+    detail:
+      "Two easy recovery days, then a lean weekly rhythm: M/W/F swims, two bikes (one long, one interval), Pull/RDL/Bulgarian strength, and occasional stair cardio. Ramp toward the fall 70.3 block.",
   },
 ];
 
@@ -1812,6 +1818,91 @@ const weekOneCalendarSessions = {
 };
 
 const calendarPhaseTemplates = {
+  postsummit: {
+    0: [
+      {
+        title: "Long aerobic bike ride",
+        duration: "2.5–4 hr",
+        categories: ["bike"],
+        note: "Weekly long ride: steady endurance with consistent fueling and cadence — the aerobic anchor of the week.",
+      },
+    ],
+    1: [
+      {
+        title: "Swim pyramid main set",
+        duration: "2,000–2,200 yd",
+        categories: ["swim"],
+        note: "Monday swim: warm-up + drills, then pyramid main set (50/100/200/400/200/100/50) with controlled pacing.",
+      },
+      {
+        title: "Strength A — RDL hamstring/glute",
+        duration: "40–55 min",
+        categories: ["strength"],
+        note: "RDL day: hamstrings/hips first, posterior chain accessory, then calves and tibialis.",
+        compactDescriptor: "RDL",
+      },
+    ],
+    2: [
+      {
+        title: "Strength B — pull day",
+        duration: "35–50 min",
+        categories: ["strength"],
+        note: "Pull day: pull-ups, row/pulldown, biceps, and scap stability.",
+        compactDescriptor: "weighted pull-up",
+      },
+      {
+        title: "Bike intervals",
+        duration: "55–80 min",
+        categories: ["bike"],
+        note: "Interval ride: structured hard efforts with full recoveries, then cooldown.",
+      },
+    ],
+    3: [
+      {
+        title: "Swim speed session",
+        duration: "1,900–2,100 yd",
+        categories: ["swim"],
+        note: "Wednesday swim: warm-up + technique primer, then speed main set around 20 x 50 yd on controlled send-off.",
+      },
+      {
+        title: "Core / mobility + stretch",
+        duration: "20–35 min",
+        categories: ["recovery"],
+        note: "Trunk circuit with mobility and stretch emphasis.",
+      },
+    ],
+    4: [
+      {
+        title: "Strength C — Bulgarian split squat + quads",
+        duration: "40–55 min",
+        categories: ["strength"],
+        note: "Quad day: Bulgarian split squat first, quad accessory, plus calves and tibialis.",
+        compactDescriptor: "split squat",
+      },
+    ],
+    5: [
+      {
+        title: "Long continuous swim day",
+        duration: "2,300–2,500 yd",
+        categories: ["swim"],
+        note: "Friday swim: warm-up + optional drill prep, then long continuous main set beginning at 1 x 1000 yd and extending over time.",
+      },
+      {
+        title: "Core / mobility + stretch",
+        duration: "20–35 min",
+        categories: ["recovery"],
+        note: "Trunk and mobility work with added calves/tibialis.",
+      },
+    ],
+    6: [
+      {
+        title: "Rest or optional easy movement",
+        duration: "Optional",
+        categories: ["recovery"],
+        note: "Full rest day. Optional easy walk, spin, or stretch if you feel like moving — no structured load.",
+      },
+    ],
+  },
   base: {
     0: [
       {
@@ -2361,7 +2452,156 @@ const calendarPhaseTemplates = {
   },
 };
 
-const calendarSpecialDays = {};
+const calendarSpecialDays = {
+  // ── Mt. Baker summit week: prep taper (no lifting, no strenuous work) ──
+  "2026-07-27": [
+    {
+      id: "baker-prep-mon-swim",
+      title: "Easy technique swim",
+      duration: "1,200–1,500 yd",
+      categories: ["swim"],
+      note: "Relaxed feel-for-water swim before the summit — drills and smooth aerobic 100s, nothing hard.",
+    },
+    {
+      id: "baker-prep-mon-recovery",
+      title: "Stretching / mobility + recovery",
+      duration: "20–30 min",
+      categories: ["recovery"],
+      note: "Full-body mobility with hips, ankles, and calves; light foam roll. Prime the legs for Friday.",
+    },
+  ],
+  "2026-07-28": [
+    {
+      id: "baker-prep-tue-swim",
+      title: "Easy technique swim",
+      duration: "1,200–1,500 yd",
+      categories: ["swim"],
+      note: "Second easy swim — keep it aerobic and short; leave the pool fresher than you arrived.",
+    },
+    {
+      id: "baker-prep-tue-recovery",
+      title: "Stretching / mobility + recovery",
+      duration: "20–30 min",
+      categories: ["recovery"],
+      note: "Mobility and gentle stretching, no loading.",
+    },
+  ],
+  "2026-07-29": [
+    {
+      id: "baker-prep-wed-bike",
+      title: "Light cardio spin",
+      duration: "30–45 min",
+      categories: ["bike"],
+      note: "Easy Zone 1–2 flush — legs turning over with zero intensity.",
+    },
+    {
+      id: "baker-prep-wed-recovery",
+      title: "Stretching / mobility + recovery",
+      duration: "20–30 min",
+      categories: ["recovery"],
+      note: "Mobility and stretching; hydrate and prep summit gear.",
+    },
+  ],
+  "2026-07-30": [
+    {
+      id: "baker-prep-thu-swim",
+      title: "Easy technique swim",
+      duration: "1,000–1,200 yd",
+      categories: ["swim"],
+      note: "Final short shakeout swim before the mountain — very easy.",
+    },
+    {
+      id: "baker-prep-thu-recovery",
+      title: "Stretching / mobility + recovery",
+      duration: "15–25 min",
+      categories: ["recovery"],
+      note: "Light mobility only. Rest up — the summit starts tomorrow.",
+    },
+  ],
+  // ── Mt. Baker summit attempt (Fri–Sun hike days, locked) ──
+  "2026-07-31": [
+    {
+      id: "baker-summit-fri-hike",
+      title: "Mt. Baker — approach & base camp",
+      duration: "Summit day 1",
+      categories: ["hike"],
+      note: "Hike in to camp. Steady pacing, fuel and hydrate well, and protect the legs for the summit push.",
+      rescheduleLocked: true,
+    },
+  ],
+  "2026-08-01": [
+    {
+      id: "baker-summit-sat-hike",
+      title: "Mt. Baker — summit push",
+      duration: "Summit day 2",
+      categories: ["hike"],
+      note: "Summit attempt: early alpine start, steady effort, and smart turnaround decisions.",
+      rescheduleLocked: true,
+    },
+  ],
+  "2026-08-02": [
+    {
+      id: "baker-summit-sun-hike",
+      title: "Mt. Baker — descent & out",
+      duration: "Summit day 3",
+      categories: ["hike"],
+      note: "Descend and hike out. Controlled downhill, then rest and refuel.",
+      rescheduleLocked: true,
+    },
+  ],
+  // ── Post-summit recovery days (swim + stretch only, before easing back in) ──
+  "2026-08-03": [
+    {
+      id: "postsummit-recovery-mon-swim",
+      title: "Recovery swim",
+      duration: "1,000–1,400 yd",
+      categories: ["swim", "recovery"],
+      note: "Very easy loosen-up swim after the summit — flush the legs, no pace work.",
+    },
+    {
+      id: "postsummit-recovery-mon-mobility",
+      title: "Stretching / mobility + recovery",
+      duration: "20–30 min",
+      categories: ["recovery"],
+      note: "Gentle full-body mobility and stretching; absorb the summit effort.",
+    },
+  ],
+  "2026-08-04": [
+    {
+      id: "postsummit-recovery-tue-swim",
+      title: "Recovery swim",
+      duration: "1,000–1,400 yd",
+      categories: ["swim", "recovery"],
+      note: "Second easy recovery swim — keep it short and relaxed.",
+    },
+    {
+      id: "postsummit-recovery-tue-mobility",
+      title: "Stretching / mobility + recovery",
+      duration: "20–30 min",
+      categories: ["recovery"],
+      note: "Mobility and stretching. Back into the groove from Wednesday.",
+    },
+  ],
+  // ── Occasional stair cardio sessions in the streamlined block ──
+  "2026-08-15": [
+    {
+      id: "postsummit-stairs-aug15",
+      title: "Stairmaster cardio",
+      duration: "30–45 min",
+      categories: ["hike"],
+      note: "Occasional stair cardio — steady climbs or easy intervals for aerobic variety.",
+    },
+  ],
+  "2026-08-22": [
+    {
+      id: "postsummit-stairs-aug22",
+      title: "Stairmaster cardio",
+      duration: "30–45 min",
+      categories: ["hike"],
+      note: "Occasional stair cardio — steady climbs or easy intervals for aerobic variety.",
+    },
+  ],
+};
 
 const weekOneTrackingIdsByDate = {
   "2026-06-01": "mon-jun-1",
@@ -2428,12 +2668,13 @@ const calendarPhaseLabels = {
   base: "Base + technical consistency",
   build: "Mountain capacity + swim endurance",
   specific: "Specificity + open-water transition",
+  summit: "Mt. Baker summit week",
+  postsummit: "Post-summit streamlined base",
   taper: "Taper + execution",
   recovery: "Post-peak recovery",
   maintenance: "Maintenance",
 };
 const calendarMilestones = {
-  swim: { dateKey: "2026-08-29", label: "Lake Union" },
   bike: { dateKey: "2026-08-01", label: "Mt. Baker" },
   strength: { dateKey: "2026-08-01", label: "Mt. Baker" },
   hike: { dateKey: "2026-08-01", label: "Mt. Baker" },
@@ -3761,9 +4002,9 @@ function dateToKey(date) {
 function getCalendarPhaseKey(dateKey) {
   if (dateKey <= "2026-06-14") return "base";
   if (dateKey <= "2026-07-05") return "build";
-  if (dateKey <= "2026-08-23") return "specific";
-  if (dateKey <= "2026-08-30") return "taper";
-  if (dateKey <= "2026-08-31") return "recovery";
+  if (dateKey <= "2026-07-26") return "specific";
+  if (dateKey <= "2026-08-02") return "summit";
+  if (dateKey <= "2026-08-31") return "postsummit";
   return "maintenance";
 }
 
