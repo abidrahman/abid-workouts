@@ -1,5 +1,14 @@
 [
   {
+    "id": "19633723344",
+    "name": "Afternoon Workout",
+    "type": "Workout",
+    "startTime": "2026-08-06T15:28:39Z",
+    "duration": 2643,
+    "distance": 0,
+    "elevationGain": 0
+  },
+  {
     "id": "19619249597",
     "name": "Afternoon Weight Training",
     "type": "WeightTraining",
@@ -1789,14 +1798,5 @@
     "duration": 1378,
     "distance": 914.4,
     "elevationGain": 0
-  },
-  {
-    "id": "17980643598",
-    "name": "Lunch Hike",
-    "type": "Hike",
-    "startTime": "2026-04-04T12:30:40Z",
-    "duration": 6673,
-    "distance": 6788.2,
-    "elevationGain": 387
   }
 ]
