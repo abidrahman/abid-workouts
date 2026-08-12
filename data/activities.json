@@ -1,5 +1,14 @@
 [
   {
+    "id": "19718033570",
+    "name": "Afternoon Swim",
+    "type": "Swim",
+    "startTime": "2026-08-12T14:45:39Z",
+    "duration": 2213,
+    "distance": 1920.2,
+    "elevationGain": 0
+  },
+  {
     "id": "19702617224",
     "name": "Afternoon Ride",
     "type": "Ride",
@@ -1788,15 +1797,6 @@
     "startTime": "2026-04-09T14:57:36Z",
     "duration": 1861,
     "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "18046592624",
-    "name": "Afternoon Swim",
-    "type": "Swim",
-    "startTime": "2026-04-09T14:21:15Z",
-    "duration": 1025,
-    "distance": 685.8,
     "elevationGain": 0
   }
 ]
