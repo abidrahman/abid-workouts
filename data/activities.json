@@ -1,5 +1,14 @@
 [
   {
+    "id": "19830591966",
+    "name": "Afternoon Ride",
+    "type": "Ride",
+    "startTime": "2026-08-20T14:47:08Z",
+    "duration": 7327,
+    "distance": 42618.1,
+    "elevationGain": 511
+  },
+  {
     "id": "19815812189",
     "name": "Afternoon Swim",
     "type": "Swim",
@@ -1787,15 +1796,6 @@
     "type": "Ride",
     "startTime": "2026-04-16T12:15:39Z",
     "duration": 2424,
-    "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "18126362843",
-    "name": "Evening Elliptical",
-    "type": "Elliptical",
-    "startTime": "2026-04-15T18:01:36Z",
-    "duration": 1712,
     "distance": 0,
     "elevationGain": 0
   }
