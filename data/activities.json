@@ -1,5 +1,14 @@
 [
   {
+    "id": "19954819157",
+    "name": "Lunch Ride",
+    "type": "Ride",
+    "startTime": "2026-08-29T11:13:20Z",
+    "duration": 8568,
+    "distance": 43822,
+    "elevationGain": 272
+  },
+  {
     "id": "19942160919",
     "name": "Afternoon Ride",
     "type": "Ride",
@@ -1789,14 +1798,5 @@
     "duration": 6650,
     "distance": 21116,
     "elevationGain": 270
-  },
-  {
-    "id": "18244949384",
-    "name": "Afternoon Ride",
-    "type": "Ride",
-    "startTime": "2026-04-24T16:04:04Z",
-    "duration": 2636,
-    "distance": 0,
-    "elevationGain": 0
   }
 ]
