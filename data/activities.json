@@ -1,7 +1,16 @@
 [
   {
+    "id": "20061687238",
+    "name": "Dolomites Day 2",
+    "type": "Hike",
+    "startTime": "2026-09-06T09:19:40Z",
+    "duration": 8572,
+    "distance": 8065,
+    "elevationGain": 579
+  },
+  {
     "id": "20056545799",
-    "name": "Morning Hike",
+    "name": "Dolomites Day 1",
     "type": "Hike",
     "startTime": "2026-09-05T08:51:45Z",
     "duration": 14418,
@@ -1788,15 +1797,6 @@
     "startTime": "2026-05-04T16:10:11Z",
     "duration": 1720,
     "distance": 1097.3,
-    "elevationGain": 0
-  },
-  {
-    "id": "18364986075",
-    "name": "Lunch Ride",
-    "type": "Ride",
-    "startTime": "2026-05-03T12:47:38Z",
-    "duration": 2828,
-    "distance": 0,
     "elevationGain": 0
   }
 ]
