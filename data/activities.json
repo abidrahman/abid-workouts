@@ -1,5 +1,14 @@
 [
   {
+    "id": "20072069198",
+    "name": "Dolomites Day 3",
+    "type": "Hike",
+    "startTime": "2026-09-07T07:58:57Z",
+    "duration": 14706,
+    "distance": 12548,
+    "elevationGain": 1121
+  },
+  {
     "id": "20061687238",
     "name": "Dolomites Day 2",
     "type": "Hike",
@@ -1788,15 +1797,6 @@
     "startTime": "2026-05-04T17:02:35Z",
     "duration": 1114,
     "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "18378921568",
-    "name": "Afternoon Swim",
-    "type": "Swim",
-    "startTime": "2026-05-04T16:10:11Z",
-    "duration": 1720,
-    "distance": 1097.3,
     "elevationGain": 0
   }
 ]
