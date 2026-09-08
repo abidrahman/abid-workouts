@@ -1,5 +1,14 @@
 [
   {
+    "id": "20086923733",
+    "name": "Dolomites Day 4",
+    "type": "Hike",
+    "startTime": "2026-09-08T08:40:25Z",
+    "duration": 11832,
+    "distance": 10431,
+    "elevationGain": 768
+  },
+  {
     "id": "20072069198",
     "name": "Dolomites Day 3",
     "type": "Hike",
@@ -1787,15 +1796,6 @@
     "type": "WeightTraining",
     "startTime": "2026-05-05T15:11:19Z",
     "duration": 2101,
-    "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "18379106502",
-    "name": "Afternoon Ride",
-    "type": "Ride",
-    "startTime": "2026-05-04T17:02:35Z",
-    "duration": 1114,
     "distance": 0,
     "elevationGain": 0
   }
