@@ -1,5 +1,23 @@
 [
   {
+    "id": "20102136664",
+    "name": "Morning Workout",
+    "type": "Workout",
+    "startTime": "2026-09-09T10:14:36Z",
+    "duration": 15685,
+    "distance": 17327,
+    "elevationGain": 0
+  },
+  {
+    "id": "20102218751",
+    "name": "Dolomites Day 5",
+    "type": "Hike",
+    "startTime": "2026-09-09T10:14:07Z",
+    "duration": 11842,
+    "distance": 13464.3,
+    "elevationGain": 499.5
+  },
+  {
     "id": "20086923733",
     "name": "Dolomites Day 4",
     "type": "Hike",
@@ -1778,24 +1796,6 @@
     "type": "Ride",
     "startTime": "2026-05-05T16:45:00Z",
     "duration": 1488,
-    "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "18392466128",
-    "name": "Afternoon Swim",
-    "type": "Swim",
-    "startTime": "2026-05-05T15:52:46Z",
-    "duration": 1758,
-    "distance": 1188.7,
-    "elevationGain": 0
-  },
-  {
-    "id": "18391967574",
-    "name": "Afternoon Weight Training",
-    "type": "WeightTraining",
-    "startTime": "2026-05-05T15:11:19Z",
-    "duration": 2101,
     "distance": 0,
     "elevationGain": 0
   }
