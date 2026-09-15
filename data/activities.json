@@ -1,5 +1,14 @@
 [
   {
+    "id": "20186933068",
+    "name": "Mile PR",
+    "type": "Run",
+    "startTime": "2026-09-15T08:37:33Z",
+    "duration": 899,
+    "distance": 3262.2,
+    "elevationGain": 3
+  },
+  {
     "id": "20178316131",
     "name": "Afternoon Ride",
     "type": "Ride",
@@ -1788,15 +1797,6 @@
     "startTime": "2026-05-07T16:25:46Z",
     "duration": 1851,
     "distance": 1257.3,
-    "elevationGain": 0
-  },
-  {
-    "id": "18405708527",
-    "name": "Afternoon Ride",
-    "type": "Ride",
-    "startTime": "2026-05-06T14:21:39Z",
-    "duration": 6890,
-    "distance": 0,
     "elevationGain": 0
   }
 ]
