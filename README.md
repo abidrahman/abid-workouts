@@ -81,7 +81,9 @@ npm run preview    # preview production build locally
 ├── scripts/
 │   ├── build.mjs          # production build (esbuild bundle)
 │   ├── dev-server.mjs     # local dev server
-│   └── fetch-strava.mjs   # Strava API fetch script (run by GitHub Actions)
+│   ├── fetch-strava.mjs   # Strava API fetch script (run by GitHub Actions)
+│   ├── export-plan.mjs    # plan.js → plan-export.json (self-validating)
+│   └── build-plan-xlsx.py # plan-export.json → the .xlsx tracker
 ├── plan.js                # the training block: phases, weekly sessions, swim/run/strength data
 ├── app.js                 # main app logic
 ├── app-api.js             # Firebase/Firestore sync layer
@@ -89,6 +91,25 @@ npm run preview    # preview production build locally
 ├── styles.css             # styles
 └── package.json
 ```
+
+## Spreadsheet tracker
+
+`Abid — Fall 2026 Training Block.xlsx` is the same block as a workbook, generated
+*from* `plan.js` so the two can never drift:
+
+```bash
+npm run plan:xlsx   # requires python + `pip install openpyxl`
+```
+
+Six sheets: **Log** (all 191 sessions, one row each — the only sheet you type into),
+**Week Summary** (SUMIFS rollups, incl. the 6,000 yd/week floor indicator),
+**Swim** (CSS test log, pace zones, send-offs, drill progression), **Run** (ramp +
+lower-leg protocol), **Strength** (load tracking per template per week), and
+**Reference**. Blue cells are inputs, black cells are formulas.
+
+To use it in Google Sheets: upload to Drive and open with Sheets, or
+**File → Import → Upload**. Formulas, dropdowns, and conditional formatting carry
+over; spot-check the `m:ss` cells on the Swim sheet after importing.
 
 ## Features
 

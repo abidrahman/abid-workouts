@@ -2243,241 +2243,68 @@ function getWorkoutSpecificBlocks(detailedWorkout, session, day) {
   return matchedBlocks;
 }
 
-function parseSwimYardRange(duration) {
-  const match = String(duration ?? "").match(/(\d{1,3}(?:,\d{3})?)\s*[–-]\s*(\d{1,3}(?:,\d{3})?)\s*yd/i);
-  if (!match) return null;
-  const low = Number(match[1].replace(/,/g, ""));
-  const high = Number(match[2].replace(/,/g, ""));
-  if (!Number.isFinite(low) || !Number.isFinite(high) || low <= 0 || high <= 0) return null;
-  return { low: Math.min(low, high), high: Math.max(low, high) };
+// Sentence splitter that leaves "2.5 hr", "1:05", and parenthetical asides intact.
+function splitNoteIntoSentences(note) {
+  return String(note ?? "")
+    .split(/(?<=[.!?])\s+(?=[A-Z0-9“"(])/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
 }
 
-function getSwimProgressionWeek(session) {
-  const plannedDateKey = session.plannedDateKey ?? session.dateKey;
-  const startKey = dateToKey(calendarStartDate);
-  return Math.max(1, Math.floor(getDaysBetweenDateKeys(startKey, plannedDateKey) / 7) + 1);
+const prescriptionStepPattern =
+  /^(pre-swim|pre-set|warm-?up|wu\b|build|drill|main|pull|kick|swim down|cool-?down|cd\b|finish|then\b|session:|lifts?:)|^\d+\s*[×x]\s*\d/i;
+
+// Everything below is derived from the session's own plan.js note so the summary
+// and the step list can never disagree. Nothing here is invented.
+function buildBlocksFromNote(session) {
+  const sentences = splitNoteIntoSentences(session.note);
+  if (!sentences.length) return [];
+
+  const steps = [];
+  const cues = [];
+  sentences.forEach((sentence) => {
+    if (prescriptionStepPattern.test(sentence)) steps.push(sentence);
+    else cues.push(sentence);
+  });
+
+  const blocks = [];
+  if (steps.length) blocks.push({ title: "The session", items: steps });
+  if (cues.length) blocks.push({ title: steps.length ? "Why / how" : "How to execute", items: cues });
+  return blocks;
 }
 
-function getSwimFallbackBlocks(session) {
-  const plannedDateKey = session.plannedDateKey ?? session.dateKey;
-  const weekday = parseCalendarDateKey(plannedDateKey).getDay();
-  const range = parseSwimYardRange(session.duration) ?? { low: 1400, high: 1700 };
-  const weekNumber = getSwimProgressionWeek(session);
-  const descriptor = String(session.title ?? "")
-    .replace(/^swim\s*(?:[—:-]\s*)?/i, "")
-    .trim();
-  const swimFocus = descriptor || "technique session";
-  const title = `Swim — ${swimFocus}, ${session.duration}`;
-
-  if (weekday === 1) {
-    return [
-      {
-        title,
-        items: [
-          "Pre-swim shoulder prep: 5 min bands and relaxed mobility.",
-          `Warm-up: 300 yd easy with 4 × 25 yd drill/swim by 25.`,
-          "Drill set: 4 × 25 yd side kick + 4 × 25 yd catch-up + 4 × 25 yd fingertip drag, 20 sec rest.",
-          "Main set: 50/100/200/400/200/100/50 yd pyramid at controlled effort with 15–25 sec rest between reps.",
-          `Progression cue (week ${weekNumber}): keep the pyramid shape and hold ${range.low}–${range.high} yd total by adding easy volume before/after the pyramid or repeating part of the ladder with clean form.`,
-          "Cool-down: 100–200 yd easy.",
-        ],
-      },
-    ];
-  }
-
-  if (weekday === 3) {
-    return [
-      {
-        title,
-        items: [
-          "Pre-swim shoulder prep: 5 min bands plus thoracic and lat mobility.",
-          "Warm-up: 300 yd easy plus 4 × 25 yd build.",
-          "Technique primer: 6–8 × 25 yd drill/swim by 25 with 15–20 sec rest.",
-          "Main set: 20 × 50 yd speed-focused repeats on controlled send-off.",
-          `Progression cue (week ${weekNumber}): keep this speed session inside ${range.low}–${range.high} yd total while preserving pace quality through the final 6 repeats.`,
-          "Cool-down: 100–200 yd easy.",
-        ],
-      },
-    ];
-  }
-
-  if (weekday === 5) {
-    const baselineLongSet = 1000;
-    const extendedVolume = Math.max(0, Math.round((range.low - baselineLongSet) / 50) * 50);
-    const totalLongTarget = baselineLongSet + extendedVolume;
-    return [
-      {
-        title,
-        items: [
-          "Pre-swim shoulder prep: 5 min bands and relaxed mobility.",
-          "Warm-up: 300 yd easy, then 4 × 50 yd drill/swim by 25.",
-          `Main set baseline: 1 × ${baselineLongSet} yd continuous at calm effort.`,
-          `Progression extension: add ${extendedVolume > 0 ? `${extendedVolume} yd` : "0 yd"} of easy aerobic volume around the long set (target long portion ~${totalLongTarget} yd).`,
-          `Progression cue (week ${weekNumber}): finish inside ${range.low}–${range.high} yd total with stable form in the final 300 yd.`,
-          "Cool-down: 100–200 yd easy.",
-        ],
-      },
-    ];
-  }
-
-  return [
-    {
-      title,
-      items: [
-        "Pre-swim shoulder prep: 5 min bands and relaxed mobility.",
-        "Warm-up: 250–300 yd easy.",
-        "Drill set: 4 × 25 yd side kick + 4 × 25 yd catch-up + 4 × 25 yd scull or fingertip drag, 20 sec rest.",
-        "Main: 6 × 100 yd easy/moderate with 20–30 sec rest, aiming for smoother strokes rather than faster splits.",
-        "Finish: 4 × 50 yd easy with calm exhale and low head position.",
-        "Cool-down: 100–200 yd easy.",
-      ],
-    },
-  ];
-}
-
-function getGenericFallbackBlocks(session) {
-  const plannedDateKey = session.plannedDateKey ?? session.dateKey;
-  const weekday = parseCalendarDateKey(plannedDateKey).getDay();
-  const title = `${session.title} (${session.duration})`;
-  const text = `${session.title ?? ""} ${session.note ?? ""}`.toLowerCase();
-
-  if (session.categories.includes("strength")) {
-    if (/rdl|hamstring|hinge|posterior/.test(text)) {
-      return [{
-        title,
-        items: [
-          "Warm-up: 6–8 min hips/hamstrings/ankles + light activation.",
-          "Main lift: RDL-first progression at crisp technical reps.",
-          "Accessory: hamstring + glute work (2–3 movements).",
-          "Lower leg: calves + tibialis emphasis.",
-          "Finish: short trunk stability and cooldown mobility.",
-        ],
-      }];
-    }
-    if (/pull|biceps|row|pull-up|pullup/.test(text)) {
-      return [{
-        title,
-        items: [
-          "Warm-up: 5–7 min shoulders/scap prep and hanging activation.",
-          "Main lift: pull-ups or weighted pull-ups first.",
-          "Accessory: horizontal/vertical pulls plus biceps volume.",
-          "Control: scap stability and posture-focused finish.",
-          "Cooldown: upper-back and lat mobility.",
-        ],
-      }];
-    }
-    if (/bulgarian|split squat|quad/.test(text)) {
-      return [{
-        title,
-        items: [
-          "Warm-up: 6–8 min hips/quads/ankles + movement prep.",
-          "Main lift: Bulgarian split squat-first progression.",
-          "Accessory: quad-dominant lower-body work (2 movements).",
-          "Lower leg: calves + tibialis emphasis.",
-          "Finish: short trunk stability and cooldown mobility.",
-        ],
-      }];
-    }
-
-    return [{
-      title,
-      items: [
-        "Warm-up: dynamic mobility and activation (5–8 min).",
-        "Main block: core/abs circuit with anti-rotation + anti-extension focus.",
-        "Support: mobility/stretch sequence for hips, t-spine, and shoulders.",
-        "Lower leg: include calves/tibialis on at least one weekly core day.",
-        "Finish: downshift breathing and easy cooldown.",
-      ],
-    }];
-  }
-
-  if (session.categories.includes("bike")) {
-    if (weekday === 0 || /long|outdoor|endurance/.test(text)) {
-      return [{
-        title,
-        items: [
-          "Ride long outdoor endurance at mostly steady aerobic effort.",
-          "Fuel and hydrate consistently from the first hour.",
-          "Keep cadence smooth and avoid unnecessary surges.",
-          "Finish with easy spin-down and light mobility.",
-        ],
-      }];
-    }
-
-    return [{
-      title,
-      items: [
-        "Warm-up: 10–15 min progressive easy spin.",
-        "Main set: interval-focused bike work (hard repeats with full easy recoveries).",
-        "Hold quality output across all intervals; avoid opening too hard.",
-        "Cooldown: 10 min easy spin and lower-body reset.",
-      ],
-    }];
-  }
-
-  if (session.categories.includes("hike")) {
-    if (weekday === 4 || /stair|interval/.test(text)) {
-      return [{
-        title,
-        items: [
-          "Warm-up: 8–10 min easy stair pace.",
-          "Main set: stairmaster intervals (hard climbs with easy reset intervals).",
-          "Keep posture tall and drive steady cadence on work reps.",
-          "Cooldown: easy stair pace + calves/tibialis mobility.",
-        ],
-      }];
-    }
-
-    return [{
-      title,
-      items: [
-        "Long hike at steady, sustainable pace.",
-        "Practice fueling, hydration, and climbing rhythm.",
-        "Control descents to protect lower legs and feet.",
-        "Post-hike reset: ankles/calves/hips mobility.",
-      ],
-    }];
-  }
-
-  if (session.categories.includes("recovery") && /core|abs|stretch|mobility/.test(text)) {
-    const includeLowerLeg = /lower-leg|calves|tibialis/.test(text);
-    return [{
-      title,
-      items: [
-        "Warm-up: easy mobility flow for hips, t-spine, and shoulders.",
-        "Main block: core/abs circuit with anti-rotation, anti-extension, and trunk control.",
-        "Support: guided stretch sequence focused on restoring range and tissue quality.",
-        includeLowerLeg
-          ? "Lower leg: include calves/tibialis work to support weekly durability targets."
-          : "Lower leg: optional calves/tibialis touch if legs feel stiff.",
-        "Finish: downshift breathing and leave the session feeling fresher.",
-      ],
-    }];
-  }
-
-  return [{
-    title,
-    items: [
-      "Keep this session low stress and restorative.",
-      "Use easy mobility, trunk control, and breathing-focused movement.",
-      "Prioritize feeling better at the end than at the start.",
-    ],
-  }];
+function getStrengthTemplateForSession(session) {
+  const title = String(session.title ?? "");
+  return (
+    strengthTemplates.find((template) => template.title === title) ??
+    strengthTemplates.find((template) => {
+      const letter = title.match(/^strength\s+([ab])\b/i)?.[1];
+      return letter ? new RegExp(`^strength\\s+${letter}\\b`, "i").test(template.title) : false;
+    }) ??
+    null
+  );
 }
 
 function getSessionDetailBlocks(session, workoutBlocks) {
-  const plannedDateKey = session.plannedDateKey ?? session.dateKey;
-  const templateWindowStart = "2026-06-29";
-  if (plannedDateKey >= templateWindowStart) {
-    return session.categories.includes("swim")
-      ? getSwimFallbackBlocks(session)
-      : getGenericFallbackBlocks(session);
+  if (workoutBlocks?.length) return workoutBlocks;
+
+  const blocks = [];
+
+  // Strength days carry their prescription in strengthTemplates, not in the note.
+  if (session.categories.includes("strength")) {
+    const template = getStrengthTemplateForSession(session);
+    if (template) {
+      blocks.push({ title: "Lifts", items: [...template.exercises] });
+      buildBlocksFromNote(session).forEach((block) => blocks.push({ ...block, title: "Today's focus" }));
+      if (template.focus) blocks.push({ title: "Template focus", items: splitNoteIntoSentences(template.focus) });
+      return blocks;
+    }
   }
 
-  if (workoutBlocks.length) return workoutBlocks;
-  return session.categories.includes("swim")
-    ? getSwimFallbackBlocks(session)
-    : getGenericFallbackBlocks(session);
+  const noteBlocks = buildBlocksFromNote(session);
+  if (noteBlocks.length) return noteBlocks;
+
+  return [{ title: "The session", items: ["Follow the session as written on the calendar."] }];
 }
 
 function renderCalendarDetailBlocks(blocks) {
@@ -3195,7 +3022,6 @@ function renderCalendarSessionDetail(sessionId) {
   const detailInputId = `calendar-detail-${session.id}-complete`;
   const workoutBlocks = getWorkoutSpecificBlocks(detailedWorkout, session, day);
   const detailBlocks = getSessionDetailBlocks(session, workoutBlocks);
-  const workoutSpecificIntro = session.note || "Use this as the source of truth for today's execution.";
   const linkedActivity = getLinkedActivityForSession(session.id);
   const availableActivitiesForLink = !completed && !linkedActivity ? getAvailableActivitiesForSession(session) : [];
   const isStrengthSession = session.categories.includes("strength");
@@ -3275,7 +3101,6 @@ function renderCalendarSessionDetail(sessionId) {
     ${strengthQuickHistorySection}
     <section class="calendar-detail__section">
       <h4>Workout details</h4>
-      <p>${escapeHtml(workoutSpecificIntro)}</p>
       ${renderCalendarDetailBlocks(detailBlocks)}
     </section>
 

@@ -4,6 +4,10 @@ node_modules/
 # Production build
 dist/
 
+# Intermediate artifact from `npm run plan:xlsx` (the .xlsx itself is committed)
+plan-export.json
+~$*.xlsx
+
 # Local environment files
 .env
 .env.*

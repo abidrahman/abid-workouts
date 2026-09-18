@@ -9,6 +9,7 @@
     "dev": "node scripts/dev-server.mjs . 5173 127.0.0.1",
     "dev:lan": "node scripts/dev-server.mjs . 5173 0.0.0.0",
     "build": "node scripts/build.mjs",
+    "plan:xlsx": "node scripts/export-plan.mjs && python scripts/build-plan-xlsx.py",
     "preview": "node scripts/dev-server.mjs dist 4173 127.0.0.1"
   },
   "engines": {
