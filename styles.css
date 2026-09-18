@@ -676,6 +676,7 @@ main {
 }
 
 .swim-method-card h3,
+.swim-method-card h4,
 .drill-card h3 {
   margin: 0;
   font-size: 1.2rem;
@@ -1061,7 +1062,8 @@ main {
   text-transform: uppercase;
 }
 
-.phase-card h3 {
+.phase-card h3,
+.phase-card h4 {
   margin: 0;
   font-size: 1.25rem;
   line-height: 1.15;
@@ -1195,6 +1197,11 @@ main {
 .tag--swim {
   color: var(--blue);
   background: var(--blue-soft);
+}
+
+.tag--run {
+  color: #a8332c;
+  background: #fbeceb;
 }
 
 .tag--bike {
@@ -1618,6 +1625,7 @@ main {
 /* Calendar-first tracking controls and compact month view */
 :root {
   --cat-swim: #2975a8;
+  --cat-run: #c2453d;
   --cat-bike: #c98208;
   --cat-strength: #8848a3;
   --cat-hike: #116a5c;
@@ -1862,6 +1870,11 @@ main {
   --session-color: var(--cat-swim);
 }
 
+.calendar-session--run,
+.calendar-category-dot--run {
+  --session-color: var(--cat-run);
+}
+
 .calendar-session--bike,
 .calendar-category-dot--bike {
   --session-color: var(--cat-bike);
@@ -1884,6 +1897,10 @@ main {
 
 .calendar-month--compact .calendar-session--compact-swim {
   --session-color: var(--cat-swim);
+}
+
+.calendar-month--compact .calendar-session--compact-run {
+  --session-color: var(--cat-run);
 }
 
 .calendar-month--compact .calendar-session--compact-bike {
@@ -4162,5 +4179,190 @@ body.has-calendar-drag .calendar-day--blank {
   }
   .matching-row__details {
     padding-left: 1rem;
+  }
+}
+
+/* ── Plan tab ──────────────────────────────────────────────────────────── */
+.plan-section .panel {
+  margin-top: 1.5rem;
+}
+
+.plan-subhead {
+  margin: 1.75rem 0 0.75rem;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  color: var(--primary-2);
+}
+
+.plan-subhead:first-of-type {
+  margin-top: 1.25rem;
+}
+
+.phase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.swim-drill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.swim-drill-phase {
+  padding: 1.1rem 1.2rem;
+  background: #fbfdfc;
+  border: 1px solid rgba(220, 230, 223, 0.9);
+  border-radius: 16px;
+}
+
+.swim-drill-phase__weeks {
+  margin: 0 0 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cat-swim);
+}
+
+.swim-drill-phase h4 {
+  margin: 0 0 0.65rem;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.swim-drill-phase__focus {
+  margin: 0 0 0.85rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.swim-drill-phase ul,
+.plan-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.swim-drill-phase li,
+.plan-list li {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.plan-list {
+  margin-top: 0.85rem;
+}
+
+.strength-template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.strength-template-card {
+  padding: 1.1rem 1.2rem;
+  background: #fbfdfc;
+  border: 1px solid rgba(220, 230, 223, 0.9);
+  border-radius: 16px;
+}
+
+.strength-template-card h4 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.strength-template-card__focus {
+  margin: 0 0 0.85rem;
+  font-size: 0.85rem;
+  color: var(--cat-strength);
+}
+
+.strength-template-card ol {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.strength-template-card li {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.strength-template-card li strong {
+  color: var(--text);
+}
+
+.plan-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.plan-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  min-width: 540px;
+}
+
+.plan-table th {
+  padding: 0.6rem 0.7rem;
+  text-align: left;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid rgba(220, 230, 223, 0.9);
+  white-space: nowrap;
+}
+
+.plan-table td {
+  padding: 0.6rem 0.7rem;
+  vertical-align: top;
+  line-height: 1.45;
+  color: var(--muted);
+  border-bottom: 1px solid rgba(232, 240, 235, 0.85);
+}
+
+.plan-table td strong {
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.plan-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.plan-table tbody tr:hover {
+  background: rgba(229, 243, 236, 0.35);
+}
+
+.plan-table .progress-bar {
+  min-width: 90px;
+  margin-top: 0.35rem;
+}
+
+.plan-footnote {
+  margin: 0.9rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+@media (max-width: 720px) {
+  .plan-table {
+    min-width: 460px;
+  }
+
+  .plan-table th,
+  .plan-table td {
+    padding: 0.5rem 0.55rem;
   }
 }

@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Summer 2026 training tracker with a focused calendar and progress logging."
+      content="Fall 2026 base block — swim rebuild, gradual return to running, and lower-leg durability ahead of the 2027 70.3 season."
     />
     <meta name="theme-color" content="#116a5c" />
     <link rel="manifest" href="site.webmanifest" />
-    <title>Summer 2026 Training</title>
+    <title>Fall 2026 Base Block</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -18,7 +18,7 @@
 
     <header class="hero">
       <nav class="topbar site-nav" aria-label="Training plan navigation" data-site-nav>
-        <a class="site-nav__brand" href="#dashboard">Summer 2026 Training</a>
+        <a class="site-nav__brand" href="#dashboard">Fall 2026 Base Block</a>
         <button
           class="site-nav__toggle"
           type="button"
@@ -31,6 +31,7 @@
         </button>
         <div class="site-nav__menu" id="site-nav-menu" data-site-nav-menu>
           <a class="is-active" href="#calendar" data-tab-link="calendar">Today + Calendar</a>
+          <a href="#plan" data-tab-link="plan">The Plan</a>
           <a href="#matching" data-tab-link="matching">Match Activities</a>
           <a href="#strength-history" data-tab-link="strength-history">Strength History</a>
         </div>
@@ -49,15 +50,17 @@
       </section>
 
       <section class="hero__content" id="dashboard">
-        <p class="eyebrow">Summer 2026</p>
-        <h1>Summer 2026 Training</h1>
+        <p class="eyebrow">Sep 21 – Dec 31, 2026 · 15 weeks</p>
+        <h1>Fall 2026 Base Block</h1>
         <p class="hero__lede">
-          Simple, focused, and functional. Track planned sessions, complete workouts,
-          and keep training momentum all summer.
+          Break the swim plateau, rebuild running from the ground up without waking the shins,
+          and arrive in January with a base worth building a 70.3 season on.
+          Target race: Redmond Reindeer Romp 5 mile, Dec 5.
         </p>
 
         <div class="hero__actions">
           <a class="button button--primary" href="#calendar" data-tab-link="calendar">Open Calendar</a>
+          <a class="button button--ghost" href="#plan" data-tab-link="plan">The Plan</a>
           <a class="button button--ghost" href="#matching" data-tab-link="matching">Match Activities</a>
           <a class="button button--ghost" href="#strength-history" data-tab-link="strength-history">Strength History</a>
         </div>
@@ -68,9 +71,9 @@
       <section class="section calendar-section tab-panel is-active" id="calendar-tracker" data-tab-panel="calendar">
         <div class="section-heading">
           <p class="eyebrow">Single-view tracker</p>
-          <h2>Summer 2026 workout calendar</h2>
+          <h2>Fall 2026 workout calendar</h2>
           <p>
-            Check off each swim, bike, strength, hike, and recovery session.
+            Check off each swim, run, bike, strength, hike, and recovery session.
             Completion is saved locally in this browser.
           </p>
         </div>
@@ -94,6 +97,7 @@
 
         <div class="calendar-legend" aria-label="Workout category legend">
           <span class="tag tag--swim">swim</span>
+          <span class="tag tag--run">run</span>
           <span class="tag tag--bike">bike</span>
           <span class="tag tag--strength">strength</span>
           <span class="tag tag--hike">hike</span>
@@ -104,6 +108,7 @@
           <div class="calendar-toolbar__group" role="group" aria-label="Filter calendar by workout type">
             <button class="calendar-control-button is-active" type="button" data-calendar-category-filter="all">All</button>
             <button class="calendar-control-button" type="button" data-calendar-category-filter="swim">Swim</button>
+            <button class="calendar-control-button" type="button" data-calendar-category-filter="run">Run</button>
             <button class="calendar-control-button" type="button" data-calendar-category-filter="bike">Bike</button>
             <button class="calendar-control-button" type="button" data-calendar-category-filter="strength">Strength</button>
             <button class="calendar-control-button" type="button" data-calendar-category-filter="hike">Hike</button>
@@ -202,6 +207,78 @@
         </div>
       </section>
 
+
+      <section class="section plan-section tab-panel" id="plan-tracker" data-tab-panel="plan" hidden>
+        <div class="section__inner">
+          <div class="section-heading">
+            <p class="eyebrow">Why this block looks the way it does</p>
+            <h2>The plan</h2>
+            <p>
+              Fifteen weeks of base. The swim gets the most attention because it has the most
+              room to improve; the run gets the most caution because it has the most to lose.
+            </p>
+          </div>
+
+          <div class="stats-grid" id="summary-cards"></div>
+          <div class="mini-metrics" id="week-targets"></div>
+
+          <article class="panel">
+            <div class="section-heading section-heading--compact">
+              <h3>Phases</h3>
+            </div>
+            <div class="phase-grid" id="phases"></div>
+          </article>
+
+          <article class="panel">
+            <div class="section-heading section-heading--compact">
+              <p class="eyebrow">Priority one</p>
+              <h3>Swim: how the plateau gets broken</h3>
+            </div>
+            <div class="swim-method-grid" id="swim-methodology"></div>
+            <h4 class="plan-subhead">Pace zones and send-offs</h4>
+            <div id="swim-pace-zones"></div>
+            <h4 class="plan-subhead">Drill progression</h4>
+            <div class="swim-drill-grid" id="swim-drills"></div>
+            <h4 class="plan-subhead">Test-week checklist</h4>
+            <ul class="plan-list" id="swim-readiness"></ul>
+          </article>
+
+          <article class="panel">
+            <div class="section-heading section-heading--compact">
+              <p class="eyebrow">Weekly swim volume</p>
+              <h3>The 6,000 yd floor, held for 15 weeks</h3>
+            </div>
+            <div class="plan-table-wrap" id="weekly-volume"></div>
+          </article>
+
+          <article class="panel">
+            <div class="section-heading section-heading--compact">
+              <p class="eyebrow">Priority two</p>
+              <h3>Run ramp</h3>
+            </div>
+            <div class="plan-table-wrap" id="run-ramp"></div>
+            <h4 class="plan-subhead">Heart-rate zones</h4>
+            <div class="plan-table-wrap" id="hr-zones"></div>
+          </article>
+
+          <article class="panel">
+            <div class="section-heading section-heading--compact">
+              <p class="eyebrow">Non-negotiable</p>
+              <h3>Lower-leg protocol</h3>
+            </div>
+            <ul class="plan-list" id="lower-leg-protocol"></ul>
+          </article>
+
+          <article class="panel">
+            <div class="section-heading section-heading--compact">
+              <p class="eyebrow">Two days a week</p>
+              <h3>Strength templates</h3>
+            </div>
+            <div class="strength-template-grid" id="strength-templates"></div>
+          </article>
+        </div>
+      </section>
+
       <section class="section matching-section tab-panel" id="matching-tracker" data-tab-panel="matching" hidden>
         <div class="section__inner">
           <header class="matching-header">
@@ -226,7 +303,7 @@
     </main>
 
     <footer class="footer">
-      <p>Summer 2026 training tracker — keep it simple, consistent, and sustainable.</p>
+      <p>Fall 2026 base block — consistency over heroics. Next stop: Victoria 70.3 prep in January.</p>
     </footer>
 
     <script type="module" src="app.js"></script>
