@@ -8,6 +8,7 @@ import {
   weekTargets,
   swimMethodologyCards,
   swimDrillProgression,
+  swimDrills,
   swimReadinessChecklist,
   runRamp,
   lowerLegProtocol,
@@ -2221,7 +2222,7 @@ function getSignificantWords(value) {
 
 function blockMatchesCalendarSession(block, session) {
   const blockTitle = block.title.toLowerCase();
-  const blockText = `${block.title} ${block.items.join(" ")}`.toLowerCase();
+  const blockText = `${block.title} ${(block.items ?? []).join(" ")}`.toLowerCase();
   const sessionWords = getSignificantWords(`${session.title} ${session.note}`);
   const categoryTitleMatch = session.categories.some((category) =>
     getBlockCategoryKeywords(category).some((keyword) => blockTitle.includes(keyword)),
@@ -2273,6 +2274,26 @@ function buildBlocksFromNote(session) {
   return blocks;
 }
 
+// Drills are described once in plan.js and referenced by name in the notes, so
+// the prescription stays short and the teaching lives in one place.
+function noteMentions(haystack, label) {
+  const needle = label.toLowerCase();
+  let index = haystack.indexOf(needle);
+  while (index !== -1) {
+    // "NO PADDLES this week" must not pull in the paddles card.
+    if (!/\bno\s$/.test(haystack.slice(Math.max(0, index - 4), index))) return true;
+    index = haystack.indexOf(needle, index + needle.length);
+  }
+  return false;
+}
+
+function findDrillsInNote(note) {
+  const haystack = String(note ?? "").toLowerCase();
+  return swimDrills.filter((drill) =>
+    [drill.name, ...(drill.aliases ?? [])].some((label) => noteMentions(haystack, label)),
+  );
+}
+
 function getStrengthTemplateForSession(session) {
   const title = String(session.title ?? "");
   return (
@@ -2302,6 +2323,13 @@ function getSessionDetailBlocks(session, workoutBlocks) {
   }
 
   const noteBlocks = buildBlocksFromNote(session);
+
+  // Swim notes name their drills; attach the explanation for each one mentioned.
+  if (session.categories.includes("swim")) {
+    const drills = findDrillsInNote(session.note);
+    if (drills.length) noteBlocks.push({ title: "Drills in this session", drills });
+  }
+
   if (noteBlocks.length) return noteBlocks;
 
   return [{ title: "The session", items: ["Follow the session as written on the calendar."] }];
@@ -2323,13 +2351,42 @@ function renderCalendarDetailBlocks(blocks) {
           (block) => `
             <article class="calendar-detail__block">
               <h5>${escapeHtml(block.title)}</h5>
-              <ul>${block.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+              ${
+                block.drills
+                  ? renderDrillList(block.drills)
+                  : `<ul>${block.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+              }
             </article>
           `,
         )
         .join("")}
     </div>
   `;
+}
+
+function renderDrillList(drills) {
+  return `<dl class="drill-list">${renderDrillItems(drills)}</dl>`;
+}
+
+function renderDrillItems(drills) {
+  return drills
+    .map(
+      (drill) => `
+        <div class="drill">
+          <dt>
+            <span class="drill__name">${escapeHtml(drill.name)}</span>
+            <span class="drill__gear">${escapeHtml(drill.gear)}</span>
+          </dt>
+          <dd>
+            <p class="drill__what">${escapeHtml(drill.what)}</p>
+            <p class="drill__feel"><strong>Feel for:</strong> ${escapeHtml(drill.feel)}</p>
+            ${drill.mistake ? `<p class="drill__mistake"><strong>Watch for:</strong> ${escapeHtml(drill.mistake)}</p>` : ""}
+            ${drill.why ? `<p class="drill__why">${escapeHtml(drill.why)}</p>` : ""}
+          </dd>
+        </div>
+      `,
+    )
+    .join("");
 }
 
 const strengthExerciseAliases = [
@@ -2451,7 +2508,7 @@ function parseStrengthExercisesFromBlocks(blocks = []) {
   ]);
 
   blocks.forEach((block) => {
-    block.items.forEach((item) => {
+    (block.items ?? []).forEach((item) => {
       const line = String(item ?? "").trim();
       if (!line) return;
 
@@ -3209,6 +3266,7 @@ function renderPhases() {
 function renderSwimPlan() {
   renderSwimMethodologyCards();
   renderSwimDrillProgression();
+  renderSwimDrillLibrary();
   renderSwimReadinessChecklist();
   renderSwimPaceZones();
 }
@@ -3251,6 +3309,12 @@ function renderSwimReadinessChecklist() {
   const el = document.querySelector("#swim-readiness");
   if (!el) return;
   el.innerHTML = swimReadinessChecklist.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+}
+
+function renderSwimDrillLibrary() {
+  const el = document.querySelector("#swim-drill-library");
+  if (!el) return;
+  el.innerHTML = renderDrillItems(swimDrills);
 }
 
 function renderSwimPaceZones() {

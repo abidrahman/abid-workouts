@@ -189,6 +189,142 @@ export const swimMethodologyCards = [
   },
 ];
 
+/**
+ * The drill library. Workout notes name a drill; this is where the drill is
+ * explained, so the prescription stays short and the teaching lives in one place.
+ *
+ * Gear rule that drives the `gear` field: a center-mount snorkel sits on the
+ * centreline of your face, so it only works when you are flat and face-down.
+ * Rotate past roughly 45–60° and the tube goes sideways and floods. Any drill
+ * that puts you on your side is therefore fins-only.
+ */
+export const swimDrills = [
+  {
+    name: "Front kick",
+    aliases: ["flutter kick on front", "front flutter kick", "kick on front"],
+    gear: "Snorkel + fins",
+    what: "Kick on your front, arms extended in front or flat at your sides, face down, eyes straight at the bottom.",
+    feel: "Hips high and the kick coming from the hip, not the knee — small, fast, ankles loose. Your head is the rudder: lift it and the hips sink.",
+    mistake: "Bending at the knee like pedalling a bike, and kicking big and slow because it feels more powerful. It isn't.",
+    why: "This is the drill the snorkel exists for. With breathing removed you can actually feel where your hips are sitting.",
+  },
+  {
+    name: "Side kick",
+    aliases: ["side kick", "side-kick"],
+    gear: "Fins only — no snorkel",
+    what: "Kick on one side, lead arm extended, top arm resting along your hip, body rotated a full 90°, head in line with your spine.",
+    feel: "Balance. You should be able to hold it without sculling to stay up. Press the lead armpit lightly down and stack the top hip directly over the bottom one.",
+    mistake: "Rolling only 45° and calling it a side. Also craning your neck to look forward — keep the head in line and breathe by rolling slightly.",
+    why: "At a true 90° a center-mount snorkel is lying sideways and will flood, which is why this one is fins-only.",
+  },
+  {
+    name: "6-1-6",
+    aliases: ["6-1-6 left", "6-1-6 right", "six-one-six", "6 1 6"],
+    gear: "Fins only — no snorkel",
+    what: "From the side-kick position: six kicks on your left side, one full stroke, six kicks on your right, repeat.",
+    feel: "The hips drive the rotation and the arm just goes along with it. The single stroke should land you cleanly stacked on the other side, not halfway.",
+    mistake: "Yanking yourself over with the arm, cutting the six kicks short, and quietly only rotating well to the strong side.",
+    why: "Your rotation and your breathing share the same movement. This is the drill that fixes the left side — expect it to feel clumsy, that's the information.",
+  },
+  {
+    name: "Catch-up",
+    aliases: ["catch-up", "catch up"],
+    gear: "Snorkel + fins",
+    what: "Full freestyle, but the lead arm stays extended out front until the recovering hand touches it, then they swap.",
+    feel: "A long, patient front end — one arm is always extended. This is front-quadrant timing.",
+    mistake: "Letting the lead arm drop early, and crossing the centreline as the hand comes in to touch.",
+    why: "Forces extension and stops the stroke from turning into a windmill where both arms are pulling at once.",
+  },
+  {
+    name: "Fingertip drag",
+    aliases: ["fingertip drag", "finger drag", "fingertip-drag"],
+    gear: "Fins; snorkel optional",
+    what: "Normal freestyle, but your fingertips drag along the surface through the entire recovery.",
+    feel: "A high elbow and a heavy, relaxed hand. It should feel unhurried — the recovery is the rest part of the stroke.",
+    mistake: "Swinging the arm wide around the side instead of leading with the elbow.",
+    why: "You cannot drag your fingertips without a high elbow, so the drill enforces the shape rather than asking you to remember it.",
+  },
+  {
+    name: "Single-arm freestyle",
+    aliases: ["single-arm", "single arm", "one-arm", "single-arm freestyle"],
+    gear: "Snorkel + fins",
+    what: "One arm does all the work. The other stays extended in front (harder, better balance) or rests at your side (more rotation).",
+    feel: "Exactly where in the pull you lose pressure. With only one arm there is nowhere to hide a weak catch.",
+    mistake: "Rushing the front of the stroke, and forgetting to rotate because only one side is moving.",
+    why: "The snorkel matters here — breathing during single-arm is awkward enough that it wrecks the drill.",
+  },
+  {
+    name: "Front scull",
+    aliases: ["front scull", "sculling", "scull"],
+    gear: "Snorkel + pull buoy or fins",
+    what: "Face down, forearms vertical, hands sweeping in and out in front of your head in small continuous figure-eights.",
+    feel: "Pressure pushing back toward your feet, not down toward the bottom. This is what 'grip on the water' actually means.",
+    mistake: "Pressing down, which lifts your chest, drops your legs and stalls you.",
+    why: "The catch is the hardest thing in freestyle to feel. Sculling slows it down enough to notice.",
+  },
+  {
+    name: "Closed-fist",
+    aliases: ["closed-fist", "closed fist", "fist drill"],
+    gear: "None",
+    what: "Swim with your fists closed, then open the hands for the following length.",
+    feel: "With no hand you are forced onto the forearm. The lesson is the contrast when the hand comes back.",
+    mistake: "Going easy. Swim it at normal effort or there is no contrast to feel.",
+    why: "Teaches the forearm to do its share instead of the hand doing everything.",
+  },
+  {
+    name: "Breathe-3",
+    aliases: ["breathe-3", "breathe 3", "bilateral breathing", "breathing every 3"],
+    gear: "None",
+    what: "Breathe every third stroke, which alternates the side you breathe to.",
+    feel: "Even. If one side feels like a different stroke, that is the asymmetry you are here to remove.",
+    mistake: "Forcing it inside a hard set. Keep it to warm-up, cool-down and easy swimming until it is automatic.",
+    why: "You currently breathe right every two strokes. This is the single habit that unlocks the balanced stroke.",
+  },
+  {
+    name: "3/5/3 breathing",
+    aliases: ["3/5/3", "3-5-3", "breathing ladder"],
+    gear: "None",
+    what: "Three strokes between breaths, then five, then back to three, through the warm-up.",
+    feel: "A long, steady exhale. The five teaches you that you are rarely short of air — you are short of exhale.",
+    mistake: "Holding your breath and then gasping. Breathe out the whole time your face is down.",
+  },
+  {
+    name: "Breaststroke timing",
+    aliases: ["breaststroke timing", "breaststroke"],
+    gear: "None — no snorkel",
+    what: "Pull, breathe, kick, glide — deliberately one thing at a time, with a pause on the glide.",
+    feel: "The glide. Breaststroke is the one stroke where doing less, later, is faster.",
+    mistake: "Rushing into the next pull before the glide has happened, so you fight your own kick.",
+    why: "Your second stroke should be honest, not a novelty — and the breath is part of the timing, so no snorkel.",
+  },
+  {
+    name: "Stroke-count ladder",
+    aliases: ["stroke-count ladder", "stroke count ladder", "stroke count"],
+    gear: "None",
+    what: "Hold a fixed number of strokes per 25, then take one stroke off each round.",
+    feel: "Distance per stroke. Getting faster without adding strokes is the whole game.",
+    mistake: "Gliding to hit the number. You want a better catch, not a longer pause.",
+  },
+  {
+    name: "Sighting",
+    aliases: ["sighting", "sight"],
+    gear: "None — no snorkel",
+    what: "Lift the eyes just above the surface every six to eight strokes, then straight back down into the breath.",
+    feel: "Quick alligator eyes. The head barely moves and the rhythm does not break.",
+    mistake: "Lifting the whole head, which sinks the hips and costs more than the look is worth.",
+    why: "Free speed in open water next year, and cheap to build now.",
+  },
+  {
+    name: "Paddles + pull buoy",
+    aliases: ["paddles", "small paddles", "pull with paddles"],
+    gear: "Small paddles + pull buoy",
+    what: "Pull sets only, capped at roughly 400 yd per session, small paddles only.",
+    feel: "The catch holding pressure for longer. If you feel it in the front of the shoulder, stop.",
+    mistake: "Big paddles, or using them to swim faster rather than to hold a better catch.",
+    why: "Three months of swimming is a young training age for a shoulder. Paddles are the first thing to drop if anything hurts above 2/10.",
+  },
+];
+
 export const swimDrillProgression = [
   {
     phase: "Weeks 1–3",
@@ -357,7 +493,7 @@ function hike(duration, title, note, extra = {}) {
 const MOBILITY_CORE =
   "Ankle dorsiflexion (knee-to-wall), calf and soleus stretch, hip flexors, thoracic rotation, and 3 × 20 tibialis raises. Ten minutes of this beats an hour once a month.";
 const TECH_SWIM_NOTE = (yards) =>
-  `About ${fmt(yards)} yd total, all easy. No clock, no main set. Snorkel and fins for the first half, then easy 50s holding the feel. This session exists to raise frequency and keep the stroke fresh — leave the pool fresher than you arrived.`;
+  `About ${fmt(yards)} yd total, all easy. No clock, no main set. Snorkel and fins for the first half — catch-up, fingertip drag and front scull, rotating through them — then easy 50s holding the feel. This session exists to raise frequency and keep the stroke fresh — leave the pool fresher than you arrived.`;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // The 15-week plan
@@ -389,7 +525,7 @@ export const planWeeks = [
         swim(
           1600,
           "Swim — technique reset with new gear",
-          "Warm-up 300. Drill 600 with snorkel and fins: 6 × 50 as catch-up / 6-1-6 left / 6-1-6 right / fingertip drag / side kick / single-arm. Main 10 × 50 on 1:15 aerobic, every 4th one breathing to the left. Cool-down 200. Getting the snorkel to feel normal is the whole job today.",
+          "Warm-up 300. Drill 600 as 12 × 50 with fins — each drill twice: catch-up / 6-1-6 left / 6-1-6 right / fingertip drag / side kick / single-arm. Snorkel for the face-down drills only; take it off for 6-1-6 and side kick, because on your side it floods. Main 10 × 50 on 1:15 aerobic, every 4th one breathing to the left. Cool-down 200. Getting the snorkel to feel normal is the whole job today.",
         ),
         bike("45 min", "Spin bike — Z2 aerobic", "Keiser M3i, 130–145 bpm, cadence 85–95. Note your average watts — you will want the comparison after next week's FTP test."),
       ],
@@ -428,7 +564,7 @@ export const planWeeks = [
         swim(
           2200,
           "Swim — threshold 10 × 100",
-          "Warm-up 400. Drill 400 with snorkel and fins. Main: 10 × 100 at CSS on 2:15 (about 18 s rest). Then 4 × 50 breaststroke easy. Cool-down 200. If you cannot hold the last three, the send-off is too tight — add 5 s, do not slow the swimming down.",
+          "Warm-up 400. Drill 400 as 8 × 50, each drill twice: catch-up / 6-1-6 / fingertip drag / side kick. Fins throughout; snorkel off for 6-1-6 and side kick. Main: 10 × 100 at CSS on 2:15 (about 18 s rest). Then 4 × 50 breaststroke easy. Cool-down 200. If you cannot hold the last three, the send-off is too tight — add 5 s, do not slow the swimming down.",
         ),
         strength("A", "Second time through. Add load to the RDL if last week's felt easy, but keep the 3 s eccentric honest."),
       ],
@@ -479,7 +615,7 @@ export const planWeeks = [
         swim(
           2100,
           "Swim — threshold 5 × 200",
-          "Warm-up 400. Drill 400. Main: 5 × 200 at CSS on 4:25 (about 20 s rest). Cool-down 300. Longer reps at the same pace — this is where the sprint-to-distance gap actually closes.",
+          "Warm-up 400. Drill 400 as 8 × 50, each drill twice: single-arm / front kick / catch-up / 6-1-6. Fins throughout; snorkel off for 6-1-6. Main: 5 × 200 at CSS on 4:25 (about 20 s rest). Cool-down 300. Longer reps at the same pace — this is where the sprint-to-distance gap actually closes.",
         ),
         strength("A", "Progress the RDL. Log the weight; you want to see this number move across the block."),
       ],
@@ -491,7 +627,7 @@ export const planWeeks = [
         swim(
           2200,
           "Swim — speed 20 × 50",
-          "Warm-up 300. Drill 400 with the breathing focus. Main: 20 × 50 on 1:10, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 300. The fast ones should be 1:38–1:48/100 pace, not sprints.",
+          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: 6-1-6 / 3/5/3 breathing / single-arm / breathe-3. Fins throughout; snorkel off for 6-1-6, 3/5/3 breathing and breathe-3. Main: 20 × 50 on 1:10, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 300. The fast ones should be 1:38–1:48/100 pace, not sprints.",
         ),
         bike("50 min", "Spin bike — sweet spot 3 × 8 min", "3 × 8 min at 88–93% FTP with 4 min easy between. Cadence 85–95. First structured bike session of the block."),
       ],
@@ -529,7 +665,7 @@ export const planWeeks = [
         swim(
           2300,
           "Swim — threshold 12 × 100",
-          "Warm-up 400. Drill 400. Main: 12 × 100 at CSS on 2:15. Cool-down 300. Log the stroke count on the 100 that felt best — that number is your technique feedback loop for the rest of the block.",
+          "Warm-up 400. Drill 400 as 8 × 50, each drill twice: front scull / single-arm / closed-fist / catch-up. Snorkel and fins throughout. Main: 12 × 100 at CSS on 2:15. Cool-down 300. Log the stroke count on the 100 that felt best — that number is your technique feedback loop for the rest of the block.",
         ),
         strength("A", "Full session, progressing loads. Keep the tibialis raises at 3 × 20 — they matter more now that running is climbing."),
       ],
@@ -580,7 +716,7 @@ export const planWeeks = [
         swim(
           2300,
           "Swim — threshold 4 × 300",
-          "Warm-up 400. Drill 400. Main: 4 × 300 at CSS on 6:45. Cool-down 300. The longest threshold reps yet. Pace the first 100 of each 300 deliberately slow — going out hard is what has been capping these.",
+          "Warm-up 400. Drill 400 as 8 × 50, each drill twice: 6-1-6 / breaststroke timing / front scull / single-arm. Fins throughout; snorkel off for 6-1-6 and breaststroke timing. Main: 4 × 300 at CSS on 6:45. Cool-down 300. The longest threshold reps yet. Pace the first 100 of each 300 deliberately slow — going out hard is what has been capping these.",
         ),
         strength("A", "Standard Strength A."),
       ],
@@ -592,7 +728,7 @@ export const planWeeks = [
         swim(
           2300,
           "Swim — speed 24 × 50 + first paddles",
-          "Warm-up 300. Drill 400. PADDLES: 400 pull with small paddles and buoy, easy, holding the catch — stop immediately if the shoulder complains. Main: 24 × 50 on 1:05, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 200.",
+          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: closed-fist / catch-up / 6-1-6 / breaststroke timing. Fins throughout; snorkel off for 6-1-6 and breaststroke timing. PADDLES: 400 pull with small paddles and buoy, easy, holding the catch — stop immediately if the shoulder complains. Main: 24 × 50 on 1:05, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 200.",
         ),
         bike("55 min", "Spin bike — threshold 4 × 8 min", "4 × 8 min at 95–100% FTP, 3 min easy between. 155–165 bpm."),
       ],
@@ -632,7 +768,7 @@ export const planWeeks = [
         swim(
           3200,
           "Swim — big front-load #1",
-          "Warm-up 500. Drill 400. Main: 3 rounds of 6 × 100 at CSS on 2:15, 1 min between rounds (1,800 total). Cool-down 500. Long session, but you have five days out of the water coming — bank it.",
+          "Warm-up 500. Drill 400 as 8 × 50, each drill twice: front scull / single-arm / closed-fist / catch-up. Snorkel and fins throughout. Main: 3 rounds of 6 × 100 at CSS on 2:15, 1 min between rounds (1,800 total). Cool-down 500. Long session, but you have five days out of the water coming — bank it.",
         ),
         strength("A", "Full session before travel."),
       ],
@@ -689,7 +825,7 @@ export const planWeeks = [
         swim(
           1800,
           "Swim — easy re-entry",
-          "Warm-up 300. Drill 500 with snorkel and fins — rebuild the feel before asking for pace. Main 8 × 100 on 2:30 aerobic. Cool-down 200. NO PADDLES this week; six days out of the water means the shoulders get eased back in.",
+          "Warm-up 300. Drill 500 as 10 × 50, each drill twice: 6-1-6 / breaststroke timing / front scull / single-arm / closed-fist — rebuild the feel before asking for pace. Fins throughout; snorkel off for 6-1-6 and breaststroke timing. Main 8 × 100 on 2:30 aerobic. Cool-down 200. NO PADDLES this week; six days out of the water means the shoulders get eased back in.",
         ),
         bike("40 min", "Easy spin", "Zone 2, legs turning over after travel."),
       ],
@@ -697,7 +833,7 @@ export const planWeeks = [
         swim(
           1800,
           "Swim — technique + light speed",
-          "Warm-up 300. Drill 500 with the breathing focus. Main 12 × 50 on 1:15 aerobic, every third one fast. Then 4 × 50 breaststroke. Cool-down 200.",
+          "Warm-up 300. Drill 500 as 10 × 50, each drill twice: catch-up / 6-1-6 / 3/5/3 breathing / single-arm / breathe-3. Fins throughout; snorkel off for 6-1-6, 3/5/3 breathing and breathe-3. Main 12 × 50 on 1:15 aerobic, every third one fast. Then 4 × 50 breaststroke. Cool-down 200.",
         ),
         strength("A", "First proper lift in a week. Back the loads off about 10% — you have been doing bands."),
       ],
@@ -705,7 +841,7 @@ export const planWeeks = [
         swim(
           1800,
           "Swim — threshold returns",
-          "Warm-up 400. Drill 300. Main: 8 × 100 at CSS on 2:15. Cool-down 300. Third swim in three days — if the shoulders are heavy, cut to 6 × 100.",
+          "Warm-up 400. Drill 300 as 6 × 50, each drill twice: catch-up / 6-1-6 / breaststroke timing. Fins throughout; snorkel off for 6-1-6 and breaststroke timing. Main: 8 × 100 at CSS on 2:15. Cool-down 300. Third swim in three days — if the shoulders are heavy, cut to 6 × 100.",
         ),
         run("22–25 min", "Easy run — 3 km", "Down-week running. Deliberately short."),
       ],
@@ -749,7 +885,7 @@ export const planWeeks = [
         swim(
           2300,
           "Swim — speed 6 × (4 × 50)",
-          "Warm-up 300. Drill 400. Paddles 400 pull. Main: 6 rounds of 4 × 50 on 1:00, 45 s between rounds. Then 4 × 50 breaststroke. Cool-down 200. Tighter send-off than Week 5 — this is where density shows up.",
+          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: stroke-count ladder / front scull / 6-1-6 / closed-fist. Fins throughout; snorkel off for 6-1-6. Paddles 400 pull. Main: 6 rounds of 4 × 50 on 1:00, 45 s between rounds. Then 4 × 50 breaststroke. Cool-down 200. Tighter send-off than Week 5 — this is where density shows up.",
         ),
         bike("60 min", "Spin bike — threshold 5 × 8 min", "5 × 8 min at 95–100% FTP, 3 min easy. Recheck the effort against your Week 2 FTP — if it feels easy, retest the FTP next week."),
       ],
@@ -788,7 +924,7 @@ export const planWeeks = [
         swim(
           2300,
           "Swim — threshold 6 × 200",
-          "Warm-up 400. Drill 400. Main: 6 × 200 at the new CSS on 4:25 (adjust to the retest). Cool-down 300. 1,200 yd of threshold — the biggest threshold block of the block.",
+          "Warm-up 400. Drill 400 as 8 × 50, each drill twice: sighting / breaststroke timing / stroke-count ladder / front scull. Fins throughout; snorkel off for sighting and breaststroke timing. Main: 6 × 200 at the new CSS on 4:25 (adjust to the retest). Cool-down 300. 1,200 yd of threshold — the biggest threshold block of the block.",
         ),
         strength("A", "Standard Strength A. This is a big week; if you are flat, cut a set rather than skipping."),
       ],
@@ -800,7 +936,7 @@ export const planWeeks = [
         swim(
           2600,
           "Swim — speed 30 × 50",
-          "Warm-up 300. Drill 400. Paddles 400. Main: 30 × 50 on 1:05, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 200. Long 50s set — the goal is that number 30 looks like number 1.",
+          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: 6-1-6 / closed-fist / sighting / breaststroke timing. Fins throughout; snorkel off for 6-1-6, sighting and breaststroke timing. Paddles 400. Main: 30 × 50 on 1:05, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 200. Long 50s set — the goal is that number 30 looks like number 1.",
         ),
         bike("60 min", "Spin bike — sweet spot 4 × 12 min", "4 × 12 min at 88–93% FTP, 4 min easy. Long sweet-spot blocks are the most useful 70.3 preparation you can do indoors."),
       ],
@@ -840,7 +976,7 @@ export const planWeeks = [
         swim(
           2400,
           "Swim — threshold 3 × 400",
-          "Warm-up 400. Drill 400. Main: 3 × 400 at CSS on 8:45. Cool-down 400. Longest threshold reps of the block — essentially a rehearsal for the 70.3 swim distance, broken.",
+          "Warm-up 400. Drill 400 as 8 × 50, each drill twice: stroke-count ladder / front scull / 6-1-6 / closed-fist. Fins throughout; snorkel off for 6-1-6. Main: 3 × 400 at CSS on 8:45. Cool-down 400. Longest threshold reps of the block — essentially a rehearsal for the 70.3 swim distance, broken.",
         ),
         strength("A", "Standard Strength A."),
       ],
@@ -852,7 +988,7 @@ export const planWeeks = [
         swim(
           2100,
           "Swim — speed (Edmonton)",
-          "Travel day. Warm-up 300. Drill 400. Main: 20 × 50 on 1:05 alternating. 4 × 50 breaststroke. Cool-down 200. Fit it around the flight — same gym, so no adaptation needed.",
+          "Travel day. Warm-up 300. Drill 400 as 8 × 50, each drill twice: sighting / breaststroke timing / stroke-count ladder / front scull. Fins throughout; snorkel off for sighting and breaststroke timing. Main: 20 × 50 on 1:05 alternating. 4 × 50 breaststroke. Cool-down 200. Fit it around the flight — same gym, so no adaptation needed.",
         ),
         mobility("15 min", "Travel mobility."),
       ],
@@ -893,7 +1029,7 @@ export const planWeeks = [
         swim(
           2000,
           "Swim — threshold 10 × 100 (Edmonton)",
-          "Warm-up 400. Drill 300. Main: 10 × 100 at CSS on 2:10 — the tightest send-off yet. Cool-down 300.",
+          "Warm-up 400. Drill 300 as 6 × 50, each drill twice: 6-1-6 / closed-fist / sighting. Fins throughout; snorkel off for 6-1-6 and sighting. Main: 10 × 100 at CSS on 2:10 — the tightest send-off yet. Cool-down 300.",
         ),
         strength("A", "Last full Strength A before the race. Normal loads — a 5 mile race does not need a strength taper."),
       ],
@@ -905,7 +1041,7 @@ export const planWeeks = [
         swim(
           2000,
           "Swim — speed",
-          "Warm-up 300. Drill 400. Main: 16 × 50 on 1:05 alternating. 4 × 50 breaststroke. Cool-down 300.",
+          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: breaststroke timing / stroke-count ladder / front scull / 6-1-6. Fins throughout; snorkel off for breaststroke timing and 6-1-6. Main: 16 × 50 on 1:05 alternating. 4 × 50 breaststroke. Cool-down 300.",
         ),
         bike("45 min", "Spin bike — easy Z2", "Keep it aerobic this week; no threshold work with a race on Saturday."),
       ],
@@ -945,7 +1081,7 @@ export const planWeeks = [
         swim(
           2400,
           "Swim — threshold 8 × 150",
-          "Warm-up 400. Drill 400. Main: 8 × 150 at CSS on 3:20. Cool-down 400. Post-race, so the legs are tired but the shoulders are fine — swimming is the perfect recovery training.",
+          "Warm-up 400. Drill 400 as 8 × 50, each drill twice: closed-fist / sighting / breaststroke timing / stroke-count ladder. Fins throughout; snorkel off for sighting and breaststroke timing. Main: 8 × 150 at CSS on 3:20. Cool-down 400. Post-race, so the legs are tired but the shoulders are fine — swimming is the perfect recovery training.",
         ),
         bike("45 min", "Easy spin", "Flush the legs after Saturday. No strength this week's start — let the race settle."),
       ],
@@ -953,7 +1089,7 @@ export const planWeeks = [
         swim(
           2000,
           "Swim — speed + breaststroke",
-          "Warm-up 300. Drill 400. Main: 20 × 50 on 1:05 alternating. Then 200 breaststroke continuous — the Week 12 checkpoint. Cool-down 300.",
+          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: front scull / 6-1-6 / closed-fist / sighting. Fins throughout; snorkel off for 6-1-6 and sighting. Main: 20 × 50 on 1:05 alternating. Then 200 breaststroke continuous — the Week 12 checkpoint. Cool-down 300.",
         ),
         run("28 min", "Easy run — 4 km", "First run back after the race. Easy, short, soft surface."),
       ],
@@ -1001,7 +1137,7 @@ export const planWeeks = [
         swim(
           2000,
           "Swim — threshold 5 × 200",
-          "Warm-up 400. Drill 300. Main: 5 × 200 at CSS on 4:25. Cool-down 300. Back in a pool after four days off — ease into the first 200.",
+          "Warm-up 400. Drill 300 as 6 × 50, each drill twice: breaststroke timing / stroke-count ladder / front scull. Fins throughout; snorkel off for breaststroke timing. Main: 5 × 200 at CSS on 4:25. Cool-down 300. Back in a pool after four days off — ease into the first 200.",
         ),
         strength("A", "First full lift since race week. Back the loads off slightly and rebuild."),
       ],
@@ -1013,7 +1149,7 @@ export const planWeeks = [
         swim(
           2200,
           "Swim — speed 20 × 50",
-          "Warm-up 300. Drill 400. Main: 20 × 50 on 1:05 alternating. 4 × 50 breaststroke. Cool-down 300.",
+          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: 6-1-6 / closed-fist / sighting / breaststroke timing. Fins throughout; snorkel off for 6-1-6, sighting and breaststroke timing. Main: 20 × 50 on 1:05 alternating. 4 × 50 breaststroke. Cool-down 300.",
         ),
         bike("45 min", "Spin bike — sweet spot 3 × 10 min", "3 × 10 min at 88–93% FTP, 4 min easy between."),
       ],
@@ -1054,7 +1190,7 @@ export const planWeeks = [
         swim(
           2300,
           "Swim — threshold 4 × 300",
-          "Warm-up 400. Drill 400. Main: 4 × 300 at CSS on 6:30 — tighter than Week 5's version of this set. Cool-down 300.",
+          "Warm-up 400. Drill 400 as 8 × 50, each drill twice: stroke-count ladder / front scull / 6-1-6 / closed-fist. Fins throughout; snorkel off for 6-1-6. Main: 4 × 300 at CSS on 6:30 — tighter than Week 5's version of this set. Cool-down 300.",
         ),
         strength("A", "Standard Strength A."),
       ],
@@ -1070,7 +1206,7 @@ export const planWeeks = [
         swim(
           2400,
           "Swim — speed",
-          "Warm-up 300. Drill 400. Main: 24 × 50 on 1:05 alternating. 4 × 50 breaststroke. Cool-down 300. Christmas Eve — likely reduced pool hours, so go early.",
+          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: sighting / breaststroke timing / stroke-count ladder / front scull. Fins throughout; snorkel off for sighting and breaststroke timing. Main: 24 × 50 on 1:05 alternating. 4 × 50 breaststroke. Cool-down 300. Christmas Eve — likely reduced pool hours, so go early.",
         ),
         mobility("15 min", MOBILITY_CORE),
       ],
@@ -1118,7 +1254,7 @@ export const planWeeks = [
         swim(
           2000,
           "Swim — speed",
-          "Warm-up 300. Drill 400. Main: 20 × 50 on 1:05 alternating. Then 200 breaststroke continuous. Cool-down 300.",
+          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: 6-1-6 / closed-fist / sighting / breaststroke timing. Fins throughout; snorkel off for 6-1-6, sighting and breaststroke timing. Main: 20 × 50 on 1:05 alternating. Then 200 breaststroke continuous. Cool-down 300.",
         ),
         bike("40 min", "Spin bike — easy aerobic (optional)", "Optional. Skip it without guilt if the legs feel the long run coming tomorrow."),
       ],
