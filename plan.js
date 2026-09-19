@@ -12,7 +12,7 @@
  *      but 1,750 yd continuous at 2:11/100yd with HR drifting 121 → 155. A ~35s/100
  *      spread between sprint and continuous pace is far too wide. Fix = fixed
  *      send-offs instead of "rest until ready", real threshold volume, and a 4th
- *      weekly session. Volume goes 6,600 -> 9,900 yd/wk.
+ *      weekly session. Volume goes 6,200 -> 9,500 yd/wk.
  *   2. Run — rebuild from ~5 km/wk to a 5-mile race (Dec 5) without waking up the
  *      shins. MRIs were clean; CECS + shin splint history is the constraint.
  *      Volume/frequency spikes are the primary trigger, hard surfaces secondary.
@@ -88,7 +88,7 @@ export const summaryCards = [
   {
     label: "Block focus",
     value: "Swim engine",
-    detail: "Break the plateau: 6,600 → 9,900 yd/wk on fixed send-offs, not open rest",
+    detail: "Break the plateau: 6,200 → 9,500 yd/wk on fixed send-offs, not open rest",
   },
   {
     label: "Race",
@@ -143,7 +143,7 @@ export const phases = [
 export const weekTargets = [
   { value: "15", label: "weeks, Sep 21 → Dec 31" },
   { value: "4", label: "swims per week (was 3)" },
-  { value: "6,600→9,900", label: "weekly swim yards" },
+  { value: "6,200→9,500", label: "weekly swim yards" },
   { value: "5→18", label: "weekly run km ramp" },
   { value: "2", label: "strength sessions per week" },
   { value: "2–3", label: "bikes per week" },
@@ -315,7 +315,7 @@ function swim(yards, title, note, opts = {}) {
     title,
     duration: `${fmt(yards)} yd · ${minutes}`,
     categories: ["swim"],
-    note,
+    note: typeof note === "function" ? note(yards) : note,
     yards,
     ...opts.extra,
   };
@@ -356,8 +356,8 @@ function hike(duration, title, note, extra = {}) {
 // Reusable notes that repeat across the block.
 const MOBILITY_CORE =
   "Ankle dorsiflexion (knee-to-wall), calf and soleus stretch, hip flexors, thoracic rotation, and 3 × 20 tibialis raises. Ten minutes of this beats an hour once a month.";
-const TECH_SWIM_NOTE =
-  "No clock, no main set. Snorkel and fins for the first half, then easy 50s holding the feel. This session exists to raise frequency and keep the stroke fresh — leave the pool fresher than you arrived.";
+const TECH_SWIM_NOTE = (yards) =>
+  `About ${fmt(yards)} yd total, all easy. No clock, no main set. Snorkel and fins for the first half, then easy 50s holding the feel. This session exists to raise frequency and keep the stroke fresh — leave the pool fresher than you arrived.`;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // The 15-week plan
@@ -375,7 +375,7 @@ export const planWeeks = [
     days: {
       "2026-09-21": [
         swim(
-          2000,
+          1500,
           "Swim — CSS test (400 + 200 TT)",
           "Warm-up 400 (200 free, 4 × 50 drill). Build 4 × 50. Main: 400 yd all-out for time, 5 min full rest, then 200 yd all-out for time. Cool-down 300 easy. CSS seconds per 100 yd = (T400 − T200) ÷ 2. Write both times down — every send-off in this block comes from this number.",
         ),
@@ -399,7 +399,7 @@ export const planWeeks = [
       ],
       "2026-09-25": [
         swim(
-          2000,
+          2100,
           "Swim — long aerobic base",
           "Warm-up 300. Main: 1,000 continuous at genuine easy-aerobic (2:05–2:10/100). Then 6 × 100 on 2:30. Cool-down 200. Watch HR on the 1,000 — if it climbs more than ~15 bpm from start to finish, you went out too hard. That drift number is the benchmark we beat all block.",
         ),
@@ -477,7 +477,7 @@ export const planWeeks = [
     days: {
       "2026-10-05": [
         swim(
-          2300,
+          2100,
           "Swim — threshold 5 × 200",
           "Warm-up 400. Drill 400. Main: 5 × 200 at CSS on 4:25 (about 20 s rest). Cool-down 300. Longer reps at the same pace — this is where the sprint-to-distance gap actually closes.",
         ),
@@ -489,7 +489,7 @@ export const planWeeks = [
       ],
       "2026-10-07": [
         swim(
-          2000,
+          2200,
           "Swim — speed 20 × 50",
           "Warm-up 300. Drill 400 with the breathing focus. Main: 20 × 50 on 1:10, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 300. The fast ones should be 1:38–1:48/100 pace, not sprints.",
         ),
@@ -501,7 +501,7 @@ export const planWeeks = [
       ],
       "2026-10-09": [
         swim(
-          2300,
+          2400,
           "Swim — long aerobic 1,400",
           "Warm-up 300. Main: 1,400 continuous, then 4 × 100 at CSS on 2:20. Cool-down 300. Compare the HR drift on the 1,400 to Week 1's 1,000 — the target is a flatter curve, not a faster swim.",
         ),
@@ -527,7 +527,7 @@ export const planWeeks = [
     days: {
       "2026-10-12": [
         swim(
-          2500,
+          2300,
           "Swim — threshold 12 × 100",
           "Warm-up 400. Drill 400. Main: 12 × 100 at CSS on 2:15. Cool-down 300. Log the stroke count on the 100 that felt best — that number is your technique feedback loop for the rest of the block.",
         ),
@@ -539,7 +539,7 @@ export const planWeeks = [
       ],
       "2026-10-14": [
         swim(
-          2200,
+          1900,
           "Swim — speed 4 × (4 × 50)",
           "Warm-up 300. Drill 400 with front scull and single-arm, extra 50 on the left-breathing side. Main: 4 rounds of 4 × 50 on 1:05, descending 1 to 4 within each round, 45 s between rounds. Then 4 × 50 breaststroke. Cool-down 200.",
         ),
@@ -551,7 +551,7 @@ export const planWeeks = [
       ],
       "2026-10-16": [
         swim(
-          2600,
+          2800,
           "Swim — long aerobic 1,600",
           "Warm-up 300. Main: 1,600 continuous, then 6 × 100 at CSS on 2:20. Cool-down 300. First time over 1,500 continuous in a 25 yd pool — settle in and let it be boring.",
         ),
@@ -578,7 +578,7 @@ export const planWeeks = [
     days: {
       "2026-10-19": [
         swim(
-          2700,
+          2300,
           "Swim — threshold 4 × 300",
           "Warm-up 400. Drill 400. Main: 4 × 300 at CSS on 6:45. Cool-down 300. The longest threshold reps yet. Pace the first 100 of each 300 deliberately slow — going out hard is what has been capping these.",
         ),
@@ -590,7 +590,7 @@ export const planWeeks = [
       ],
       "2026-10-21": [
         swim(
-          2400,
+          2300,
           "Swim — speed 24 × 50 + first paddles",
           "Warm-up 300. Drill 400. PADDLES: 400 pull with small paddles and buoy, easy, holding the catch — stop immediately if the shoulder complains. Main: 24 × 50 on 1:05, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 200.",
         ),
@@ -602,9 +602,9 @@ export const planWeeks = [
       ],
       "2026-10-23": [
         swim(
-          2800,
+          3000,
           "Swim — long aerobic 1,800",
-          "Warm-up 300. Main: 1,800 continuous, then 6 × 100 at CSS on 2:20. Cool-down 300. Biggest swim week so far — roughly 9,000 yd. If the shoulders are tired, drop the 6 × 100 rather than the continuous swim.",
+          "Warm-up 300. Main: 1,800 continuous, then 6 × 100 at CSS on 2:20. Cool-down 300. Biggest swim week so far — roughly {{WEEK_YARDS}} yd. If the shoulders are tired, drop the 6 × 100 rather than the continuous swim.",
         ),
       ],
       "2026-10-24": [
@@ -638,9 +638,9 @@ export const planWeeks = [
       ],
       "2026-10-27": [
         swim(
-          3000,
+          3200,
           "Swim — big front-load #2",
-          "Warm-up 400. Drill 400. Main: 1,600 continuous aerobic, then 8 × 50 on 1:05. Cool-down 400. Morning session — flight is this evening. Two 3,000+ swims back to back keeps the weekly streak intact at 6,200 yd.",
+          "Warm-up 400. Drill 400. Main: 1,600 continuous aerobic, then 8 × 50 on 1:05. Cool-down 400. Morning session — flight is this evening. Two 3,000+ swims back to back keeps the weekly streak intact at {{WEEK_YARDS}} yd.",
         ),
         run("25 min", "Shakeout walk or easy spin", "Flight tonight. You already have a 3,000 yd swim today — walk, stretch, or spin easy rather than adding a run. Run volume this week is capped at 14 km and it is all in New York.", { categories: ["recovery"] }),
       ],
@@ -703,7 +703,7 @@ export const planWeeks = [
       ],
       "2026-11-06": [
         swim(
-          2200,
+          1800,
           "Swim — threshold returns",
           "Warm-up 400. Drill 300. Main: 8 × 100 at CSS on 2:15. Cool-down 300. Third swim in three days — if the shoulders are heavy, cut to 6 × 100.",
         ),
@@ -713,7 +713,7 @@ export const planWeeks = [
         swim(
           2400,
           "Swim — long aerobic 1,400",
-          "Warm-up 300. Main: 1,400 continuous, then 4 × 100 at CSS on 2:20. Cool-down 300. Fourth swim in four days brings the week to about 8,200 yd — streak protected on the back half.",
+          "Warm-up 300. Main: 1,400 continuous, then 4 × 100 at CSS on 2:20. Cool-down 300. Fourth swim in four days brings the week to about {{WEEK_YARDS}} yd — streak protected on the back half.",
         ),
         bike("75 min", "Endurance ride", "Z2, indoors or out depending on weather. Winter is arriving; start getting comfortable on the spin bike."),
       ],
@@ -735,7 +735,7 @@ export const planWeeks = [
     days: {
       "2026-11-09": [
         swim(
-          2400,
+          1600,
           "Swim — CSS RETEST (400 + 200 TT)",
           "Same protocol as Week 1: warm-up 400, build 4 × 50, then 400 all-out, 5 min rest, 200 all-out. Cool-down 400. Recalculate CSS and reset every send-off in the second half of the block. Seven weeks of threshold work should show up here — 4–6 s/100 faster is a good outcome.",
         ),
@@ -747,7 +747,7 @@ export const planWeeks = [
       ],
       "2026-11-11": [
         swim(
-          2500,
+          2300,
           "Swim — speed 6 × (4 × 50)",
           "Warm-up 300. Drill 400. Paddles 400 pull. Main: 6 rounds of 4 × 50 on 1:00, 45 s between rounds. Then 4 × 50 breaststroke. Cool-down 200. Tighter send-off than Week 5 — this is where density shows up.",
         ),
@@ -759,7 +759,7 @@ export const planWeeks = [
       ],
       "2026-11-13": [
         swim(
-          2800,
+          3000,
           "Swim — long aerobic 1,800",
           "Warm-up 300. Main: 1,800 continuous at the NEW aerobic pace from Monday's retest, then 6 × 100 at the new CSS on the new send-off. Cool-down 300.",
         ),
@@ -786,7 +786,7 @@ export const planWeeks = [
     days: {
       "2026-11-16": [
         swim(
-          2900,
+          2300,
           "Swim — threshold 6 × 200",
           "Warm-up 400. Drill 400. Main: 6 × 200 at the new CSS on 4:25 (adjust to the retest). Cool-down 300. 1,200 yd of threshold — the biggest threshold block of the block.",
         ),
@@ -810,7 +810,7 @@ export const planWeeks = [
       ],
       "2026-11-20": [
         swim(
-          3000,
+          3200,
           "Swim — long aerobic 2,000",
           "Warm-up 300. Main: 2,000 continuous, then 6 × 100 at CSS. Cool-down 300. Two thousand yards without stopping. Compare the HR drift to the Week 1 1,000 — this is the headline number for whether the plateau broke.",
         ),
@@ -838,7 +838,7 @@ export const planWeeks = [
     days: {
       "2026-11-23": [
         swim(
-          2800,
+          2400,
           "Swim — threshold 3 × 400",
           "Warm-up 400. Drill 400. Main: 3 × 400 at CSS on 8:45. Cool-down 400. Longest threshold reps of the block — essentially a rehearsal for the 70.3 swim distance, broken.",
         ),
@@ -850,7 +850,7 @@ export const planWeeks = [
       ],
       "2026-11-25": [
         swim(
-          2400,
+          2100,
           "Swim — speed (Edmonton)",
           "Travel day. Warm-up 300. Drill 400. Main: 20 × 50 on 1:05 alternating. 4 × 50 breaststroke. Cool-down 200. Fit it around the flight — same gym, so no adaptation needed.",
         ),
@@ -862,7 +862,7 @@ export const planWeeks = [
       ],
       "2026-11-27": [
         swim(
-          2800,
+          3000,
           "Swim — long aerobic 1,800",
           "Warm-up 300. Main: 1,800 continuous, then 6 × 100 at CSS. Cool-down 300.",
         ),
@@ -891,7 +891,7 @@ export const planWeeks = [
     days: {
       "2026-11-30": [
         swim(
-          2400,
+          2000,
           "Swim — threshold 10 × 100 (Edmonton)",
           "Warm-up 400. Drill 300. Main: 10 × 100 at CSS on 2:10 — the tightest send-off yet. Cool-down 300.",
         ),
@@ -903,7 +903,7 @@ export const planWeeks = [
       ],
       "2026-12-02": [
         swim(
-          2200,
+          2000,
           "Swim — speed",
           "Warm-up 300. Drill 400. Main: 16 × 50 on 1:05 alternating. 4 × 50 breaststroke. Cool-down 300.",
         ),
@@ -915,7 +915,7 @@ export const planWeeks = [
       ],
       "2026-12-04": [
         swim(
-          1800,
+          1700,
           "Swim — easy aerobic",
           "Warm-up 300. Main 1,000 easy continuous. 4 × 50 breaststroke. Cool-down 200. Genuinely easy — you race tomorrow.",
         ),
@@ -925,7 +925,7 @@ export const planWeeks = [
         run("55–65 min", "RACE — Redmond Reindeer Romp 5 mile (8 km)", "Warm-up 1.5 km easy with 3 strides. Race: go out at 5:10/km for the first mile and let it come down — the classic error here is a first mile 20 s too fast. Target roughly 40–42 min if the shins are quiet; if they are not, run it as a steady effort and enjoy the morning. Cool-down 1 km.", { rescheduleLocked: true }),
       ],
       "2026-12-06": [
-        swim(1200, "Recovery swim", "Very easy. Flush the legs, loosen the shoulders, no pace work at all."),
+        swim(1200, "Recovery swim", "About 1,200 yd total, very easy. Flush the legs, loosen the shoulders, no pace work at all."),
         mobility("25 min", "Thorough post-race mobility. Calves and shins will be the sorest — be gentle, and do not stretch into compartment pain."),
       ],
     },
@@ -951,7 +951,7 @@ export const planWeeks = [
       ],
       "2026-12-08": [
         swim(
-          2200,
+          2000,
           "Swim — speed + breaststroke",
           "Warm-up 300. Drill 400. Main: 20 × 50 on 1:05 alternating. Then 200 breaststroke continuous — the Week 12 checkpoint. Cool-down 300.",
         ),
@@ -959,7 +959,7 @@ export const planWeeks = [
       ],
       "2026-12-09": [
         swim(
-          2200,
+          2400,
           "Swim — long aerobic 1,400",
           "Warm-up 300. Main: 1,400 continuous, then 4 × 100 at CSS. Cool-down 300. Morning session — flight is at 4:30 pm. Three swims brings the week to about 6,800 yd, so the streak holds through the trip.",
         ),
@@ -999,7 +999,7 @@ export const planWeeks = [
     days: {
       "2026-12-14": [
         swim(
-          2200,
+          2000,
           "Swim — threshold 5 × 200",
           "Warm-up 400. Drill 300. Main: 5 × 200 at CSS on 4:25. Cool-down 300. Back in a pool after four days off — ease into the first 200.",
         ),
@@ -1023,7 +1023,7 @@ export const planWeeks = [
       ],
       "2026-12-18": [
         swim(
-          2400,
+          2600,
           "Swim — long aerobic 1,600",
           "Warm-up 300. Main: 1,600 continuous, then 4 × 100 at CSS. Cool-down 300. Home pool.",
         ),
@@ -1052,7 +1052,7 @@ export const planWeeks = [
     days: {
       "2026-12-21": [
         swim(
-          2600,
+          2300,
           "Swim — threshold 4 × 300",
           "Warm-up 400. Drill 400. Main: 4 × 300 at CSS on 6:30 — tighter than Week 5's version of this set. Cool-down 300.",
         ),
@@ -1079,7 +1079,7 @@ export const planWeeks = [
       ],
       "2026-12-26": [
         swim(
-          2600,
+          2800,
           "Swim — long aerobic 1,800",
           "Warm-up 300. Main: 1,800 continuous, then 4 × 100 at CSS. Cool-down 300.",
         ),
@@ -1104,7 +1104,7 @@ export const planWeeks = [
     days: {
       "2026-12-28": [
         swim(
-          2400,
+          1600,
           "Swim — FINAL CSS TEST (400 + 200 TT)",
           "Same protocol as Weeks 1 and 8. Warm-up 400, build 4 × 50, 400 all-out, 5 min rest, 200 all-out, cool-down 400. This is the block's headline number. Compare all three tests side by side — Week 1, Week 8, and today.",
         ),
@@ -1116,7 +1116,7 @@ export const planWeeks = [
       ],
       "2026-12-30": [
         swim(
-          2200,
+          2000,
           "Swim — speed",
           "Warm-up 300. Drill 400. Main: 20 × 50 on 1:05 alternating. Then 200 breaststroke continuous. Cool-down 300.",
         ),
@@ -1138,6 +1138,18 @@ export const planWeeks = [
 // ─────────────────────────────────────────────────────────────────────────────
 // Derived structures
 // ─────────────────────────────────────────────────────────────────────────────
+
+// A few notes reference their own week's swim total. Resolve that from the
+// sessions themselves so the prose can never drift from the prescriptions.
+planWeeks.forEach((weekEntry) => {
+  const sessions = Object.values(weekEntry.days).flat();
+  const weekYards = sessions.reduce((total, session) => total + (session.yards ?? 0), 0);
+  sessions.forEach((session) => {
+    if (session.note?.includes("{{WEEK_YARDS}}")) {
+      session.note = session.note.replaceAll("{{WEEK_YARDS}}", fmt(weekYards));
+    }
+  });
+});
 
 /** Flattened { "YYYY-MM-DD": [session, ...] } map used by the calendar. */
 export const plannedSessionsByDate = (() => {

@@ -8,7 +8,7 @@ The priorities, in order:
 
 1. **Swim** — break a plateau by replacing open rest with fixed send-offs built off
    Critical Swim Speed, adding a 4th weekly session, and holding a 6,000 yd/wk floor
-   through every travel week. Volume ramps 6,600 → 9,900 yd/wk.
+   through every travel week. Volume ramps 6,200 → 9,500 yd/wk.
 2. **Run** — rebuild from ~5 km/wk to an 8 km race (Redmond Reindeer Romp 5 mile,
    Dec 5) without re-triggering shin splints or CECS. One run per week until the
    custom orthotics arrive, then a capped ramp.
