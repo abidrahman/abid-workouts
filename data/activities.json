@@ -1,5 +1,14 @@
 [
   {
+    "id": "20262438674",
+    "name": "Bainbridge Food Tour",
+    "type": "Ride",
+    "startTime": "2026-09-20T11:51:40Z",
+    "duration": 12485,
+    "distance": 61573.2,
+    "elevationGain": 952
+  },
+  {
     "id": "20245617456",
     "name": "Lunch Ride",
     "type": "Ride",
@@ -1787,15 +1796,6 @@
     "type": "Ride",
     "startTime": "2026-05-12T13:44:45Z",
     "duration": 2458,
-    "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "18470810009",
-    "name": "Afternoon Ride",
-    "type": "Ride",
-    "startTime": "2026-05-11T16:22:35Z",
-    "duration": 3299,
     "distance": 0,
     "elevationGain": 0
   }
