@@ -2,6 +2,8 @@ import {
   blockMeta,
   swimPaceZones,
   swimSendOffs,
+  swimTests,
+  swimTestTarget,
   heartRateZones,
   summaryCards,
   phases,
@@ -3268,6 +3270,7 @@ function renderSwimPlan() {
   renderSwimDrillProgression();
   renderSwimDrillLibrary();
   renderSwimReadinessChecklist();
+  renderSwimCssLog();
   renderSwimPaceZones();
 }
 
@@ -3317,6 +3320,69 @@ function renderSwimDrillLibrary() {
   el.innerHTML = renderDrillItems(swimDrills);
 }
 
+function formatTestDate(dateKey) {
+  const date = new Date(`${dateKey}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return dateKey;
+  const month = calendarMonthNames[date.getMonth()].slice(0, 3);
+  return `${calendarWeekdayNames[date.getDay()]} ${month} ${date.getDate()}`;
+}
+
+function renderSwimCssLog() {
+  const el = document.querySelector("#swim-css-log");
+  if (!el) return;
+  const latest = swimTests[swimTests.length - 1];
+  const testRow = (row) => `
+    <tr>
+      <td><strong>${escapeHtml(row.label)}</strong></td>
+      <td>${escapeHtml(row.t400)}</td>
+      <td>${escapeHtml(row.t200)}</td>
+      <td><strong>${escapeHtml(row.css)}</strong></td>
+    </tr>
+  `;
+
+  el.innerHTML = `
+    <p class="css-current">
+      <span class="css-current__label">Current CSS</span>
+      <span class="css-current__value">${escapeHtml(latest?.css ?? "—")}</span>
+      <span class="css-current__unit">per 100 yd</span>
+    </p>
+    <div class="plan-table-wrap">
+      <table class="plan-table">
+        <thead>
+          <tr><th>Test</th><th>400 yd</th><th>200 yd</th><th>CSS</th></tr>
+        </thead>
+        <tbody>
+          ${swimTests
+            .map(
+              (test) => `
+                <tr>
+                  <td><strong>${escapeHtml(test.label)}</strong><br><span class="css-log__date">${escapeHtml(formatTestDate(test.date))}</span></td>
+                  <td>${escapeHtml(test.t400)}</td>
+                  <td>${escapeHtml(test.t200)}</td>
+                  <td><strong>${escapeHtml(test.css)}</strong></td>
+                </tr>
+              `,
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
+    ${latest?.note ? `<p class="plan-subhead__note">${escapeHtml(latest.note)}</p>` : ""}
+    <h5 class="plan-subhead">Week ${swimTestTarget.week} retest target — ${escapeHtml(formatTestDate(swimTestTarget.date))}</h5>
+    <div class="plan-table-wrap">
+      <table class="plan-table">
+        <thead>
+          <tr><th>Outcome</th><th>400 yd</th><th>200 yd</th><th>CSS</th></tr>
+        </thead>
+        <tbody>
+          ${swimTestTarget.rows.map(testRow).join("")}
+        </tbody>
+      </table>
+    </div>
+    <p class="plan-subhead__note">${escapeHtml(swimTestTarget.caveat)}</p>
+  `;
+}
+
 function renderSwimPaceZones() {
   const el = document.querySelector("#swim-pace-zones");
   if (!el) return;
@@ -3342,6 +3408,12 @@ function renderSwimPaceZones() {
       </table>
     </div>
     <h4 class="plan-subhead">Send-offs</h4>
+    <p class="plan-subhead__note">
+      These are still cut from the pre-test estimate of 1:55, which the Week 1 test came
+      within 2 s of. That couple of seconds is left in on purpose while the new gear and
+      drill work bed in — the send-offs get re-cut at the Week 8 retest, where the change
+      should actually be worth making. The rest column is measured against your tested 1:53.
+    </p>
     <div class="plan-table-wrap">
       <table class="plan-table">
         <thead>

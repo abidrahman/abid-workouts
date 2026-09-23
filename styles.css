@@ -2364,6 +2364,36 @@ main {
   line-height: 1.55;
 }
 
+.css-current {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.9rem 0 0.75rem;
+}
+
+.css-current__label {
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.css-current__value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.css-current__unit {
+  color: var(--muted);
+}
+
+.css-log__date {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
 .drill-list--library {
   margin-top: 0.9rem;
 }

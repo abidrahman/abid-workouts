@@ -47,30 +47,63 @@ export const blockMeta = {
  *     CSS pace per 100 yd = (400 − 200) / (T400 − T200) ... expressed as time per 100
  *     i.e. CSS seconds per 100 = (T400 − T200) / 2
  *
- * Until that test is done, everything below assumes CSS ≈ 1:55/100 yd, which is the
- * best estimate from the Aug–Sep COROS data. Re-anchor after the Week 1 and Week 8
- * tests — every send-off in this plan is derived from CSS.
+ * Tested Mon Sep 21 2026: 400 in 7:06, 200 in 3:20 → CSS = 1:53/100 yd. The zones below
+ * are all derived from that number. Retested Week 8 and Week 15.
+ *
+ * The send-offs in this file are still cut from the pre-test estimate of 1:55, which the
+ * test came within 2 s of. That 2 s is left in deliberately as a small buffer while the
+ * new gear and drill work bed in — send-offs get re-cut at the Week 8 retest, where the
+ * change should actually be material.
  */
-export const swimPaceZones = [
-  { zone: "Easy / recovery", pace: "2:10–2:20", cue: "Conversational. Used for warm-up, cool-down, and the technique swim." },
-  { zone: "Aerobic (Z2)", pace: "2:00–2:10", cue: "The pace a long continuous swim should feel like. Nose-breathing calm." },
-  { zone: "CSS / threshold", pace: "1:52–1:58", cue: "The engine of this block. Comfortably hard, repeatable for 20–40 min of work." },
-  { zone: "Fast (VO2)", pace: "1:38–1:48", cue: "50s and short 100s. Hard but still with clean catch and a long stroke." },
-  { zone: "Sprint", pace: "1:30–1:35", cue: "25s and the last 50 of a set. Rare — this is already a strength." },
+export const swimTests = [
+  {
+    label: "Week 1 baseline",
+    date: "2026-09-21",
+    t400: "7:06",
+    t200: "3:20",
+    css: "1:53",
+    note: "First CSS test. The 400/200 ratio is 2.13, inside the normal 2.10–2.20 band, so the number is internally consistent and the speed-to-endurance balance is healthy.",
+  },
 ];
 
 /**
- * Send-offs assume CSS ≈ 1:55/100 yd. Recalculate after each CSS test:
- * threshold 100s go on CSS + 20s, aerobic 100s on CSS + 35s.
+ * Week 8 retest target. CSS is hypersensitive to the 400: holding the 200 and taking
+ * 8 s off the 400 alone moves CSS from 1:53 to 1:49. The 400 is the number the threshold
+ * and continuous work actually targets.
+ */
+export const swimTestTarget = {
+  week: 8,
+  date: "2026-11-09",
+  rows: [
+    { label: "Now (Sep 21)", t400: "7:06", t200: "3:20", css: "1:53" },
+    { label: "Good — 4 s/100 faster", t400: "6:58", t200: "3:20", css: "1:49" },
+    { label: "Strong — 6 s/100 faster", t400: "6:52", t200: "3:18", css: "1:47" },
+  ],
+  caveat:
+    "Run the protocol identically — 400 first, 5 min full rest, then 200 — or the comparison means nothing. A sandbagged 200 inflates CSS and makes the block look better than it was, so both efforts have to be genuine.",
+};
+
+export const swimPaceZones = [
+  { zone: "Easy / recovery", pace: "2:08–2:13", cue: "CSS + 15–20 s. Conversational. Warm-up, cool-down, and the technique swim." },
+  { zone: "Aerobic (Z2)", pace: "2:01–2:05", cue: "CSS + 8–12 s. What a long continuous swim should feel like. Nose-breathing calm." },
+  { zone: "CSS / threshold", pace: "1:51–1:55", cue: "Your tested 1:53, give or take 2 s. The engine of this block — comfortably hard, repeatable for 20–40 min of work." },
+  { zone: "Fast (VO2)", pace: "1:45–1:48", cue: "CSS −5 to −8 s. 50s and short 100s, still with a clean catch and a long stroke." },
+  { zone: "Sprint", pace: "1:35–1:40", cue: "25s and the last 50 of a set. 1:40 is your 200 TT pace — anything quicker is a genuine sprint, so use it sparingly." },
+];
+
+/**
+ * Send-offs are cut from the pre-test estimate of CSS ≈ 1:55 and stay there until the
+ * Week 8 retest. The rest column is measured against the tested 1:53, so it reads a
+ * couple of seconds more generous than these send-offs were originally labelled.
  */
 export const swimSendOffs = [
-  { set: "100 aerobic", sendOff: "2:30", rest: "~25 s" },
-  { set: "100 threshold (CSS)", sendOff: "2:15", rest: "~18 s" },
-  { set: "100 fast", sendOff: "2:30", rest: "~40 s" },
+  { set: "100 aerobic", sendOff: "2:30", rest: "~27 s" },
+  { set: "100 threshold (CSS)", sendOff: "2:15", rest: "~22 s" },
+  { set: "100 fast", sendOff: "2:30", rest: "~43 s" },
   { set: "50 aerobic", sendOff: "1:15", rest: "~13 s" },
   { set: "50 threshold (CSS)", sendOff: "1:05", rest: "~8 s" },
-  { set: "50 fast", sendOff: "1:15", rest: "~25 s" },
-  { set: "200 threshold (CSS)", sendOff: "4:25", rest: "~20 s" },
+  { set: "50 fast", sendOff: "1:15", rest: "~22 s" },
+  { set: "200 threshold (CSS)", sendOff: "4:25", rest: "~39 s" },
 ];
 
 export const heartRateZones = [
@@ -513,7 +546,7 @@ export const planWeeks = [
         swim(
           1500,
           "Swim — CSS test (400 + 200 TT)",
-          "Warm-up 400 (200 free, 4 × 50 drill). Build 4 × 50. Main: 400 yd all-out for time, 5 min full rest, then 200 yd all-out for time. Cool-down 300 easy. CSS seconds per 100 yd = (T400 − T200) ÷ 2. Write both times down — every send-off in this block comes from this number.",
+          "Warm-up 400 (200 free, 4 × 50 drill). Build 4 × 50. Main: 400 yd all-out for time, 5 min full rest, then 200 yd all-out for time. Cool-down 300 easy. CSS seconds per 100 yd = (T400 − T200) ÷ 2. Write both times down — every send-off in this block comes from this number. Result, Sep 21: 7:06 and 3:20, giving CSS 1:53/100 yd.",
         ),
         strength("A", "First session back. Leave two reps in reserve on everything — this is a re-entry week, not a test."),
       ],
@@ -564,7 +597,7 @@ export const planWeeks = [
         swim(
           2200,
           "Swim — threshold 10 × 100",
-          "Warm-up 400. Drill 400 as 8 × 50, each drill twice: catch-up / 6-1-6 / fingertip drag / side kick. Fins throughout; snorkel off for 6-1-6 and side kick. Main: 10 × 100 at CSS on 2:15 (about 18 s rest). Then 4 × 50 breaststroke easy. Cool-down 200. If you cannot hold the last three, the send-off is too tight — add 5 s, do not slow the swimming down.",
+          "Warm-up 400. Drill 400 as 8 × 50, each drill twice: catch-up / 6-1-6 / fingertip drag / side kick. Fins throughout; snorkel off for 6-1-6 and side kick. Main: 10 × 100 at CSS on 2:15 (about 22 s rest). Then 4 × 50 breaststroke easy. Cool-down 200. If you cannot hold the last three, the send-off is too tight — add 5 s, do not slow the swimming down.",
         ),
         strength("A", "Second time through. Add load to the RDL if last week's felt easy, but keep the 3 s eccentric honest."),
       ],
@@ -615,7 +648,7 @@ export const planWeeks = [
         swim(
           2100,
           "Swim — threshold 5 × 200",
-          "Warm-up 400. Drill 400 as 8 × 50, each drill twice: single-arm / front kick / catch-up / 6-1-6. Fins throughout; snorkel off for 6-1-6. Main: 5 × 200 at CSS on 4:25 (about 20 s rest). Cool-down 300. Longer reps at the same pace — this is where the sprint-to-distance gap actually closes.",
+          "Warm-up 400. Drill 400 as 8 × 50, each drill twice: single-arm / front kick / catch-up / 6-1-6. Fins throughout; snorkel off for 6-1-6. Main: 5 × 200 at CSS on 4:25 (about 39 s rest). Cool-down 300. Longer reps at the same pace — this is where the sprint-to-distance gap actually closes.",
         ),
         strength("A", "Progress the RDL. Log the weight; you want to see this number move across the block."),
       ],
@@ -873,7 +906,7 @@ export const planWeeks = [
         swim(
           1600,
           "Swim — CSS RETEST (400 + 200 TT)",
-          "Same protocol as Week 1: warm-up 400, build 4 × 50, then 400 all-out, 5 min rest, 200 all-out. Cool-down 400. Recalculate CSS and reset every send-off in the second half of the block. Seven weeks of threshold work should show up here — 4–6 s/100 faster is a good outcome.",
+          "Same protocol as Week 1. Warm-up 400, build 4 × 50, 400 all-out, 5 min rest, 200 all-out, cool-down 400. Recalculate CSS and reset every send-off in the second half of the block. Seven weeks of threshold work should show up here — 4–6 s/100 faster is a good outcome, which from the Week 1 baseline of 1:53 means landing between 1:49 and 1:47. CSS is hypersensitive to the 400: hold the 200 at 3:20, take eight seconds off the 400, and you are already at 1:49. Run it identically to Week 1 or the comparison means nothing, and give both efforts everything — an easy 200 flatters the number.",
         ),
         strength("A", "Standard Strength A."),
       ],
