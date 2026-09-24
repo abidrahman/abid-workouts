@@ -109,7 +109,7 @@ export const swimSendOffs = [
 export const heartRateZones = [
   { zone: "Run — easy", range: "140–152 bpm", cue: "Every easy run lives here. If it drifts above, walk it back." },
   { zone: "Run — steady / tempo", range: "158–168 bpm", cue: "Thursday quality only, and never for long early in the block." },
-  { zone: "Bike — Z2 endurance", range: "130–145 bpm", cue: "Matches the Sep 17 outdoor ride (136 bpm avg). The default bike pace." },
+  { zone: "Bike — Z2 endurance", range: "130–145 bpm", cue: "Matches the Sep 17 outdoor ride (136 bpm avg). The Sep 23 spin ran 140–150, a touch hot — aim for the middle of the band, not the top." },
   { zone: "Bike — threshold", range: "155–165 bpm", cue: "Spin-bike intervals. Pair with watts once the Week 2 FTP test is done." },
 ];
 
@@ -560,7 +560,7 @@ export const planWeeks = [
           "Swim — technique reset with new gear",
           "Warm-up 300. Drill 600 as 12 × 50 with fins — each drill twice: catch-up / 6-1-6 left / 6-1-6 right / fingertip drag / side kick / single-arm. Snorkel for the face-down drills only; take it off for 6-1-6 and side kick, because on your side it floods. Main 10 × 50 on 1:15 aerobic, every 4th one breathing to the left. Cool-down 200. Getting the snorkel to feel normal is the whole job today.",
         ),
-        bike("45 min", "Spin bike — Z2 aerobic", "Keiser M3i, 130–145 bpm, cadence 85–95. Note your average watts — you will want the comparison after next week's FTP test."),
+        bike("45 min", "Spin bike — Z2 aerobic", "Keiser M3i, 130–145 bpm, cadence 85–95. Note your average watts — you will want the comparison after next week's FTP test. Result, Sep 23: 130–150 W at 140–150 bpm, level 12. That heart rate is a touch above the band, so this ran closer to tempo than Z2 — fine once, but these rides exist to add cheap aerobic volume, and if they cost recovery they start competing with the swim and run work that actually matter."),
       ],
       "2026-09-24": [
         run("25 min", "Optional shakeout walk or easy spin", "Only if the legs feel good after Tuesday. Walking counts. Nothing that loads the shins.", { categories: ["recovery"] }),
@@ -611,7 +611,7 @@ export const planWeeks = [
           "Swim — speed + bilateral breathing",
           "Warm-up 300. Drill 400 focused on breathing: 3/5/3 pattern, 6-1-6 both sides. Main 16 × 50 on 1:10, odd ones aerobic and even ones fast. Then 4 × 50 breaststroke working the pull-breathe-kick-glide timing. Cool-down 200.",
         ),
-        bike("50 min", "Spin bike — 20 min FTP test", "Keiser M3i. 15 min warm-up with 3 × 1 min builds, then 20 min all-out at an even effort, then 10 min easy. FTP ≈ 95% of your 20 min average watts. Record it — every bike interval after this is a percentage of it."),
+        bike("50 min", "Spin bike — 20 min FTP test", "Keiser M3i. 15 min warm-up with 3 × 1 min builds, then 20 min all-out at an even effort, then 10 min easy. FTP ≈ 95% of your 20 min average watts. Record it — every bike interval after this is a percentage of it. Use the same bike as Sep 23 so the comparison means something. From that ride, 130–150 W at 140–150 bpm, your FTP is probably near 180–200 W, so open the 20 min around 195 W instead of guessing and lift it if five minutes in it is clearly easy. Pacing is the whole test: go out too hard and you fade, and the number comes out low. Ignore the level — on a Keiser the level only sets resistance, and the same level gives very different watts at different cadences, so it is never a target."),
       ],
       "2026-10-01": [
         strength("B", "First Strength B. Bulgarian split squats on the Smith machine — find a load where rep 8 is hard but clean. Copenhagen planks will humble you; start on the short lever (knee on bench)."),
