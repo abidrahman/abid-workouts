@@ -53,7 +53,7 @@ const CALENDAR_UI_STORAGE_KEY = "baker-lake-union-calendar-ui-v1";
 const CALENDAR_RESCHEDULE_STORAGE_KEY = "baker-lake-union-calendar-reschedule-v1";
 const CALENDAR_RESCHEDULE_WINDOW_DAYS = 3;
 const calendarMoveOffsets = [-3, -2, -1, 1, 2, 3];
-const calendarCategoryFilters = ["all", "swim", "run", "bike", "strength", "hike", "recovery"];
+const calendarCategoryFilters = ["all", "swim", "run", "bike", "strength", "cardio", "mobility"];
 const calendarStatusFilters = ["all", "incomplete", "complete"];
 const calendarViewModes = ["compact", "detailed"];
 const calendarFilterLabels = {
@@ -62,16 +62,16 @@ const calendarFilterLabels = {
   run: "run",
   bike: "bike",
   strength: "strength",
-  hike: "hike",
-  recovery: "recovery",
+  cardio: "cardio",
+  mobility: "mobility",
 };
 const calendarCategoryDisplayLabels = {
   swim: "Swim",
   run: "Run",
   bike: "Bike",
   strength: "Strength",
-  hike: "Hike",
-  recovery: "Recovery",
+  cardio: "Cardio",
+  mobility: "Mobility",
   default: "Workout",
 };
 const calendarMilestones = {
@@ -79,8 +79,8 @@ const calendarMilestones = {
   run: { dateKey: blockMeta.raceDateKey, label: "Reindeer Romp 5 mi" },
   bike: { dateKey: "2026-12-31", label: "winter base complete" },
   strength: { dateKey: blockMeta.raceDateKey, label: "Reindeer Romp 5 mi" },
-  hike: { dateKey: "2026-12-31", label: "winter base complete" },
-  recovery: { dateKey: blockMeta.raceDateKey, label: "Reindeer Romp 5 mi" },
+  cardio: { dateKey: "2026-12-31", label: "winter base complete" },
+  mobility: { dateKey: blockMeta.raceDateKey, label: "Reindeer Romp 5 mi" },
   default: { dateKey: blockMeta.raceDateKey, label: "Reindeer Romp 5 mi" },
 };
 const METRICS_STORAGE_KEY = "workout-metrics";
@@ -186,8 +186,8 @@ function normalizeActivityCategory(activityType) {
   if (/(^|[^a-z])(run|jog)/.test(type)) return "run";
   if (/(ride|bike|cycl|spin)/.test(type)) return "bike";
   if (/(weight|strength|workout|training)/.test(type)) return "strength";
-  if (/(hike|walk|trail|mountaineer|snowshoe|stair)/.test(type)) return "hike";
-  if (/(yoga|stretch|mobility|pilates)/.test(type)) return "recovery";
+  if (/(hike|walk|trail|mountaineer|snowshoe|stair|row|ski|elliptical)/.test(type)) return "cardio";
+  if (/(yoga|stretch|mobility|pilates)/.test(type)) return "mobility";
   return "strength";
 }
 
@@ -226,10 +226,10 @@ function scoreSessionCandidate(activity, session) {
     ? Math.abs(activityMinutes - durationMidpoint)
     : 999;
 
-  // Allow cross-category matching: strength ↔ hike (for stairmaster/vertical training)
+  // Allow cross-category matching: strength ↔ cardio (for stairmaster/vertical training)
   const isStrengthActivity = activityCategory === "strength";
-  const isHikeSession = session.categories.includes("hike");
-  const crossCategoryMatch = isStrengthActivity && isHikeSession;
+  const isCardioSession = session.categories.includes("cardio");
+  const crossCategoryMatch = isStrengthActivity && isCardioSession;
 
   let score = 0;
   if (typeMatch) score += 60;
@@ -1652,12 +1652,12 @@ function getCalendarCategoryLabel(category) {
 }
 
 function getCalendarSessionCompactCategory(session) {
-  const trainingCategory = session.categories.find((category) => category !== "recovery");
+  const trainingCategory = session.categories.find((category) => category !== "mobility");
   return trainingCategory ?? calendarSessionPrimaryCategory(session);
 }
 
 function getCalendarSessionCompactLabel(session) {
-  const trainingCategories = session.categories.filter((category) => category !== "recovery");
+  const trainingCategories = session.categories.filter((category) => category !== "mobility");
   const displayCategories = trainingCategories.length ? trainingCategories : session.categories;
 
   if (displayCategories.length > 1) {
@@ -1728,7 +1728,7 @@ function getCalendarSessionCompactDescriptor(session) {
     return getStrengthCompactDescriptor(session);
   }
 
-  if (compactCategory === "recovery") {
+  if (compactCategory === "mobility") {
     return getRecoveryCompactDescriptor(session);
   }
 
@@ -2169,9 +2169,10 @@ function getCalendarSessionCoachingCue(session) {
     return "Key swim cue: make technique quality the win before chasing yardage.";
   }
 
-  if (category === "hike") {
+  if (category === "cardio") {
     if (/baker|summit/.test(text)) return "Execution focus: steady pacing, fueling, hydration, foot care, and communication.";
-    return "Mountain cue: build vertical durability gradually and protect the downhill/shin response.";
+    if (/hike|uphill|vertical/.test(text)) return "Mountain cue: build vertical durability gradually and protect the downhill/shin response.";
+    return "Cardio cue: this is aerobic volume on a day the legs are otherwise free — keep it conversational.";
   }
 
   if (category === "strength") {
@@ -2182,8 +2183,8 @@ function getCalendarSessionCoachingCue(session) {
     return "Bike cue: keep this low-impact aerobic unless the plan explicitly says otherwise.";
   }
 
-  if (category === "recovery") {
-    return "Recovery cue: finish feeling better than when you started; optional means optional.";
+  if (category === "mobility") {
+    return "Mobility cue: finish feeling better than when you started. This is the cheapest injury insurance in the plan.";
   }
 
   return "Use this session to support the larger Summer 2026 progression.";
@@ -2195,7 +2196,8 @@ function getBlockCategoryKeywords(category) {
     bike: ["bike", "spin", "cycling"],
     strength: ["strength", "accessory", "core", "pull", "pull-up", "rdl", "romanian", "squat", "split", "hinge", "deadlift", "calf", "tibialis", "durability"],
     hike: ["hike", "stair", "uphill", "incline", "simulation", "pack", "vertical", "fueling"],
-    recovery: ["recovery", "mobility", "rest", "reset", "easy"],
+    cardio: ["hike", "stair", "uphill", "incline", "simulation", "pack", "vertical", "fueling", "erg", "row", "ski"],
+    mobility: ["mobility", "prehab", "stretch", "flexibility", "rest", "reset"],
   }[category] ?? [];
 }
 
@@ -2857,8 +2859,8 @@ function renderCalendarProgress() {
     ["Run", "run"],
     ["Bike", "bike"],
     ["Strength", "strength"],
-    ["Hike", "hike"],
-    ["Recovery", "recovery"],
+    ["Cardio", "cardio"],
+    ["Mobility", "mobility"],
   ].map(([label, category]) => {
     const categorySessions = sessions.filter((session) => session.categories.includes(category));
     const done = categorySessions.filter((session) => getCalendarSessionCompleted(session)).length;
@@ -3568,8 +3570,8 @@ function renderTrackingSummary() {
     ["Run", "run"],
     ["Bike", "bike"],
     ["Strength", "strength"],
-    ["Hike/Stairs", "hike"],
-    ["Recovery", "recovery"],
+    ["Cardio", "cardio"],
+    ["Mobility", "mobility"],
   ]
     .map(([label, category]) => {
       const inCategory = sessions.filter((session) => session.categories?.includes(category));

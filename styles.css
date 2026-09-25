@@ -1214,12 +1214,12 @@ main {
   background: #f5ebfb;
 }
 
-.tag--hike {
+.tag--cardio {
   color: var(--primary-2);
   background: #e5f3ec;
 }
 
-.tag--recovery {
+.tag--mobility {
   color: #59656b;
   background: #edf1f3;
 }
@@ -1628,8 +1628,8 @@ main {
   --cat-run: #c2453d;
   --cat-bike: #c98208;
   --cat-strength: #8848a3;
-  --cat-hike: #116a5c;
-  --cat-recovery: #6f7a80;
+  --cat-cardio: #116a5c;
+  --cat-mobility: #6f7a80;
   --cat-default: var(--primary);
 }
 
@@ -1885,14 +1885,14 @@ main {
   --session-color: var(--cat-strength);
 }
 
-.calendar-session--hike,
-.calendar-category-dot--hike {
-  --session-color: var(--cat-hike);
+.calendar-session--cardio,
+.calendar-category-dot--cardio {
+  --session-color: var(--cat-cardio);
 }
 
-.calendar-session--recovery,
-.calendar-category-dot--recovery {
-  --session-color: var(--cat-recovery);
+.calendar-session--mobility,
+.calendar-category-dot--mobility {
+  --session-color: var(--cat-mobility);
 }
 
 .calendar-month--compact .calendar-session--compact-swim {
@@ -1911,12 +1911,12 @@ main {
   --session-color: var(--cat-strength);
 }
 
-.calendar-month--compact .calendar-session--compact-hike {
-  --session-color: var(--cat-hike);
+.calendar-month--compact .calendar-session--compact-cardio {
+  --session-color: var(--cat-cardio);
 }
 
-.calendar-month--compact .calendar-session--compact-recovery {
-  --session-color: var(--cat-recovery);
+.calendar-month--compact .calendar-session--compact-mobility {
+  --session-color: var(--cat-mobility);
 }
 
 .calendar-session:hover,
