@@ -5,6 +5,10 @@ import {
   swimTests,
   swimTestTarget,
   heartRateZones,
+  ftpTests,
+  ftpTarget,
+  bikePowerZones,
+  ftpGoal,
   summaryCards,
   phases,
   weekTargets,
@@ -3215,6 +3219,7 @@ function renderPlanTab() {
   renderSwimPlan();
   renderRunRamp();
   renderHeartRateZones();
+  renderFtpLog();
   renderLowerLegProtocol();
   renderStrengthTemplates();
   renderWeeklyVolume();
@@ -3461,6 +3466,90 @@ function renderHeartRateZones() {
           .join("")}
       </tbody>
     </table>
+  `;
+}
+
+function renderFtpLog() {
+  const el = document.querySelector("#ftp-log");
+  if (!el) return;
+  const latest = ftpTests[ftpTests.length - 1];
+  const testRow = (row) => `
+    <tr>
+      <td><strong>${escapeHtml(row.label)}</strong></td>
+      <td>${escapeHtml(row.avg20)}</td>
+      <td><strong>${escapeHtml(row.ftp)}</strong></td>
+      <td>${escapeHtml(row.wkg)}</td>
+    </tr>
+  `;
+
+  el.innerHTML = `
+    <p class="css-current">
+      <span class="css-current__label">Current FTP</span>
+      <span class="css-current__value">${escapeHtml(latest?.ftp ?? "—")}</span>
+      <span class="css-current__unit">${escapeHtml(latest?.wkg ?? "")}</span>
+    </p>
+    <div class="plan-table-wrap">
+      <table class="plan-table">
+        <thead>
+          <tr><th>Test</th><th>20 min avg</th><th>FTP</th><th>W/kg</th></tr>
+        </thead>
+        <tbody>
+          ${ftpTests
+            .map(
+              (test) => `
+                <tr>
+                  <td><strong>${escapeHtml(test.label)}</strong><br><span class="css-log__date">${escapeHtml(formatTestDate(test.date))}</span></td>
+                  <td>${escapeHtml(test.avg20)}</td>
+                  <td><strong>${escapeHtml(test.ftp)}</strong></td>
+                  <td>${escapeHtml(test.wkg)}</td>
+                </tr>
+              `,
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
+    ${latest?.note ? `<p class="plan-subhead__note">${escapeHtml(latest.note)}</p>` : ""}
+    <h5 class="plan-subhead">Week ${ftpTarget.week} retest target — ${escapeHtml(formatTestDate(ftpTarget.date))}</h5>
+    <div class="plan-table-wrap">
+      <table class="plan-table">
+        <thead>
+          <tr><th>Outcome</th><th>20 min avg</th><th>FTP</th><th>W/kg</th></tr>
+        </thead>
+        <tbody>
+          ${ftpTarget.rows.map(testRow).join("")}
+        </tbody>
+      </table>
+    </div>
+    <p class="plan-subhead__note">${escapeHtml(ftpTarget.caveat)}</p>
+    <h5 class="plan-subhead">Power zones</h5>
+    <div class="plan-table-wrap">
+      <table class="plan-table">
+        <thead>
+          <tr><th>Zone</th><th>% FTP</th><th>Watts</th><th>Used for</th></tr>
+        </thead>
+        <tbody>
+          ${bikePowerZones
+            .map(
+              (zone) => `
+                <tr>
+                  <td><strong>${escapeHtml(zone.zone)}</strong></td>
+                  <td>${escapeHtml(zone.percent)}</td>
+                  <td><strong>${escapeHtml(zone.watts)}</strong></td>
+                  <td>${escapeHtml(zone.cue)}</td>
+                </tr>
+              `,
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
+    <h5 class="plan-subhead">The gap to a 3-hour 70.3 bike split</h5>
+    <p class="plan-subhead__note">
+      ${escapeHtml(ftpGoal.current)} today against ${escapeHtml(ftpGoal.target)}
+      (${escapeHtml(ftpGoal.targetWkg)}) wanted for ${escapeHtml(ftpGoal.deadline)}.
+      ${escapeHtml(ftpGoal.note)}
+    </p>
   `;
 }
 

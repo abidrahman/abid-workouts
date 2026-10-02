@@ -110,8 +110,76 @@ export const heartRateZones = [
   { zone: "Run — easy", range: "140–152 bpm", cue: "Every easy run lives here. If it drifts above, walk it back." },
   { zone: "Run — steady / tempo", range: "158–168 bpm", cue: "Thursday quality only, and never for long early in the block." },
   { zone: "Bike — Z2 endurance", range: "130–145 bpm", cue: "Matches the Sep 17 outdoor ride (136 bpm avg). The Sep 23 spin ran 140–150, a touch hot — aim for the middle of the band, not the top." },
-  { zone: "Bike — threshold", range: "155–165 bpm", cue: "Spin-bike intervals. Pair with watts once the Week 2 FTP test is done." },
+  { zone: "Bike — threshold", range: "155–165 bpm", cue: "Spin-bike intervals. Now paired with watts — see the FTP block below. Where the two disagree, trust the watts: power is what you did, heart rate is how you felt about it." },
 ];
+
+/**
+ * FTP is the bike's CSS: the highest power holdable for roughly an hour, taken as 95% of
+ * a 20 min all-out average. Every bike interval in this block is a percentage of it.
+ *
+ * One caveat worth repeating every time this number is used: it is a Keiser console
+ * figure, and Keiser estimates watts from resistance and cadence rather than measuring
+ * strain. It is consistent enough to train against and to compare against itself, but it
+ * is not transferable — a different bike, or a real power meter, will give a different
+ * number for the same effort. Retest on the same equipment or not at all.
+ */
+export const ftpTests = [
+  {
+    label: "Week 2 baseline",
+    date: "2026-10-01",
+    avg20: "196 W",
+    ftp: "186 W",
+    wkg: "2.56 W/kg",
+    note:
+      "Split 205 W for 10 min, 195 W for 5 min, 180 W for the last 5 — a 12% fade. That shape is the signature of opening above threshold rather than of nutrition or sleep, which tend to lower the whole curve or cause a late cliff instead of a steady slide from minute ten. The plan said to open at 195 and the opening was 205. The cost is small — an even ride was probably worth 190-odd — so 186 W is the honest number to train against, and a mild underestimate rather than an optimistic one. It also lands inside the 180–200 W predicted from the Sep 23 Z2 ride, which means the estimate and the test agree.",
+  },
+];
+
+/**
+ * Week 8 retest, deliberately sat in the same week as the CSS retest so both anchors are
+ * re-cut at once. Six weeks of sweet spot from a base this low usually returns 5–10%.
+ */
+export const ftpTarget = {
+  week: 8,
+  date: "2026-11-11",
+  rows: [
+    { label: "Now (Oct 1)", avg20: "196 W", ftp: "186 W", wkg: "2.56 W/kg" },
+    { label: "Good — +5%", avg20: "206 W", ftp: "195 W", wkg: "2.69 W/kg" },
+    { label: "Strong — +10%", avg20: "216 W", ftp: "205 W", wkg: "2.82 W/kg" },
+  ],
+  caveat:
+    "Pace it evenly this time. The whole test is a pacing exercise: the number you get is the number you could hold for the full twenty minutes, so a fast first five buys nothing and costs the last ten. Same bike, same warm-up, and open at the target rather than at what feels good.",
+};
+
+/**
+ * Cut from the tested 186 W. Sweet spot and threshold overlap tempo and each other on
+ * purpose — sweet spot is defined as the top of tempo and the bottom of threshold, which
+ * is exactly why it returns the most fitness per unit of fatigue.
+ */
+export const bikePowerZones = [
+  { zone: "Recovery", percent: "< 55%", watts: "< 102 W", cue: "Spinning between intervals. Should feel like nothing." },
+  { zone: "Endurance (Z2)", percent: "56–75%", watts: "104–140 W", cue: "Every easy ride. Note that the Sep 23 spin ran 130–150 W, so its top half was already tempo — this is the band it should have been in." },
+  { zone: "Tempo", percent: "76–90%", watts: "141–167 W", cue: "Steady, breathy, sustainable. Rarely prescribed on its own here — it mostly shows up as the back half of a long ride." },
+  { zone: "Sweet spot", percent: "88–93%", watts: "164–173 W", cue: "The workhorse of this block. Hard enough to move FTP, cheap enough in recovery that it does not steal from the swim and run days." },
+  { zone: "Threshold", percent: "95–105%", watts: "177–195 W", cue: "Around and just above FTP, 155–165 bpm. The 8 min repeats live here." },
+  { zone: "VO2max", percent: "106–120%", watts: "197–223 W", cue: "Short, sharp, sparingly. Raises the ceiling that sweet spot sits under." },
+  { zone: "70.3 race pace", percent: "70–75%", watts: "130–140 W", cue: "What today's FTP would let you ride for 56 miles while still running off it. Worth knowing because it is the gap: see the target below." },
+];
+
+/**
+ * The reason the winter bike block exists. A 3-hour 70.3 split on Victoria's terrain
+ * wants an FTP near 220–240 W, because the leg is ridden at 70–75% of FTP — you have to
+ * run a half marathon afterwards. At 186 W, race intensity is about 134 W, which on a
+ * flat course is roughly 17.7 mph and a 3:10 split, and Victoria is not flat.
+ */
+export const ftpGoal = {
+  current: "186 W",
+  target: "220–240 W",
+  targetWkg: "3.0–3.3 W/kg",
+  deadline: "Victoria 70.3, late May 2027",
+  note:
+    "An 18–29% gain. That is a lot to ask of six weeks and an entirely reasonable ask of eight months, which is what there is — this block only has to deliver the first third of it.",
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Narrative / overview content
@@ -600,17 +668,17 @@ export const workoutLibrary = [
     focus: "Zone 2, conversational.",
     intent:
       "Cheap aerobic volume. The value is that it costs almost nothing in recovery, which is exactly why it must stay easy — a Z2 ride that drifts into tempo stops being free and starts competing with the swim and run work.",
-    shape: "Steady Z2, cadence 85–95, indoor or outdoor",
+    shape: "Steady Z2 at 104–140 W, cadence 85–95, indoor or outdoor",
   },
   {
     key: "B-SS",
     category: "bike",
     name: "Sweet spot intervals",
     compactDescriptor: "sweet spot",
-    focus: "88–94% of FTP.",
+    focus: "88–93% of FTP — 164–173 W.",
     intent:
       "The best return per hour on the bike. Hard enough to move FTP, easy enough that it does not wreck the next day.",
-    shape: "Warm-up · 2–4 intervals of 8–20 min at 88–94% FTP · cool-down",
+    shape: "Warm-up · 2–4 intervals of 8–20 min at 164–173 W · cool-down",
   },
   {
     key: "B-VO2",
@@ -620,7 +688,7 @@ export const workoutLibrary = [
     focus: "Above threshold, short and sharp.",
     intent:
       "Raises the ceiling that sweet spot work sits under. Used sparingly in a base block — one a week at most, and never the day before a hard run.",
-    shape: "Warm-up · 30/30s or 3–5 min efforts above FTP · cool-down",
+    shape: "Warm-up · 30/30s or 3–5 min efforts above 197 W · cool-down",
   },
   {
     key: "B-LONG",
@@ -832,7 +900,7 @@ const TYPE_PATTERNS = {
     [/easy run|shakeout/i, "R-EASY"],
   ],
   bike: [
-    [/sweet spot|threshold|ftp test/i, "B-SS"],
+    [/sweet spot|threshold|ftp\s*(re)?test/i, "B-SS"],
     [/vo2|30\/30/i, "B-VO2"],
     [/endurance ride|long ride/i, "B-LONG"],
     [/z2|easy spin|easy aerobic|spin bike|ride/i, "B-Z2"],
@@ -981,7 +1049,7 @@ export const planWeeks = [
           "Swim — technique reset with new gear",
           "Warm-up 300. Drill 600 as 12 × 50 with fins — each drill twice: catch-up / 6-1-6 left / 6-1-6 right / fingertip drag / side kick / single-arm. Snorkel for the face-down drills only; take it off for 6-1-6 and side kick, because on your side it floods. Main 10 × 50 on 1:15 aerobic, every 4th one breathing to the left. Cool-down 200. Getting the snorkel to feel normal is the whole job today.",
         ),
-        bike("45 min", "Spin bike — Z2 aerobic", "Keiser M3i, 130–145 bpm, cadence 85–95. Note your average watts — you will want the comparison after next week's FTP test. Result, Sep 23: 130–150 W at 140–150 bpm, level 12. That heart rate is a touch above the band, so this ran closer to tempo than Z2 — fine once, but these rides exist to add cheap aerobic volume, and if they cost recovery they start competing with the swim and run work that actually matter."),
+        bike("45 min", "Spin bike — Z2 aerobic", "Keiser M3i, 130–145 bpm, cadence 85–95. Note your average watts — you will want the comparison after next week's FTP test. Result, Sep 23: 130–150 W at 140–150 bpm, level 12. Against the FTP that test went on to produce, 186 W, that is 70–81% — so the top half of this ride was tempo, not Z2, which is exactly what the heart rate was saying. Fine once, but these rides exist to add cheap aerobic volume, and if they cost recovery they start competing with the swim and run work that actually matter. Z2 is 104–140 W."),
       ],
       "2026-09-24": [
         run("25 min", "Optional shakeout walk or easy spin", "Only if the legs feel good after Tuesday. Walking counts. Nothing that loads the shins.", { categories: ["cardio"] }),
@@ -1034,7 +1102,7 @@ export const planWeeks = [
           "Swim — speed + bilateral breathing",
           "Warm-up 300. Drill 400 focused on breathing: 3/5/3 pattern, 6-1-6 both sides. Main 16 × 50 on 1:10, odd ones aerobic and even ones fast. Then 4 × 50 breaststroke working the pull-breathe-kick-glide timing. Cool-down 200.",
         ),
-        bike("50 min", "Spin bike — 20 min FTP test", "Keiser M3i. 15 min warm-up with 3 × 1 min builds, then 20 min all-out at an even effort, then 10 min easy. FTP ≈ 95% of your 20 min average watts. Record it — every bike interval after this is a percentage of it. Use the same bike as Sep 23 so the comparison means something. From that ride, 130–150 W at 140–150 bpm, your FTP is probably near 180–200 W, so open the 20 min around 195 W instead of guessing and lift it if five minutes in it is clearly easy. Pacing is the whole test: go out too hard and you fade, and the number comes out low. Ignore the level — on a Keiser the level only sets resistance, and the same level gives very different watts at different cadences, so it is never a target."),
+        bike("50 min", "Spin bike — 20 min FTP test", "Keiser M3i. 15 min warm-up with 3 × 1 min builds, then 20 min all-out at an even effort, then 10 min easy. FTP ≈ 95% of your 20 min average watts. Use the same bike as Sep 23 so the comparison means something. Pacing is the whole test: go out too hard and you fade, and the number comes out low. Ignore the level — on a Keiser the level only sets resistance, and the same level gives very different watts at different cadences, so it is never a target. Result, run Oct 1: 205 W for 10 min, 195 W for 5, 180 W for the last 5, averaging 196 W, so FTP = 186 W and 2.56 W/kg. That is inside the 180–200 W predicted from the Sep 23 ride, so estimate and test agree. The 12% fade is a pacing signature rather than the nutrition and rest you suspected — those usually lower the whole curve or cause a late cliff, not a steady slide from minute ten — which means 186 W is, if anything, slightly conservative. Every bike target in this block now reads in watts off that number; it gets re-cut at the Week 8 retest. Note also that the session ran 94 min rather than the 50 prescribed, so the Thursday was a far bigger day than designed — fine once, worth not repeating on a test day."),
       ],
       "2026-10-01": [
         strength("B", "First Strength B. Bulgarian split squats on the Smith machine — find a load where rep 8 is hard but clean. Copenhagen planks will humble you; start on the short lever (knee on bench)."),
@@ -1053,7 +1121,7 @@ export const planWeeks = [
         swim(900, "Technique swim (short)", TECH_SWIM_NOTE),
       ],
       "2026-10-04": [
-        bike("60 min", "Endurance ride — Z2", "Outdoors while the weather allows. 130–145 bpm, steady. Now that you have an FTP number, note the ride's average watts for reference."),
+        bike("60 min", "Endurance ride — Z2", "Outdoors while the weather allows. 130–145 bpm and 104–140 W, steady. First ride off the new FTP — the band is narrower than it looks, and Sep 23 proves it: 130–150 W felt easy and still spent half its time above Z2."),
         mobility("20 min", "Mobility plus foot intrinsics. Check knee-to-wall and log the number."),
       ],
     },
@@ -1086,7 +1154,7 @@ export const planWeeks = [
           "Swim — speed 20 × 50",
           "Warm-up 300. Drill 400 as 8 × 50, each drill twice: 6-1-6 / 3/5/3 breathing / single-arm / breathe-3. Fins throughout; snorkel off for 6-1-6, 3/5/3 breathing and breathe-3. Main: 20 × 50 on 1:10, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 300. The fast ones should be 1:38–1:48/100 pace, not sprints.",
         ),
-        bike("50 min", "Spin bike — sweet spot 3 × 8 min", "3 × 8 min at 88–93% FTP with 4 min easy between. Cadence 85–95. First structured bike session of the block."),
+        bike("50 min", "Spin bike — sweet spot 3 × 8 min", "3 × 8 min at 164–173 W (88–93% of your 186 W FTP) with 4 min easy between. Cadence 85–95. First structured bike session of the block — hold the bottom of the band on the first interval, because the last one is the one that counts."),
       ],
       "2026-10-08": [
         run("32–36 min", "Easy run — 5 km", "Track or soft trail, easy throughout. This is the week's long run even though it is short — that is the point."),
@@ -1107,7 +1175,7 @@ export const planWeeks = [
       ],
       "2026-10-11": [
         cardio("30 min", "Ski erg — easy aerobic", "No swim, bike or run today, so this is the calorie-and-aerobic topper. 30 min steady on the ski erg, HR under 145, full double-pole. It is the one machine that loads the lats the way swimming does without touching your legs — useful the day after a run."),
-        mobility("25 min", "Full mobility plus foot intrinsics and knee-to-wall check. End of the reset phase — take stock: CSS number, FTP number, shins quiet?"),
+        mobility("25 min", "Full mobility plus foot intrinsics and knee-to-wall check. End of the reset phase — take stock: CSS 1:53, FTP 186 W, shins quiet?"),
       ],
     },
   },
@@ -1139,7 +1207,7 @@ export const planWeeks = [
           "Swim — speed 4 × (4 × 50)",
           "Warm-up 300. Drill 400 with front scull and single-arm, extra 50 on the left-breathing side. Main: 4 rounds of 4 × 50 on 1:05, descending 1 to 4 within each round, 45 s between rounds. Then 4 × 50 breaststroke. Cool-down 200.",
         ),
-        bike("55 min", "Spin bike — sweet spot 3 × 10 min", "3 × 10 min at 88–93% FTP, 4 min easy between. Hold cadence above 85."),
+        bike("55 min", "Spin bike — sweet spot 3 × 10 min", "3 × 10 min at 164–173 W, 4 min easy between. Hold cadence above 85."),
       ],
       "2026-10-15": [
         run("38–42 min", "Easy run — 6 km", "Long run of the week. Flat, soft surface, conversational the whole way. Do not let a good day turn this into 8 km."),
@@ -1192,7 +1260,7 @@ export const planWeeks = [
           "Swim — speed 24 × 50 + first paddles",
           "Warm-up 300. Drill 400 as 8 × 50, each drill twice: closed-fist / catch-up / 6-1-6 / breaststroke timing. Fins throughout; snorkel off for 6-1-6 and breaststroke timing. PADDLES: 400 pull with small paddles and buoy, easy, holding the catch — stop immediately if the shoulder complains. Main: 24 × 50 on 1:05, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 200.",
         ),
-        bike("55 min", "Spin bike — threshold 4 × 8 min", "4 × 8 min at 95–100% FTP, 3 min easy between. 155–165 bpm."),
+        bike("55 min", "Spin bike — threshold 4 × 8 min", "4 × 8 min at 177–186 W (95–100% FTP), 3 min easy between. 155–165 bpm. First time at threshold rather than sweet spot — the difference is only about 15 W but it is the difference between repeatable and not, so start at 177 W and only drift up if the fourth interval still looks safe."),
       ],
       "2026-10-22": [
         run("28–30 min", "Easy run — 4 km + strides", "Second short run. Finish with 6 × 20 s strides on grass."),
@@ -1336,7 +1404,7 @@ export const planWeeks = [
     phase: "build2",
     theme: "Retest + race distance",
     focus:
-      "Halfway point. Retest CSS to see whether the send-off work has moved the number, and take the long run to 8 km — race distance — for the first time.",
+      "Halfway point. Retest both anchors — CSS on Monday, FTP on Wednesday — to see whether seven weeks of threshold work has moved either number, and take the long run to 8 km, race distance, for the first time.",
     days: {
       "2026-11-09": [
         swim(
@@ -1357,7 +1425,7 @@ export const planWeeks = [
           "Swim — speed 6 × (4 × 50)",
           "Warm-up 300. Drill 400 as 8 × 50, each drill twice: stroke-count ladder / front scull / 6-1-6 / closed-fist. Fins throughout; snorkel off for 6-1-6. Paddles 400 pull. Main: 6 rounds of 4 × 50 on 1:00, 45 s between rounds. Then 4 × 50 breaststroke. Cool-down 200. Tighter send-off than Week 5 — this is where density shows up.",
         ),
-        bike("60 min", "Spin bike — threshold 5 × 8 min", "5 × 8 min at 95–100% FTP, 3 min easy. Recheck the effort against your Week 2 FTP — if it feels easy, retest the FTP next week."),
+        bike("60 min", "Spin bike — 20 min FTP RETEST", "Same protocol as Week 2: 15 min warm-up with 3 × 1 min builds, 20 min all-out, 10 min easy. Same Keiser, because the number only compares to itself. Six weeks of sweet spot from a base this low usually returns 5–10%, so 195 W is a good outcome and 205 W a strong one. The one thing to do differently: pace it evenly. Last time you opened at 205 and finished at 180, which is why 186 W was probably a slight underestimate — open at your target instead of at what feels good in minute two, and let the last five minutes be the ones that hurt. Re-cut every bike watt target in the second half of the block off whatever this gives."),
       ],
       "2026-11-12": [
         run("32–35 min", "Quality run — 6 × 1 min (≈5 km)", "Warm-up 10 min easy. Then 6 × 1 min at 5k effort with 2 min easy jog between. Cool-down 10 min. Short reps on a track or soft trail — first real intensity of the block, and it stays short on purpose."),
@@ -1410,7 +1478,7 @@ export const planWeeks = [
           "Swim — speed 30 × 50",
           "Warm-up 300. Drill 400 as 8 × 50, each drill twice: 6-1-6 / closed-fist / sighting / breaststroke timing. Fins throughout; snorkel off for 6-1-6, sighting and breaststroke timing. Paddles 400. Main: 30 × 50 on 1:05, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 200. Long 50s set — the goal is that number 30 looks like number 1.",
         ),
-        bike("60 min", "Spin bike — sweet spot 4 × 12 min", "4 × 12 min at 88–93% FTP, 4 min easy. Long sweet-spot blocks are the most useful 70.3 preparation you can do indoors."),
+        bike("60 min", "Spin bike — sweet spot 4 × 12 min", "4 × 12 min at the NEW sweet-spot watts from Wednesday's retest, 4 min easy. Long sweet-spot blocks are the most useful 70.3 preparation you can do indoors."),
       ],
       "2026-11-19": [
         run("35 min", "Quality run — 4 × 3 min (≈5 km)", "Warm-up 10 min. Then 4 × 3 min at 5-mile race effort (roughly 4:55–5:10/km) with 2 min easy between. Cool-down 10 min. First taste of race pace."),
@@ -1634,7 +1702,7 @@ export const planWeeks = [
           "Swim — speed 20 × 50",
           "Warm-up 300. Drill 400 as 8 × 50, each drill twice: 6-1-6 / closed-fist / sighting / breaststroke timing. Fins throughout; snorkel off for 6-1-6, sighting and breaststroke timing. Main: 20 × 50 on 1:05 alternating. 4 × 50 breaststroke. Cool-down 300.",
         ),
-        bike("45 min", "Spin bike — sweet spot 3 × 10 min", "3 × 10 min at 88–93% FTP, 4 min easy between."),
+        bike("45 min", "Spin bike — sweet spot 3 × 10 min", "3 × 10 min at sweet spot, 4 min easy between."),
       ],
       "2026-12-17": [
         run("30 min", "Easy run — 4 km", "Travel day home. Morning run before the flight."),
