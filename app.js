@@ -2284,22 +2284,49 @@ function buildBlocksFromNote(session) {
 
 // Drills are described once in plan.js and referenced by name in the notes, so
 // the prescription stays short and the teaching lives in one place.
-function noteMentions(haystack, label) {
+function findMatchSpans(haystack, label) {
   const needle = label.toLowerCase();
+  const spans = [];
   let index = haystack.indexOf(needle);
   while (index !== -1) {
     // "NO PADDLES this week" must not pull in the paddles card.
-    if (!/\bno\s$/.test(haystack.slice(Math.max(0, index - 4), index))) return true;
+    if (!/\bno\s$/.test(haystack.slice(Math.max(0, index - 4), index))) {
+      spans.push([index, index + needle.length]);
+    }
     index = haystack.indexOf(needle, index + needle.length);
   }
-  return false;
+  return spans;
 }
 
 function findDrillsInNote(note) {
   const haystack = String(note ?? "").toLowerCase();
-  return swimDrills.filter((drill) =>
-    [drill.name, ...(drill.aliases ?? [])].some((label) => noteMentions(haystack, label)),
-  );
+  const matched = swimDrills
+    .map((drill) => ({
+      drill,
+      spans: [drill.name, ...(drill.aliases ?? [])].flatMap((label) =>
+        findMatchSpans(haystack, label),
+      ),
+    }))
+    .filter((entry) => entry.spans.length > 0);
+
+  // The most specific drill wins. "side kick + breathe" also contains "side kick",
+  // and "left-breathing single-arm" contains "single-arm", so without this a note
+  // pulls in the base card alongside the variant — and the base card's gear advice
+  // contradicts the variant's. A drill survives only if it matched somewhere that
+  // a longer label from a different drill did not already cover.
+  const isCovered = (span, self) =>
+    matched.some(
+      (other) =>
+        other.drill !== self &&
+        other.spans.some(
+          ([start, end]) =>
+            start <= span[0] && end >= span[1] && end - start > span[1] - span[0],
+        ),
+    );
+
+  return matched
+    .filter((entry) => entry.spans.some((span) => !isCovered(span, entry.drill)))
+    .map((entry) => entry.drill);
 }
 
 function getStrengthTemplateForSession(session) {

@@ -272,9 +272,9 @@ export const swimMethodologyCards = [
   },
   {
     title: "Bilateral breathing, built gradually",
-    metric: "Breathe 3 by Week 8",
+    metric: "Left side competent by Week 12",
     detail:
-      "Right-side-every-2 costs you rotation symmetry and open-water navigation. Bilateral is introduced in warm-ups and easy 50s first, never forced inside hard sets, and becomes the default for easy swimming by the second half of the block.",
+      "Revised after Oct 2, where breathing left inside a continuous 1,200 sank the hips and feet immediately. The target is competence breathing left, not breathe-3 as a race pattern — a 70.3 is raced every 2 to the strong side, and the left side exists for sighting, sun, chop and a swimmer on your right. That reframe matters: it turns an unreachable default into a skill with a ladder. Side kick, then side kick + breathe, then left-breathing single-arm, then easy 50s with rest. Continuous swims get it back in Week 10 at the earliest.",
   },
   {
     title: "Shoulder-safe progression",
@@ -317,6 +317,24 @@ export const swimDrills = [
     feel: "Balance. You should be able to hold it without sculling to stay up. Press the lead armpit lightly down and stack the top hip directly over the bottom one.",
     mistake: "Rolling only 45° and calling it a side. Also craning your neck to look forward — keep the head in line and breathe by rolling slightly.",
     why: "At a true 90° a center-mount snorkel is lying sideways and will flood, which is why this one is fins-only.",
+  },
+  {
+    name: "Side kick + breathe",
+    aliases: ["side kick breathe", "side-kick + breathe", "sweet spot", "side kick with breath"],
+    gear: "Fins only — no snorkel",
+    what: "Side-kick on your weak (left) side, lead arm extended as a rail. Stay there and take relaxed breaths by rolling your face just clear of the water, then rolling it back down. No stroke at all — just kick, breathe, kick.",
+    feel: "That you can get air on the left without anything else changing. The lower goggle stays in the water and the head rests on the lead shoulder rather than lifting off it.",
+    mistake: "Pressing down on the lead arm to lever the face up. That is the exact move that drops your hips — the lead arm is a rail, not a lever. Also stopping the kick to breathe.",
+    why: "This is the rung between rotating well and breathing well. Side kick teaches balance with no air; breathe-3 asks for balance and air at full stroke rate. This one asks for air while the balance is already solved, which is why it is the drill to start with when the left side sinks.",
+  },
+  {
+    name: "Left-breathing single-arm",
+    aliases: ["left-breathing single-arm", "single-arm left breathe", "one-arm left breathing"],
+    gear: "Fins — no snorkel",
+    what: "Right arm stays extended in front as a rail. Left arm does every stroke, and you breathe to the left on every one.",
+    feel: "A breath that arrives because the body rotated, not because the neck turned. The extended right arm gives you something to balance against while the timing is still new.",
+    mistake: "Pushing down on the extended right arm each time you go for air. Keep it patient and slightly deep — it holds a line, it does not hold you up.",
+    why: "Bridges the gap between side kick and real swimming. You get the left breath many times per length with the support still present, which is the repetition the pattern needs before it survives a full stroke.",
   },
   {
     name: "6-1-6",
@@ -378,8 +396,8 @@ export const swimDrills = [
     gear: "None",
     what: "Breathe every third stroke, which alternates the side you breathe to.",
     feel: "Even. If one side feels like a different stroke, that is the asymmetry you are here to remove.",
-    mistake: "Forcing it inside a hard set. Keep it to warm-up, cool-down and easy swimming until it is automatic.",
-    why: "You currently breathe right every two strokes. This is the single habit that unlocks the balanced stroke.",
+    mistake: "Forcing it inside a hard set or a long continuous swim. Tried in the Oct 2 long swim and the hips and feet sank immediately — this drill is the top of the ladder, not the way onto it. Keep it to short easy 50s with rest until the left breath is stable there.",
+    why: "You currently breathe right every two strokes. This is the single habit that unlocks the balanced stroke — but it is the last rung, reached through side kick, side kick + breathe and left-breathing single-arm, not jumped to.",
   },
   {
     name: "3/5/3 breathing",
@@ -388,6 +406,7 @@ export const swimDrills = [
     what: "Three strokes between breaths, then five, then back to three, through the warm-up.",
     feel: "A long, steady exhale. The five teaches you that you are rarely short of air — you are short of exhale.",
     mistake: "Holding your breath and then gasping. Breathe out the whole time your face is down.",
+    why: "Directly relevant to the left side sinking. Going from every-2 to every-3 means longer between breaths, so an incomplete exhale leaves you air-hungry, and air hunger makes you lift the head instead of rotating — which is what drops the hips. Fixing the exhale removes the reason to lift.",
   },
   {
     name: "Breaststroke timing",
@@ -438,6 +457,7 @@ export const swimDrillProgression = [
       "Catch-up, 4 × 50: patient lead arm, long body line, no crossover.",
       "Fingertip drag, 4 × 50: relaxed recovery, high elbow, unhurried rotation.",
       "Breathe-3 on easy 50s only — warm-up and cool-down, never inside a hard set.",
+      "Left-side ladder starts here: side kick (left) until stable, then side kick + breathe.",
     ],
   },
   {
@@ -448,6 +468,7 @@ export const swimDrillProgression = [
     drills: [
       "Front scull, 3 × 50 with snorkel: forearm vertical, pressure back not down.",
       "Single-arm freestyle, 4 × 50 per side: the weak (left-breathing) side gets the extra 50.",
+      "Left-breathing single-arm, 4 × 50 with fins: right arm as a rail, breathe left every stroke.",
       "Closed-fist, 4 × 50, then 50 normal — the contrast teaches the forearm to grip water.",
       "3/5/3 breathing pattern through warm-ups: three strokes, five strokes, three.",
       "Small paddles + pull buoy, max 400 yd: hold the catch, stop if the shoulder complains.",
@@ -462,7 +483,7 @@ export const swimDrillProgression = [
     drills: [
       "Stroke-count ladder, 4 × 50: hold a fixed count per length, then drop it by one.",
       "Descending 100s at a fixed stroke count — get faster without adding strokes.",
-      "Breathe-3 as the default for all easy swimming and the first 25 of each threshold 100.",
+      "Breathe-3 on easy 50s with rest, and only inside continuous swimming once the left breath survives those.",
       "Sighting, 6 × 50: eyes just above the water every 6–8 strokes, ahead of open water next year.",
       "Breaststroke 200 continuous — an honest second stroke, not a novelty.",
       "Self-check every Monday: log the 100 that felt best and its stroke count.",
@@ -1112,7 +1133,7 @@ export const planWeeks = [
         swim(
           2200,
           "Swim — long aerobic 1,200",
-          "Warm-up 300. Main: 1,200 continuous aerobic, then 4 × 100 at CSS on 2:20. Cool-down 300. Breathe to the left for the first 50 of every 200 inside the continuous swim — build the habit while the effort is low.",
+          "Warm-up 300. Main: 1,200 continuous aerobic, then 4 × 100 at CSS on 2:20. Cool-down 300. Result, Oct 2: 2,220 yd in 46:42 at 2:01/100 with an average heart rate of 125 — the top of the aerobic band at a genuinely calm heart rate, which is exactly what this session is for. The left-breathing instruction that was here is withdrawn. It asked you to breathe left for the first 50 of every 200 inside the continuous swim and the hips and feet sank immediately, which is a sequencing error in the plan rather than a failure on your part: you cannot learn a balance skill inside a 1,200 where the effort is constant and there is no chance to reset. What sinks you is almost certainly the lead arm pressing down to lever your face up, plus the kick stopping during the breath, plus air hunger from an incomplete exhale making you lift the head instead of rotating. All three are fixed in drills, not in continuous swimming. The left-side ladder now runs side kick, side kick + breathe, left-breathing single-arm, then easy 50s with rest — and continuous swims do not ask for it again until Week 10.",
         ),
         strength("S-PUSH", "First upper day of the block. Your shoulders do a lot of internal rotation in the water, so the point here is the opposite — press, then row and pull apart to balance it. Keep the overhead press light and strict; if the shoulder pinches at the top, switch to a landmine press."),
       ],
@@ -1152,7 +1173,7 @@ export const planWeeks = [
         swim(
           2200,
           "Swim — speed 20 × 50",
-          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: 6-1-6 / 3/5/3 breathing / single-arm / breathe-3. Fins throughout; snorkel off for 6-1-6, 3/5/3 breathing and breathe-3. Main: 20 × 50 on 1:10, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 300. The fast ones should be 1:38–1:48/100 pace, not sprints.",
+          "Warm-up 300. Drill 400 as 8 × 50, the left-side ladder in order: side kick + breathe (left) ×2 / 6-1-6 ×2 / left-breathing single-arm ×2 / 3/5/3 breathing ×2. Fins throughout and no snorkel at all today — every drill in this block is about getting air, which is exactly what a snorkel removes. Work the ladder in sequence and do not move up until the current rung is calm: if the hips drop on the side kick, stay there. Main: 20 × 50 on 1:10, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 300. The fast ones should be 1:38–1:48/100 pace, not sprints.",
         ),
         bike("50 min", "Spin bike — sweet spot 3 × 8 min", "3 × 8 min at 164–173 W (88–93% of your 186 W FTP) with 4 min easy between. Cadence 85–95. First structured bike session of the block — hold the bottom of the band on the first interval, because the last one is the one that counts."),
       ],
@@ -1205,7 +1226,7 @@ export const planWeeks = [
         swim(
           1900,
           "Swim — speed 4 × (4 × 50)",
-          "Warm-up 300. Drill 400 with front scull and single-arm, extra 50 on the left-breathing side. Main: 4 rounds of 4 × 50 on 1:05, descending 1 to 4 within each round, 45 s between rounds. Then 4 × 50 breaststroke. Cool-down 200.",
+          "Warm-up 300. Drill 400 as 8 × 50, left-side ladder week two: left-breathing single-arm ×3 / side kick + breathe (left) ×1 / front scull ×2 / 6-1-6 ×2. Fins throughout; snorkel on for front scull only. The left-breathing single-arm takes the biggest share now — it is the rung where the left breath starts happening at something close to real stroke rate, and side kick + breathe drops to a single 50 as a check rather than a lesson. Main: 4 rounds of 4 × 50 on 1:05, descending 1 to 4 within each round, 45 s between rounds. Then 4 × 50 breaststroke. Cool-down 200.",
         ),
         bike("55 min", "Spin bike — sweet spot 3 × 10 min", "3 × 10 min at 164–173 W, 4 min easy between. Hold cadence above 85."),
       ],
@@ -1369,7 +1390,7 @@ export const planWeeks = [
         swim(
           1800,
           "Swim — technique + light speed",
-          "Warm-up 300. Drill 500 as 10 × 50, each drill twice: catch-up / 6-1-6 / 3/5/3 breathing / single-arm / breathe-3. Fins throughout; snorkel off for 6-1-6, 3/5/3 breathing and breathe-3. Main 12 × 50 on 1:15 aerobic, every third one fast. Then 4 × 50 breaststroke. Cool-down 200.",
+          "Warm-up 300. Drill 500 as 10 × 50, each drill twice: catch-up / 6-1-6 / 3/5/3 breathing / left-breathing single-arm / breathe-3. Fins throughout; snorkel off for everything except catch-up. This is the ladder's graduation test — five weeks after the left side sank in the Oct 2 long swim, breathe-3 reappears, but only as a 50 with rest on either end. The question to answer honestly: do the hips stay up for a full 50? If yes, the ladder worked and Week 10 puts it back inside continuous swimming. If no, drop back to left-breathing single-arm and there is no cost to doing so. Main 12 × 50 on 1:15 aerobic, every third one fast. Then 4 × 50 breaststroke. Cool-down 200.",
         ),
         strength("A", "First proper lift in a week. Back the loads off about 10% — you have been doing bands."),
       ],
@@ -1544,7 +1565,7 @@ export const planWeeks = [
         swim(
           3000,
           "Swim — long aerobic 1,800",
-          "Warm-up 300. Main: 1,800 continuous, then 6 × 100 at CSS. Cool-down 300.",
+          "Warm-up 300. Main: 1,800 continuous, then 6 × 100 at CSS. Cool-down 300. Left breathing returns to continuous swimming here, eight weeks after Oct 2 and only if the Week 7 graduation test went well — one 25 breathing left at the start of every 300, and nothing more. Twenty-five yards is short enough that you can bail onto your right side before anything sinks, which is the whole reason the dose is that small. If the hips drop even once, stop doing it for the rest of the swim and keep it in drills a while longer; the 1,800 is the session and the breathing is a passenger.",
         ),
         bike("50 min", "Spin bike — Z2", "Easy aerobic hour on the spin bike."),
       ],
