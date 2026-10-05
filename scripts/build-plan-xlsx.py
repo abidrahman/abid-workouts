@@ -1,4 +1,5 @@
-import json, os
+import json, os, re
+from datetime import time as _time
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -9,6 +10,28 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 D = json.load(open(os.path.join(ROOT, "plan-export.json"), encoding="utf-8"))
 OUT = os.path.join(ROOT, "Abid — Fall 2026 Training Block.xlsx")
 rows = D["rows"]
+
+
+def num(s):
+    """First number in a string like '196 W' or '2.56 W/kg'."""
+    m = re.search(r"-?\d+(?:\.\d+)?", str(s or ""))
+    return float(m.group()) if m else None
+
+
+def pct_nums(s):
+    return [float(x) for x in re.findall(r"\d+(?:\.\d+)?", str(s or ""))]
+
+
+def mmss(s):
+    """'7:06' -> a real Excel time, so the CSS formula can subtract it."""
+    parts = str(s or "").split(":")
+    if len(parts) != 2:
+        return None
+    try:
+        return _time(0, int(parts[0]), int(parts[1]))
+    except ValueError:
+        return None
+
 
 FONT = "Arial"
 INK = "1F3A2E"
@@ -192,12 +215,22 @@ sw["A4"].font = SUB_FONT
 for i, h in enumerate(["Date", "400 yd time", "200 yd time", "CSS /100 yd (sec)", "CSS as m:ss", "Notes"], start=1):
     sw.cell(row=5, column=i, value=h)
 style_header(sw, 5, 6)
-for i, d in enumerate(["2026-09-21", "2026-11-09", "2026-12-28"]):
-    r = 6 + i
+tests_by_date = {t["date"]: t for t in D.get("swimTests", [])}
+css_dates = sorted(set(list(tests_by_date) + ["2026-09-21", "2026-11-09", "2026-12-28"]))
+r = 6
+for d in css_dates:
+    t = tests_by_date.get(d)
     sw.cell(row=r, column=1, value=d).font = BLUE
     for c in (2, 3, 6):
-        sw.cell(row=r, column=c).font = BLUE
-        sw.cell(row=r, column=c).fill = PatternFill("solid", start_color="FFFF00")
+        cell = sw.cell(row=r, column=c)
+        cell.font = BLUE
+        # Cream once the test is in the book; yellow while it still needs doing.
+        cell.fill = INPUT_FILL if t else PatternFill("solid", start_color="FFFF00")
+    if t:
+        sw.cell(row=r, column=2, value=mmss(t.get("t400")))
+        sw.cell(row=r, column=3, value=mmss(t.get("t200")))
+        sw.cell(row=r, column=6, value=t.get("note", ""))
+        sw.cell(row=r, column=6).alignment = WRAP
     sw.cell(row=r, column=2).number_format = "mm:ss"
     sw.cell(row=r, column=3).number_format = "mm:ss"
     sw.cell(row=r, column=4, value=f'=IF(OR(B{r}="",C{r}=""),"",ROUND((B{r}-C{r})*86400/2,1))').font = BLACK
@@ -205,8 +238,12 @@ for i, d in enumerate(["2026-09-21", "2026-11-09", "2026-12-28"]):
     sw.cell(row=r, column=5, value=f'=IF(D{r}="","",INT(D{r}/60)&":"&TEXT(MOD(D{r},60),"00"))').font = BLACK
     for c in range(1, 7):
         sw.cell(row=r, column=c).border = BORDER
-sw["A10"] = "Enter times as m:ss (e.g. 7:40). CSS = (T400 − T200) ÷ 2, in seconds per 100 yd."
-sw["A10"].font = Font(name=FONT, size=9, italic=True, color="5A6B60")
+    r += 1
+
+sw.cell(row=r, column=1, value="Enter times as m:ss (e.g. 7:40). CSS = (T400 − T200) ÷ 2, in seconds per 100 yd. "
+                               "Yellow rows are retests still to come — fill the two times and CSS computes itself.")
+sw.cell(row=r, column=1).font = Font(name=FONT, size=9, italic=True, color="5A6B60")
+CSS_NEXT = r + 2
 
 def table(ws, start_row, heading, headers, data, widths=None, wrap_cols=()):
     ws.cell(row=start_row, column=1, value=heading).font = SUB_FONT
@@ -224,7 +261,28 @@ def table(ws, start_row, heading, headers, data, widths=None, wrap_cols=()):
         r += 1
     return r + 1
 
-r = table(sw, 12, "Pace zones (recalculate off your measured CSS)",
+def caption(ws, row, text, span):
+    """Full-width italic note under a table."""
+    if not text:
+        return row + 1
+    ws.cell(row=row, column=1, value=text).font = Font(name=FONT, size=9, italic=True, color="5A6B60")
+    ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=span)
+    ws.cell(row=row, column=1).alignment = WRAP
+    ws.row_dimensions[row].height = 30
+    return row + 2
+
+
+swim_target = D.get("swimTestTarget") or {}
+r = CSS_NEXT
+if swim_target.get("rows"):
+    r = table(sw, r, f"Week {swim_target.get('week', '')} retest target — {swim_target.get('date', '')}",
+              ["Scenario", "400 yd", "200 yd", "CSS /100 yd"],
+              [[x.get("label", ""), x.get("t400", ""), x.get("t200", ""), x.get("css", "")]
+               for x in swim_target["rows"]],
+              wrap_cols=(1,))
+    r = caption(sw, r - 1, swim_target.get("caveat", ""), 6)
+
+r = table(sw, r, "Pace zones (recalculate off your measured CSS)",
           ["Zone", "Target", "Cue"],
           [[z.get("zone", ""), z.get("pace", ""), z.get("cue", "")] for z in D["swimPaceZones"]],
           wrap_cols=(3,))
@@ -236,7 +294,131 @@ r = table(sw, r, "Drill progression", ["Phase", "Title", "Focus", "Drills"],
            for p in D["swimDrillProgression"]],
           wrap_cols=(3, 4))
 r = table(sw, r, "Before every swim", ["Checklist"], [[c] for c in D["swimReadinessChecklist"]], wrap_cols=(1,))
-set_widths(sw, [22, 16, 40, 46, 14, 30])
+set_widths(sw, [24, 16, 40, 44, 14, 52])
+
+# ----------------------------------------------------------------- Drills
+dr = wb.create_sheet("Drills", 3)
+title_block(dr, "Swim drill library",
+            "Every drill the sessions refer to by name. Gear is not decoration: a center-mount snorkel sits on the "
+            "centreline of your face, so it floods the moment you rotate onto your side — side-lying drills, and "
+            "anything whose point is getting air, are fins-only.", 6)
+table(dr, 4, "Drills", ["Drill", "Gear", "What you do", "Feel for", "Watch for", "Why it is in the plan"],
+      [[d.get("name", ""), d.get("gear", ""), d.get("what", ""), d.get("feel", ""), d.get("mistake", ""),
+        d.get("why", "")] for d in D.get("swimDrills", [])],
+      wrap_cols=(1, 2, 3, 4, 5, 6))
+set_widths(dr, [24, 20, 50, 50, 50, 54])
+
+# ------------------------------------------------------------------- Bike
+bk = wb.create_sheet("Bike", 4)
+title_block(bk, "Bike — FTP and the winter power block",
+            "FTP is the bike's CSS: the highest power you could hold for about an hour, taken as 95% of a 20 min "
+            "all-out average. Every interval in the plan is a percentage of it, so the zone table is formula-driven "
+            "— update the test log and the zones re-cut themselves.", 5)
+
+ftp_tests = D.get("ftpTests", [])
+ftp_target = D.get("ftpTarget") or {}
+
+# W/kg needs a body weight. Take it from the plan so the sheet and the site agree,
+# and expose it as the single assumption cell everything below references.
+weight_kg = (D.get("blockMeta") or {}).get("bodyWeightKg") or 72.6
+
+bk.cell(row=4, column=1, value="Body weight (kg)").font = SUB_FONT
+wc = bk.cell(row=4, column=2, value=weight_kg)
+wc.font = BLUE
+wc.fill = PatternFill("solid", start_color="FFFF00")
+wc.number_format = "0.0"
+wc.border = BORDER
+bk.cell(row=4, column=3, value="Key assumption — every W/kg below divides by this cell. "
+                               "Source: plan.js blockMeta.bodyWeightKg (COROS profile). Update it if your weight moves.") \
+    .font = Font(name=FONT, size=9, italic=True, color="5A6B60")
+WEIGHT = "$B$4"
+
+bk.cell(row=6, column=1, value="FTP test log").font = SUB_FONT
+for i, h in enumerate(["Date", "20 min avg (W)", "FTP (W)", "W/kg", "Notes"], start=1):
+    bk.cell(row=7, column=i, value=h)
+style_header(bk, 7, 5)
+
+ftp_by_date = {t["date"]: t for t in ftp_tests}
+ftp_dates = sorted(set(list(ftp_by_date) + [d for d in [ftp_target.get("date")] if d]))
+r = 8
+FTP_FIRST = r
+for d in ftp_dates:
+    t = ftp_by_date.get(d)
+    bk.cell(row=r, column=1, value=d).font = BLUE
+    cell = bk.cell(row=r, column=2, value=num(t.get("avg20")) if t else None)
+    cell.font = BLUE
+    cell.fill = INPUT_FILL if t else PatternFill("solid", start_color="FFFF00")
+    cell.number_format = "0"
+    bk.cell(row=r, column=3, value=f'=IF(B{r}="","",ROUND(B{r}*0.95,0))').font = BLACK
+    bk.cell(row=r, column=3).number_format = '0" W"'
+    bk.cell(row=r, column=4, value=f'=IF(C{r}="","",ROUND(C{r}/{WEIGHT},2))').font = BLACK
+    bk.cell(row=r, column=4).number_format = '0.00" W/kg"'
+    bk.cell(row=r, column=5, value=(t or {}).get("note", "")).alignment = WRAP
+    for c in range(1, 6):
+        bk.cell(row=r, column=c).border = BORDER
+    r += 1
+FTP_LAST = r - 1
+
+r = caption(bk, r, "Type the 20 min average into the blue column; FTP and W/kg are formulas. These are Keiser console "
+                   "watts — estimated from resistance and cadence, not measured by a strain gauge. Consistent against "
+                   "themselves, but not transferable to another bike or a real power meter. Retest on the same "
+                   "equipment or not at all.", 5)
+
+bk.cell(row=r, column=1, value="Current FTP (W)").font = SUB_FONT
+cur = bk.cell(row=r, column=2,
+              value=f'=IFERROR(LOOKUP(2,1/($C${FTP_FIRST}:$C${FTP_LAST}<>""),$C${FTP_FIRST}:$C${FTP_LAST}),0)')
+cur.font = BLACK
+cur.number_format = '0" W"'
+cur.fill = SUB_FILL
+cur.border = BORDER
+bk.cell(row=r, column=3, value="Last completed test. The zone table below cuts off this cell.") \
+    .font = Font(name=FONT, size=9, italic=True, color="5A6B60")
+FTPC = f"$B${r}"
+r += 2
+
+bk.cell(row=r, column=1, value="Power zones (live — cut from current FTP)").font = SUB_FONT
+for i, h in enumerate(["Zone", "% of FTP", "Watts", "Cue"], start=1):
+    bk.cell(row=r + 1, column=i, value=h)
+style_header(bk, r + 1, 4)
+rr = r + 2
+for z in D.get("bikePowerZones", []):
+    pcts = pct_nums(z.get("percent"))
+    if len(pcts) >= 2:
+        val = (f'=TEXT(ROUND({FTPC}*{pcts[0] / 100},0),"0")&"–"'
+               f'&TEXT(ROUND({FTPC}*{pcts[1] / 100},0),"0")&" W"')
+    elif len(pcts) == 1:
+        prefix = "< " if "<" in str(z.get("percent", "")) else ""
+        val = f'="{prefix}"&TEXT(ROUND({FTPC}*{pcts[0] / 100},0),"0")&" W"'
+    else:
+        val = z.get("watts", "")
+    bk.cell(row=rr, column=1, value=z.get("zone", "")).font = BLACK
+    bk.cell(row=rr, column=2, value=z.get("percent", "")).font = BLACK
+    bk.cell(row=rr, column=3, value=val).font = BLACK
+    bk.cell(row=rr, column=4, value=z.get("cue", "")).font = BLACK
+    for c in range(1, 5):
+        bk.cell(row=rr, column=c).border = BORDER
+        bk.cell(row=rr, column=c).alignment = WRAP if c == 4 else TOP
+    rr += 1
+r = rr + 1
+
+if ftp_target.get("rows"):
+    r = table(bk, r, f"Week {ftp_target.get('week', '')} retest target — {ftp_target.get('date', '')}",
+              ["Scenario", "20 min avg", "FTP", "W/kg"],
+              [[x.get("label", ""), x.get("avg20", ""), x.get("ftp", ""), x.get("wkg", "")]
+               for x in ftp_target["rows"]],
+              wrap_cols=(1,))
+    r = caption(bk, r - 1, ftp_target.get("caveat", ""), 5)
+
+goal = D.get("ftpGoal") or {}
+if goal:
+    r = table(bk, r, "Why the winter bike block exists", ["Metric", "Value"],
+              [["Current", goal.get("current", "")],
+               ["Target", goal.get("target", "")],
+               ["Target W/kg", goal.get("targetWkg", "")],
+               ["Deadline", goal.get("deadline", "")]],
+              wrap_cols=(1,))
+    r = caption(bk, r - 1, goal.get("note", ""), 5)
+set_widths(bk, [26, 16, 18, 62, 60])
 
 # ------------------------------------------------------------------- Run
 rn = wb.create_sheet("Run")
@@ -301,6 +483,14 @@ r = table(rf, r, "Heart-rate zones", ["Zone", "Range", "Use"],
            for z in D["heartRateZones"]], wrap_cols=(3,))
 r = table(rf, r, "Block at a glance", ["Metric", "Value"],
           [[c.get("label", ""), c.get("value", "")] for c in D["summaryCards"]], wrap_cols=(1,))
+r = table(rf, r, "Where things live", ["Sheet", "What is on it"],
+          [["Log", "Every session in the block. Tick Done, enter actuals, leave a note."],
+           ["Week Summary", "Rolls the log up by week — swim yards, run km, bike hours, sessions done."],
+           ["Swim", "CSS test log and retest target, pace zones, send-offs, drill phases, pre-swim checklist."],
+           ["Drills", "The drill library — gear, what you do, what to feel, what to watch for, and why."],
+           ["Bike", "FTP test log, live power zones, retest target, and the 70.3 power gap."],
+           ["Run", "The run ramp and its rules."],
+           ["Strength", "The lifting sessions, set by set."]], wrap_cols=(2,))
 set_widths(rf, [22, 26, 86, 20, 20])
 
 for s in wb.worksheets:

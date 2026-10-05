@@ -36,6 +36,7 @@ export const blockMeta = {
   endDateKey: "2026-12-31",
   raceDateKey: "2026-12-05",
   raceName: "Redmond Reindeer Romp 5 mile",
+  bodyWeightKg: 72.6,
 };
 
 /**
@@ -110,7 +111,7 @@ export const heartRateZones = [
   { zone: "Run — easy", range: "140–152 bpm", cue: "Every easy run lives here. If it drifts above, walk it back." },
   { zone: "Run — steady / tempo", range: "158–168 bpm", cue: "Thursday quality only, and never for long early in the block." },
   { zone: "Bike — Z2 endurance", range: "130–145 bpm", cue: "Matches the Sep 17 outdoor ride (136 bpm avg). The Sep 23 spin ran 140–150, a touch hot — aim for the middle of the band, not the top." },
-  { zone: "Bike — threshold", range: "155–165 bpm", cue: "Spin-bike intervals. Now paired with watts — see the FTP block below. Where the two disagree, trust the watts: power is what you did, heart rate is how you felt about it." },
+  { zone: "Bike — threshold", range: "155–165 bpm", cue: "Spin-bike intervals. Now paired with watts — see the FTP test log. Where the two disagree, trust the watts: power is what you did, heart rate is how you felt about it." },
 ];
 
 /**
@@ -492,11 +493,11 @@ export const swimDrillProgression = [
 ];
 
 export const swimReadinessChecklist = [
-  "Fins, center-mount snorkel, and small paddles bought and in the bag by Week 2.",
+  "Fins and center-mount snorkel in the bag from Week 1; small paddles bought before Week 5, which is when they enter.",
   "Know your CSS number and carry the send-off table on your phone.",
   "Every main set leaves on the clock — if you are resting until you feel ready, the set is wrong.",
   "Stroke count per 25 yd logged on the best 100 of each Monday session.",
-  "Breathe-3 feels automatic on easy swimming by Week 8.",
+  "Left-side breathing competent — calm on easy 50s with rest by Week 7, inside continuous swimming by Week 10.",
   "Breaststroke 200 continuous, relaxed, by Week 12.",
   "Shoulder pain stays ≤ 2/10 — paddles are the first thing to drop if it does not.",
 ];
