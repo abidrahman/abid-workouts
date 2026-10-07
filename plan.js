@@ -63,25 +63,36 @@ export const swimTests = [
     t400: "7:06",
     t200: "3:20",
     css: "1:53",
-    note: "First CSS test. The 400/200 ratio is 2.13, inside the normal 2.10–2.20 band, so the number is internally consistent and the speed-to-endurance balance is healthy.",
+    note: "First CSS test. The 400/200 ratio is 2.13, inside the normal 2.10–2.20 band, so the number is internally consistent. What the ratio cannot detect is both swims being submaximal together, and that now looks like what happened: on Oct 5 the warm-up 400 came in at 7:07.5 and the 5 × 200 that followed averaged 1:47.6/100 without fading. Treat 1:53 as a soft floor rather than a true threshold until Nov 9 re-measures it.",
   },
 ];
 
 /**
- * Week 8 retest target. CSS is hypersensitive to the 400: holding the 200 and taking
- * 8 s off the 400 alone moves CSS from 1:53 to 1:49. The 400 is the number the threshold
- * and continuous work actually targets.
+ * Week 8 retest target.
+ *
+ * These were re-cut on Oct 7 after two sessions showed the Sep 21 400 was almost
+ * certainly not a maximal effort: the Oct 5 *warm-up* 400 came in at 7:07.5, within
+ * 1.5 s of the all-out test, and the 5 × 200 that followed held 1:47.6/100 with no
+ * fade. You cannot warm up at your own 400 TT pace. The 200 looks closer to honest
+ * but is probably still soft — Oct 7 held ten fast 50s at 1:36.4/100 on a 1:10
+ * send-off, which is quicker than the 1:40/100 the 200 TT was swum at.
+ *
+ * The trap in this test is that CSS only measures the *gap* between the two swims, so
+ * it is entirely possible to get materially faster and watch CSS barely move. Chase
+ * the 400 and 200 times below; treat the CSS column as the arithmetic that falls out
+ * of them, not as the goal.
  */
 export const swimTestTarget = {
   week: 8,
   date: "2026-11-09",
   rows: [
-    { label: "Now (Sep 21)", t400: "7:06", t200: "3:20", css: "1:53" },
-    { label: "Good — 4 s/100 faster", t400: "6:58", t200: "3:20", css: "1:49" },
-    { label: "Strong — 6 s/100 faster", t400: "6:52", t200: "3:18", css: "1:47" },
+    { label: "Sep 21 baseline", t400: "7:06", t200: "3:20", css: "1:53" },
+    { label: "Floor — an honest test, no fitness gained", t400: "7:00", t200: "3:18", css: "1:51" },
+    { label: "Good — the number to aim at", t400: "6:52", t200: "3:16", css: "1:48" },
+    { label: "Strong", t400: "6:44", t200: "3:12", css: "1:46" },
   ],
   caveat:
-    "Run the protocol identically — 400 first, 5 min full rest, then 200 — or the comparison means nothing. A sandbagged 200 inflates CSS and makes the block look better than it was, so both efforts have to be genuine.",
+    "Two execution notes, both learned the hard way. First, warm up genuinely easy — 2:08–2:13/100, not the 1:45s of the last two sessions — because a 400 TT off a hard warm-up is just a second hard swim. Second, pace the 400 off the clock and not off feel: 1:42 for the first 100, 1:43s through the middle, empty the tank on the last 50. Then 5 min full rest before the 200. Run the protocol identically or the comparison means nothing.",
 };
 
 export const swimPaceZones = [
