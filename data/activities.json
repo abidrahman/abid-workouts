@@ -1,5 +1,23 @@
 [
   {
+    "id": "20509944994",
+    "name": "Afternoon Weight Training",
+    "type": "WeightTraining",
+    "startTime": "2026-10-08T16:28:50Z",
+    "duration": 4413,
+    "distance": 0,
+    "elevationGain": 0
+  },
+  {
+    "id": "20508192580",
+    "name": "Afternoon Walk",
+    "type": "Run",
+    "startTime": "2026-10-08T14:01:59Z",
+    "duration": 3605,
+    "distance": 4968.2,
+    "elevationGain": 0
+  },
+  {
     "id": "20496942033",
     "name": "Afternoon Run",
     "type": "Run",
@@ -1780,23 +1798,5 @@
     "duration": 2775,
     "distance": 0,
     "elevationGain": 0
-  },
-  {
-    "id": "18707579549",
-    "name": "Afternoon Ride",
-    "type": "Ride",
-    "startTime": "2026-05-29T16:16:30Z",
-    "duration": 554,
-    "distance": 3520,
-    "elevationGain": 6
-  },
-  {
-    "id": "18697681378",
-    "name": "Night Ride",
-    "type": "Ride",
-    "startTime": "2026-05-28T21:42:52Z",
-    "duration": 2539,
-    "distance": 16498.2,
-    "elevationGain": 57
   }
 ]
