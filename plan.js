@@ -520,7 +520,7 @@ export const runRamp = [
   { week: "Week 4", dates: "Oct 12–18", runs: "2", volume: "11 km", longRun: "6 km", note: "First week in orthotics — expect new calf soreness, that is normal." },
   { week: "Week 5", dates: "Oct 19–25", runs: "3", volume: "13 km", longRun: "5 km", note: "Third run added as three short runs, not one long one." },
   { week: "Week 6", dates: "Oct 26–Nov 1", runs: "3", volume: "14 km", longRun: "6 km", note: "New York. Low other load makes this a good run week." },
-  { week: "Week 7", dates: "Nov 2–8", runs: "3", volume: "12 km", longRun: "5 km", note: "Down week. Flying home plus four swims in four days — running gives way." },
+  { week: "Week 7", dates: "Nov 2–8", runs: "3", volume: "12 km", longRun: "5 km", note: "Down week. Flying home plus three swims in three days — running gives way." },
   { week: "Week 8", dates: "Nov 9–15", runs: "3", volume: "16 km", longRun: "8 km", note: "Long run reaches race distance for the first time." },
   { week: "Week 9", dates: "Nov 16–22", runs: "3", volume: "18 km", longRun: "10 km", note: "Peak run week. 10 km long run, comfortably over race distance." },
   { week: "Week 10", dates: "Nov 23–29", runs: "3", volume: "15 km", longRun: "7 km", note: "Edmonton down week. Ice and cold — indoor track is fine here." },
@@ -1232,6 +1232,7 @@ export const planWeeks = [
       ],
       "2026-10-13": [
         run("30–35 min", "Easy run — 5 km", "Second week in the orthotics. Calves will be working differently; that is adaptation, not injury. Track or soft trail."),
+        swim(1200, "Technique swim (short)", TECH_SWIM_NOTE),
         mobility("15 min", MOBILITY_CORE),
       ],
       "2026-10-14": [
@@ -1257,7 +1258,6 @@ export const planWeeks = [
       ],
       "2026-10-17": [
         hike("45 min", "Stairmaster + 15 lb pack", "Steady 45 min at 15 lb. Rainier maintenance continues biweekly through the block."),
-        swim(1200, "Technique swim (short)", TECH_SWIM_NOTE),
       ],
       "2026-10-18": [
         bike("75–90 min", "Endurance ride — Z2", "Outdoors if the weather cooperates, spin bike if not. Steady 130–145 bpm."),
@@ -1285,6 +1285,7 @@ export const planWeeks = [
       ],
       "2026-10-20": [
         run("25–28 min", "Easy run — 4 km", "Short and easy. Three runs this week, all short — frequency is the adaptation we want, not distance."),
+        swim(1200, "Technique swim (short)", TECH_SWIM_NOTE),
         mobility("15 min", MOBILITY_CORE),
       ],
       "2026-10-21": [
@@ -1310,7 +1311,6 @@ export const planWeeks = [
       ],
       "2026-10-24": [
         hike("2.5–3.5 hr", "Weekend aerobic — long ride or hike", "Pack 15 lb if hiking.", { categories: ["cardio", "bike"] }),
-        swim(1200, "Technique swim (short)", TECH_SWIM_NOTE),
       ],
       "2026-10-25": [
         run("35–38 min", "Easy run — 5 km", "Third run of the week, easy. Longest of the three but still short."),
@@ -1379,7 +1379,7 @@ export const planWeeks = [
     phase: "build1",
     theme: "Back-loaded return",
     focus:
-      "New York Monday and Tuesday, then four swims in the four days after the flight home. Running takes a planned down week to absorb the travel and the swim cluster. No paddles this week — six days out of the water first.",
+      "New York Monday and Tuesday, then three swims in the three days after the flight home. Running takes a planned down week to absorb the travel and the swim cluster. No paddles this week — six days out of the water first.",
     travel: "New York Mon–Tue (flight home Tue Nov 3, 4 pm) · Seattle Wed onward",
     days: {
       "2026-11-02": [
@@ -1400,26 +1400,21 @@ export const planWeeks = [
       ],
       "2026-11-05": [
         swim(
-          1800,
-          "Swim — technique + light speed",
-          "Warm-up 300. Drill 500 as 10 × 50, each drill twice: catch-up / 6-1-6 / 3/5/3 breathing / left-breathing single-arm / breathe-3. Fins throughout; snorkel off for everything except catch-up. This is the ladder's graduation test — five weeks after the left side sank in the Oct 2 long swim, breathe-3 reappears, but only as a 50 with rest on either end. The question to answer honestly: do the hips stay up for a full 50? If yes, the ladder worked and Week 10 puts it back inside continuous swimming. If no, drop back to left-breathing single-arm and there is no cost to doing so. Main 12 × 50 on 1:15 aerobic, every third one fast. Then 4 × 50 breaststroke. Cool-down 200.",
+          2400,
+          "Swim — technique + threshold",
+          "Warm-up 300. Drill 500 as 10 × 50, each drill twice: catch-up / 6-1-6 / 3/5/3 breathing / left-breathing single-arm / breathe-3. Fins throughout; snorkel off for everything except catch-up. This is the ladder's graduation test — five weeks after the left side sank in the Oct 2 long swim, breathe-3 reappears, but only as a 50 with rest on either end. The question to answer honestly: do the hips stay up for a full 50? If yes, the ladder worked and Week 10 puts it back inside continuous swimming. If no, drop back to left-breathing single-arm and there is no cost to doing so. Main 12 × 50 on 1:15 aerobic, every third one fast. Then 6 × 100 at CSS on 2:15 — this is the week's threshold work, moved here off the old Friday slot so the weekend stays free. Then 4 × 50 breaststroke. Cool-down 200.",
         ),
         strength("A", "First proper lift in a week. Back the loads off about 10% — you have been doing bands."),
       ],
       "2026-11-06": [
         swim(
-          1800,
-          "Swim — threshold returns",
-          "Warm-up 400. Drill 300 as 6 × 50, each drill twice: catch-up / 6-1-6 / breaststroke timing. Fins throughout; snorkel off for 6-1-6 and breaststroke timing. Main: 8 × 100 at CSS on 2:15. Cool-down 300. Third swim in three days — if the shoulders are heavy, cut to 6 × 100.",
+          2800,
+          "Swim — long aerobic 1,400",
+          "Warm-up 400. Main: 1,400 continuous, then 6 × 100 at CSS on 2:20. Cool-down 400. Third swim in three days and the biggest of the week — it sits on Friday now rather than Saturday, so the weekend is yours. If the shoulders are heavy, drop the 6 × 100 rather than the continuous swim.",
         ),
         run("22–25 min", "Easy run — 3 km", "Down-week running. Deliberately short."),
       ],
       "2026-11-07": [
-        swim(
-          2400,
-          "Swim — long aerobic 1,400",
-          "Warm-up 300. Main: 1,400 continuous, then 4 × 100 at CSS on 2:20. Cool-down 300. Fourth swim in four days brings the week to about {{WEEK_YARDS}} yd — streak protected on the back half.",
-        ),
         bike("75 min", "Endurance ride", "Z2, indoors or out depending on weather. Winter is arriving; start getting comfortable on the spin bike."),
       ],
       "2026-11-08": [
@@ -1449,7 +1444,7 @@ export const planWeeks = [
       ],
       "2026-11-10": [
         run("22–25 min", "Easy run — 3 km", "Easy. The long run is Sunday and it is the big one this week."),
-        bike("40 min", "Spin bike — Z2", "Second ride of the week, easy Z2 at 130–145 bpm. Stacked after a 3 km run so the hard days stay hard and the easy days stay genuinely easy — this is aerobic volume, not a workout."),
+        swim(1400, "Technique swim (short)", TECH_SWIM_NOTE),
         mobility("15 min", MOBILITY_CORE),
       ],
       "2026-11-11": [
@@ -1475,7 +1470,7 @@ export const planWeeks = [
       ],
       "2026-11-14": [
         hike("45–50 min", "Stairmaster + 20 lb pack", "Biweekly Rainier maintenance, now at 20 lb."),
-        swim(1400, "Technique swim (short)", TECH_SWIM_NOTE),
+        bike("40 min", "Spin bike — Z2", "Second ride of the week, easy Z2 at 130–145 bpm. Off Tuesday now — it was sitting the day before the FTP retest, which is the one place an easy ride is not free. Pure aerobic volume, not a workout, so swap it for an outdoor ride with your partner if the weather allows."),
       ],
       "2026-11-15": [
         run("50–55 min", "Long run — 8 km", "Race distance for the first time. Easy pace throughout, soft surface, cadence 175–180. If the shins are tight the next morning and still tight 48 hours later, next week's long run gets cut."),
@@ -1503,6 +1498,7 @@ export const planWeeks = [
       ],
       "2026-11-17": [
         run("22–25 min", "Easy run — 3 km", "Easy. Save it for Sunday."),
+        swim(1400, "Technique swim (short)", TECH_SWIM_NOTE),
         mobility("15 min", MOBILITY_CORE),
       ],
       "2026-11-18": [
@@ -1528,7 +1524,6 @@ export const planWeeks = [
       ],
       "2026-11-21": [
         hike("2.5–3 hr", "Weekend aerobic — ride or hike", "Keep it aerobic. Big week, so err easy.", { categories: ["cardio", "bike"] }),
-        swim(1400, "Technique swim (short)", TECH_SWIM_NOTE),
       ],
       "2026-11-22": [
         run("62–68 min", "Long run — 10 km", "Peak long run, comfortably over race distance. Easy pace, soft surface. This is the run that makes Dec 5 feel short — and the last long one before the race."),
@@ -1557,7 +1552,7 @@ export const planWeeks = [
       ],
       "2026-11-24": [
         run("28–30 min", "Easy run — 4 km", "Last Seattle run before the flight. Soft surface."),
-        strength("S-PUSH", "Upper day, and the last lift before the flight. Pressing pairs cleanly with an easy run and leaves Thursday's Strength B with fresh legs."),
+        swim(1400, "Technique swim (short)", TECH_SWIM_NOTE),
         mobility("15 min", MOBILITY_CORE),
       ],
       "2026-11-25": [
@@ -1582,8 +1577,8 @@ export const planWeeks = [
         bike("50 min", "Spin bike — Z2", "Easy aerobic hour on the spin bike."),
       ],
       "2026-11-28": [
-        swim(1400, "Technique swim (short)", TECH_SWIM_NOTE),
         hike("40 min", "Stairmaster + 20 lb pack", "Biweekly Rainier maintenance."),
+        strength("S-PUSH", "Upper day, in the Edmonton gym. Every weekday this week is already at the two-session cap, so the pressing day lands here — it is the one strength session that does nothing to the legs, which is what makes it safe the day before a 7 km long run."),
       ],
       "2026-11-29": [
         run("45–50 min", "Long run — 7 km", "Down-week long run, shorter than last week on purpose. Indoor track if the footing is bad."),
@@ -1641,8 +1636,7 @@ export const planWeeks = [
         run("55–65 min", "RACE — Redmond Reindeer Romp 5 mile (8 km)", "Warm-up 1.5 km easy with 3 strides. Race: go out at 5:10/km for the first mile and let it come down — the classic error here is a first mile 20 s too fast. Target roughly 40–42 min if the shins are quiet; if they are not, run it as a steady effort and enjoy the morning. Cool-down 1 km.", { rescheduleLocked: true }),
       ],
       "2026-12-06": [
-        swim(1200, "Recovery swim", "About 1,200 yd total, very easy. Flush the legs, loosen the shoulders, no pace work at all."),
-        mobility("25 min", "Thorough post-race mobility. Calves and shins will be the sorest — be gentle, and do not stretch into compartment pain."),
+        mobility("25 min", "Thorough post-race mobility. Calves and shins will be the sorest — be gentle, and do not stretch into compartment pain. The old Sunday recovery swim is gone with the rest of the weekend swims; four swims and about 7,300 yd already clear the streak in a race week, and the day after 8 km is a day the legs want off their feet rather than another session."),
       ],
     },
   },
@@ -1739,6 +1733,7 @@ export const planWeeks = [
       ],
       "2026-12-17": [
         run("30 min", "Easy run — 4 km", "Travel day home. Morning run before the flight."),
+        swim(1400, "Technique swim (short)", (yards) => `${TECH_SWIM_NOTE(yards)} This moved off Saturday with the rest of the weekend swims, so it lands on a travel morning — if the flight is early, this is the most droppable session of the week. Let it go rather than rushing it.`),
         mobility("15 min", "Travel mobility."),
       ],
       "2026-12-18": [
@@ -1751,7 +1746,6 @@ export const planWeeks = [
       ],
       "2026-12-19": [
         hike("2–3 hr", "Weekend aerobic — ride, hike, or stairs", "Winter options: spin bike endurance, a shorter hike, or 45 min on the stairmaster with 20 lb.", { categories: ["cardio", "bike"] }),
-        swim(1400, "Technique swim (short)", TECH_SWIM_NOTE),
       ],
       "2026-12-20": [
         run("50–55 min", "Long run — 8 km", "Back to race distance, easy. The run base is worth keeping through the holidays rather than rebuilding in January."),
@@ -1780,11 +1774,15 @@ export const planWeeks = [
       ],
       "2026-12-22": [
         run("35 min", "Easy run — 5 km", "Last Seattle run of the year. Soft surface."),
-        swim(1400, "Technique swim (short)", TECH_SWIM_NOTE),
+        swim(
+          2800,
+          "Swim — long aerobic 1,800",
+          "Warm-up 300. Main: 1,800 continuous, then 4 × 100 at CSS. Cool-down 300. The week's long swim, pulled off Boxing Day to your home pool on your last Seattle day — you know this water, the lane etiquette and the clock, which is exactly what you want for the longest continuous swim of the week.",
+        ),
       ],
       "2026-12-23": [
         run("30 min", "Easy run — 4 km", "Travel day to Edmonton. Indoor track or treadmill given the conditions. CHECK THE GYM'S HOLIDAY HOURS TODAY and shuffle this week's swims to fit them."),
-        strength("S-QUAD", "Leg day moved up to Wednesday this week so it sits four days clear of Sunday's long run. Standard Strength B — Bulgarian split squats, step-ups, Copenhagen planks."),
+        swim(1400, "Technique swim (short)", (yards) => `${TECH_SWIM_NOTE(yards)} Deliberately the smallest swim of the week on the most disrupted day — fit it around the flight, and if Edmonton's pool hours do not cooperate, this is the one to drop.`),
         mobility("15 min", "Travel mobility."),
       ],
       "2026-12-24": [
@@ -1793,19 +1791,15 @@ export const planWeeks = [
           "Swim — speed",
           "Warm-up 300. Drill 400 as 8 × 50, each drill twice: sighting / breaststroke timing / stroke-count ladder / front scull. Fins throughout; snorkel off for sighting and breaststroke timing. Main: 24 × 50 on 1:05 alternating. 4 × 50 breaststroke. Cool-down 300. Christmas Eve — likely reduced pool hours, so go early.",
         ),
-        strength("S-BACK", "Upper day on Christmas Eve — short and unglamorous, but it is the last pulling session of the block. If the gym closes early, cut to two sets of everything and still do the pull-ups."),
+        strength("S-QUAD", "Leg day on Christmas Eve, which puts it three clear days before Sunday's long run — close the gym out early if you need to, but do not push it later into the week or it lands too close to that run. Standard Strength B: Bulgarian split squats, step-ups, Copenhagen planks."),
         mobility("15 min", MOBILITY_CORE),
       ],
       "2026-12-25": [
         mobility("20–30 min", "Christmas Day. Rest, stretch, walk if you feel like it. Nothing structured — this is the one fully off day in the block and taking it properly is part of the plan.", "Rest day — walk and stretch"),
       ],
       "2026-12-26": [
-        swim(
-          2800,
-          "Swim — long aerobic 1,800",
-          "Warm-up 300. Main: 1,800 continuous, then 4 × 100 at CSS. Cool-down 300.",
-        ),
-        bike("50 min", "Spin bike — Z2", "Boxing Day ride, all indoors — Edmonton in late December is not outdoor riding weather. Fifty minutes steady at 130–145 bpm. Legs are fresh because the leg day moved to Wednesday."),
+        bike("50 min", "Spin bike — Z2", "Boxing Day ride, all indoors — Edmonton in late December is not outdoor riding weather. Fifty minutes steady at 130–145 bpm, and an easy one to swap for a ski or a walk with your partner if that is the better use of the morning."),
+        strength("S-BACK", "Upper day, and the last pulling session of the block. It sits on Saturday because every weekday this week already carries a swim, and pulling is the one strength session that leaves the legs completely alone the day before an 8 km long run. If the gym closes early, cut to two sets of everything and still do the pull-ups."),
       ],
       "2026-12-27": [
         run("50–55 min", "Long run — 8 km", "Indoor track if the footing is bad, outside if it is clear and you are dressed for it."),
