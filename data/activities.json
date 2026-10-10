@@ -1,5 +1,50 @@
 [
   {
+    "id": "20521757210",
+    "name": "Afternoon Weight Training",
+    "type": "WeightTraining",
+    "startTime": "2026-10-09T17:10:05Z",
+    "duration": 1619,
+    "distance": 0,
+    "elevationGain": 0
+  },
+  {
+    "id": "20521757219",
+    "name": "Afternoon Swim",
+    "type": "Swim",
+    "startTime": "2026-10-09T15:18:22Z",
+    "duration": 2721,
+    "distance": 2194.6,
+    "elevationGain": 0
+  },
+  {
+    "id": "20509944994",
+    "name": "Afternoon Weight Training",
+    "type": "WeightTraining",
+    "startTime": "2026-10-08T16:28:50Z",
+    "duration": 4413,
+    "distance": 0,
+    "elevationGain": 0
+  },
+  {
+    "id": "20508192580",
+    "name": "Afternoon Walk",
+    "type": "Run",
+    "startTime": "2026-10-08T14:01:59Z",
+    "duration": 3605,
+    "distance": 4968.2,
+    "elevationGain": 0
+  },
+  {
+    "id": "20496942033",
+    "name": "Afternoon Run",
+    "type": "Run",
+    "startTime": "2026-10-07T17:54:18Z",
+    "duration": 1550,
+    "distance": 4020,
+    "elevationGain": 4
+  },
+  {
     "id": "20494769441",
     "name": "Afternoon Swim",
     "type": "Swim",
@@ -1753,50 +1798,5 @@
     "duration": 442,
     "distance": 2114,
     "elevationGain": 8
-  },
-  {
-    "id": "18708340833",
-    "name": "Afternoon Swim",
-    "type": "Swim",
-    "startTime": "2026-05-29T17:23:30Z",
-    "duration": 531,
-    "distance": 457.2,
-    "elevationGain": 0
-  },
-  {
-    "id": "18707976226",
-    "name": "Afternoon Weight Training",
-    "type": "WeightTraining",
-    "startTime": "2026-05-29T16:30:56Z",
-    "duration": 2775,
-    "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "18707579549",
-    "name": "Afternoon Ride",
-    "type": "Ride",
-    "startTime": "2026-05-29T16:16:30Z",
-    "duration": 554,
-    "distance": 3520,
-    "elevationGain": 6
-  },
-  {
-    "id": "18697681378",
-    "name": "Night Ride",
-    "type": "Ride",
-    "startTime": "2026-05-28T21:42:52Z",
-    "duration": 2539,
-    "distance": 16498.2,
-    "elevationGain": 57
-  },
-  {
-    "id": "18684039772",
-    "name": "Night Ride",
-    "type": "Ride",
-    "startTime": "2026-05-27T21:43:47Z",
-    "duration": 404,
-    "distance": 2136,
-    "elevationGain": 3
   }
 ]
