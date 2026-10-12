@@ -1,5 +1,14 @@
 [
   {
+    "id": "20546957280",
+    "name": "Lunch Hike",
+    "type": "Hike",
+    "startTime": "2026-10-11T12:14:52Z",
+    "duration": 3729,
+    "distance": 7166,
+    "elevationGain": 205
+  },
+  {
     "id": "20533984196",
     "name": "Afternoon Ride",
     "type": "Ride",
@@ -1789,14 +1798,5 @@
     "duration": 1830,
     "distance": 1280.2,
     "elevationGain": 0
-  },
-  {
-    "id": "18736078900",
-    "name": "Afternoon Hike",
-    "type": "Hike",
-    "startTime": "2026-05-31T15:10:03Z",
-    "duration": 5787,
-    "distance": 5291.3,
-    "elevationGain": 626
   }
 ]
