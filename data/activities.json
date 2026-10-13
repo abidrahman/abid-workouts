@@ -1,5 +1,14 @@
 [
   {
+    "id": "20561361937",
+    "name": "Afternoon Swim",
+    "type": "Swim",
+    "startTime": "2026-10-12T16:04:49Z",
+    "duration": 2719,
+    "distance": 2126,
+    "elevationGain": 0
+  },
+  {
     "id": "20546957280",
     "name": "Lunch Hike",
     "type": "Hike",
@@ -1788,15 +1797,6 @@
     "startTime": "2026-06-01T14:48:14Z",
     "duration": 3340,
     "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "18747708769",
-    "name": "Afternoon Swim",
-    "type": "Swim",
-    "startTime": "2026-06-01T14:01:28Z",
-    "duration": 1830,
-    "distance": 1280.2,
     "elevationGain": 0
   }
 ]
