@@ -2428,6 +2428,7 @@ const strengthExerciseAliases = [
   { regex: /\bweighted pull-?ups?\b/i, name: "Weighted pull-up" },
   { regex: /\bpull-?ups?\b/i, name: "Pull-up" },
   { regex: /\blat pulldowns?\b/i, name: "Lat pulldown" },
+  { regex: /\bstraight-arm pulldowns?\b/i, name: "Straight-arm pulldown" },
   { regex: /\b(barbell|dumbbell|cable|seated)\s+rows?\b/i, name: "Row" },
   { regex: /\brows?\b/i, name: "Row" },
   { regex: /\bface pulls?\b/i, name: "Face pull" },
@@ -2441,8 +2442,14 @@ const strengthExerciseAliases = [
   { regex: /\bbulgarian split squats?\b/i, name: "Bulgarian split squat" },
   { regex: /\bsplit squats?\b/i, name: "Split squat" },
   { regex: /\bgoblet squats?\b/i, name: "Goblet squat" },
+  { regex: /\bstep-?ups?\b/i, name: "Box step-up" },
+  { regex: /\bbench press(?:es)?\b/i, name: "Bench press" },
+  { regex: /\bexternal rotations?\b/i, name: "External rotation" },
+  { regex: /\bstanding calf raises?\b/i, name: "Standing calf raise" },
+  { regex: /\bseated calf raises?\b/i, name: "Seated calf raise" },
   { regex: /\bcalf raises?\b/i, name: "Calf raise" },
   { regex: /\btibialis raises?\b/i, name: "Tibialis raise" },
+  { regex: /\bcopenhagen planks?\b/i, name: "Copenhagen plank" },
   { regex: /\bplanks?\b/i, name: "Plank" },
   { regex: /\bdead bugs?\b/i, name: "Dead bug" },
   { regex: /\bpallof press(?:es)?\b/i, name: "Pallof press" },
@@ -3618,6 +3625,7 @@ function renderStrengthTemplates() {
   const el = document.querySelector("#strength-templates");
   if (!el) return;
   el.innerHTML = strengthTemplates
+    .filter((template) => !template.retired)
     .map(
       (template) => `
         <article class="strength-template-card">

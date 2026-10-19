@@ -41,6 +41,19 @@ function countByCategory(sessions) {
   return counts;
 }
 
+/** The latest strength era that has started by this week. */
+const strengthEraFor = (week) =>
+  [...weeklyRules.strengthEras].reverse().find((era) => week >= era.fromWeek) ?? null;
+
+const isWeekend = (dateKey) => ["Sat", "Sun"].includes(dayName(dateKey));
+
+/** What a flexible weekend may carry: the flex slot, the long run, mobility, a locked race. */
+const isWeekendSafe = (session) =>
+  Boolean(session.flex) ||
+  Boolean(session.rescheduleLocked) ||
+  categoriesOf(session).includes("mobility") ||
+  weeklyRules.flexWeekends.allowedTypes.includes(session.libraryKey);
+
 function checkWeek(weekEntry, swimYards) {
   const { week } = weekEntry;
   const days = Object.entries(weekEntry.days);
@@ -62,26 +75,35 @@ function checkWeek(weekEntry, swimYards) {
     fail(week, `${swimYards.toLocaleString("en-US")} swim yd, under the ${weeklyRules.minSwimYards.toLocaleString("en-US")} yd floor`);
   }
 
-  // ── Strength composition: both leg days, plus one upper ───────────────────
-  if (!isRelaxed(weekEntry, "strength")) {
-    const strengthKeys = allSessions
-      .filter((session) => categoriesOf(session).includes("strength"))
-      .map((session) => session.libraryKey)
-      .filter(Boolean);
+  // ── Strength: the era's count, and the slots it has to fill ───────────────
+  const era = strengthEraFor(week);
+  const strengthKeys = allSessions
+    .filter((session) => categoriesOf(session).includes("strength"))
+    .map((session) => session.libraryKey)
+    .filter(Boolean);
 
-    const { lower, upper, travel } = weeklyRules.strengthComposition;
-    const hasTravel = strengthKeys.some((key) => travel.includes(key));
+  if (!isRelaxed(weekEntry, "strength") && era) {
+    if (strengthKeys.length !== era.count) {
+      fail(week, `${strengthKeys.length} strength sessions, this part of the block needs ${era.count}`);
+    }
 
+    const hasTravel = strengthKeys.some((key) => weeklyRules.travelStrength.includes(key));
     if (!hasTravel) {
-      for (const key of lower) {
-        if (!strengthKeys.includes(key)) {
-          fail(week, `missing the ${workoutLibraryByKey[key].name} day`);
+      for (const slot of era.slots) {
+        if (!strengthKeys.some((key) => slot.includes(key))) {
+          const names = slot.map((key) => workoutLibraryByKey[key].name).join(" or ");
+          fail(week, `missing the ${names} session`);
         }
       }
-      if (!strengthKeys.some((key) => upper.includes(key))) {
-        fail(week, "no upper-body strength day");
-      }
     }
+  }
+
+  const retiredInUse = strengthKeys.filter((key) => {
+    const entry = workoutLibraryByKey[key];
+    return entry?.retired && era && !era.slots.flat().includes(key);
+  });
+  for (const key of new Set(retiredInUse)) {
+    fail(week, `uses the retired ${workoutLibraryByKey[key].name} template`);
   }
 
   // ── Weekly load warning ──────────────────────────────────────────────────
@@ -102,6 +124,16 @@ function checkWeek(weekEntry, swimYards) {
     const real = sessions.filter(isReal);
     if (real.length > weeklyRules.maxRealPerDay) {
       fail(week, `${where} has ${real.length} real workouts, over the cap of ${weeklyRules.maxRealPerDay}`);
+    }
+
+    if (
+      week >= weeklyRules.flexWeekends.fromWeek &&
+      !isRelaxed(weekEntry, "weekend") &&
+      isWeekend(dateKey)
+    ) {
+      for (const session of sessions.filter((item) => !isWeekendSafe(item))) {
+        fail(week, `${where} carries "${session.title}" — weekends hold only the flex slot, the long run and mobility`);
+      }
     }
 
     const mobility = sessions.filter((session) => categoriesOf(session).includes("mobility"));
@@ -128,7 +160,7 @@ function checkWeek(weekEntry, swimYards) {
     const todayKeys = ordered[i].sessions.map((session) => session.libraryKey);
     const tomorrowKeys = ordered[i + 1].sessions.map((session) => session.libraryKey);
 
-    const legsToday = todayKeys.some((key) => weeklyRules.strengthComposition.lower.includes(key));
+    const legsToday = todayKeys.some((key) => weeklyRules.legDayTypes.includes(key));
     const hardRunTomorrow = tomorrowKeys.some((key) => weeklyRules.hardRunTypes.includes(key));
     if (legsToday && hardRunTomorrow) {
       warn(week, `${ordered[i].dateKey} is a leg day and ${ordered[i + 1].dateKey} is a hard run — fresh legs would be better`);

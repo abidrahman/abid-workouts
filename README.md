@@ -12,9 +12,13 @@ The priorities, in order:
 2. **Run** — rebuild from ~5 km/wk to an 8 km race (Redmond Reindeer Romp 5 mile,
    Dec 5) without re-triggering shin splints or CECS. One run per week until the
    custom orthotics arrive, then a capped ramp.
-3. **Strength + mobility** — two lifting days a week aimed at the posterior chain,
-   single-leg strength, and the soleus/tibialis work that keeps the lower legs quiet.
+3. **Strength + mobility** — two ~45 min full-body sessions a week (Mon + Thu) aimed at
+   the posterior chain, single-leg strength, and the soleus/tibialis work that keeps the
+   lower legs quiet.
 4. **Bike** — 2–3 sessions a week, moving indoors to the Keiser M3i as winter lands.
+
+From Week 5, weekends stay open: a flex slot for riding, hiking or skiing, plus the
+long run, which floats between Saturday and Sunday.
 
 It feeds into the January 2027 Victoria 70.3 build. The whole rationale lives in the
 app's **The Plan** tab; the week-by-week schedule lives in `plan.js`.

@@ -231,7 +231,7 @@ export const phases = [
     date: "Oct 12 – Nov 8",
     title: "Build I — swim volume, run ramp",
     detail:
-      "Orthotics in: running goes to two, then three sessions a week at roughly +10%/wk. Swim threshold volume climbs. The New York week is absorbed as a run-led travel block with swims front-loaded in Seattle before the flight and back-loaded after the return.",
+      "Orthotics in: running goes to two, then three sessions a week at roughly +10%/wk. Swim threshold volume climbs. The New York trip (Oct 25 – Nov 3) runs as a travel block: two swims at the Chinatown YMCA hold the 6,000 yd floor, band circuits stand in for the lifts, and swims are back-loaded after the return.",
   },
   {
     date: "Nov 9 – Dec 6",
@@ -519,12 +519,12 @@ export const runRamp = [
   { week: "Week 3", dates: "Oct 5–11", runs: "2", volume: "9 km", longRun: "5 km", note: "Second run only if the orthotics have arrived. If not, repeat Week 2." },
   { week: "Week 4", dates: "Oct 12–18", runs: "2", volume: "11 km", longRun: "6 km", note: "First week in orthotics — expect new calf soreness, that is normal." },
   { week: "Week 5", dates: "Oct 19–25", runs: "3", volume: "13 km", longRun: "5 km", note: "Third run added as three short runs, not one long one." },
-  { week: "Week 6", dates: "Oct 26–Nov 1", runs: "3", volume: "14 km", longRun: "6 km", note: "New York. Low other load makes this a good run week." },
+  { week: "Week 6", dates: "Oct 26–Nov 1", runs: "3", volume: "14 km", longRun: "6 km", note: "New York all week. Two swims, no bike — running carries the week, long run Saturday." },
   { week: "Week 7", dates: "Nov 2–8", runs: "3", volume: "12 km", longRun: "5 km", note: "Down week. Flying home plus three swims in three days — running gives way." },
   { week: "Week 8", dates: "Nov 9–15", runs: "3", volume: "16 km", longRun: "8 km", note: "Long run reaches race distance for the first time." },
   { week: "Week 9", dates: "Nov 16–22", runs: "3", volume: "18 km", longRun: "10 km", note: "Peak run week. 10 km long run, comfortably over race distance." },
   { week: "Week 10", dates: "Nov 23–29", runs: "3", volume: "15 km", longRun: "7 km", note: "Edmonton down week. Ice and cold — indoor track is fine here." },
-  { week: "Week 11", dates: "Nov 30–Dec 6", runs: "2 + race", volume: "16 km", longRun: "8 km race", note: "Run-only taper. Swim, bike, and strength continue exactly as normal." },
+  { week: "Week 11", dates: "Nov 30–Dec 6", runs: "2 + race", volume: "16 km", longRun: "8 km race", note: "Run-only taper. Swim and bike continue as normal; strength drops to Monday's full-body session only." },
   { week: "Week 12", dates: "Dec 7–13", runs: "3", volume: "15 km", longRun: "6 km", note: "Florida. Easy running in warm weather, no quality work." },
   { week: "Week 13", dates: "Dec 14–20", runs: "3", volume: "17 km", longRun: "8 km", note: "North Carolina gym week. Normal structure returns." },
   { week: "Week 14", dates: "Dec 21–27", runs: "3", volume: "17 km", longRun: "8 km", note: "Edmonton. Holiday gym hours — check before planning." },
@@ -532,7 +532,7 @@ export const runRamp = [
 ];
 
 export const lowerLegProtocol = [
-  "Soleus is the shin-splint muscle: bent-knee calf raises matter more than straight-leg ones. Both are in every strength session.",
+  "Soleus is the shin-splint muscle: bent-knee calf raises matter more than straight-leg ones. Full body A carries the straight-leg standing raise, Full body B the bent-knee seated raise at the bigger dose.",
   "Tibialis raises, 3 × 20, directly load the anterior compartment — the CECS one. Never skip these.",
   "Knee-to-wall ankle dorsiflexion test each Monday; target 10–12 cm. Losing range is an early warning.",
   "Run cadence 175–180 spm. Higher cadence cuts tibial bone load at the same pace and is the cheapest injury insurance you have.",
@@ -554,13 +554,64 @@ export const lowerLegProtocol = [
 //
 // `legacyTitle` exists only where week 1 already shipped under an older name.
 // Week 1 is frozen, so those two entries keep their original titles on screen.
+//
+// `retired` marks a type that the early weeks used but nothing from Week 5 on
+// does. It stays in the library so those weeks still resolve, but it is hidden
+// from the Plan tab and the workbook so only the current templates show.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const workoutLibrary = [
   // ── Strength ───────────────────────────────────────────────────────────────
+  // From Week 5: two full-body sessions. Weeks 2–4 ran a three-day split (both
+  // leg days plus an alternating upper day) — retired below — which did not fit
+  // the weekday mornings. Each session here is built as supersets so the rest
+  // periods do double duty and the whole thing lands at about 45 minutes.
+  {
+    key: "S-FULL-A",
+    category: "strength",
+    name: "Full body A — hinge + pull",
+    compactDescriptor: "full body A",
+    defaultDuration: "40–45 min",
+    focus: "Hamstrings, glutes, gastrocnemius, lats, rear shoulder.",
+    intent:
+      "The old hamstring day and pulling day, merged. The straight-leg calf raise loads the gastrocnemius — what fails on hills and late in a run — and the straight-arm pulldown is the closest dry-land match to the catch. If time runs short, trim the C block, never the tibialis raises.",
+    exercises: [
+      "Warm-up · banded lateral walk 2 × 15 per side, then two ramp-up sets of the first lift",
+      "A1 · Barbell Romanian deadlift — 4 × 6–8, 3 s eccentric",
+      "A2 · Weighted pull-up or lat pulldown — 4 × 6–8",
+      "B1 · Smith Bulgarian split squat — 3 × 8 per leg",
+      "B2 · Straight-arm pulldown — 3 × 12",
+      "C · Standing calf raise (straight leg) — 3 × 12, 3 s down",
+      "C · Tibialis raise — 3 × 20",
+      "C · Pallof press — 3 × 12 per side",
+      "C · Face pull — 3 × 15",
+    ],
+  },
+  {
+    key: "S-FULL-B",
+    category: "strength",
+    name: "Full body B — single-leg + press",
+    compactDescriptor: "full body B",
+    defaultDuration: "40–45 min",
+    focus: "Quads, single-leg stability, soleus, adductors, chest, rotator cuff.",
+    intent:
+      "The old quad day and pressing day, merged. The seated calf raise is the soleus — the primary CECS site and the muscle that absorbs landing — so it gets the bigger calf dose of the week. External rotation stays because freestyle is almost all internal rotation and the cuff is what keeps the shoulder healthy as swim volume climbs.",
+    exercises: [
+      "Warm-up · banded lateral walk 2 × 15 per side, then two ramp-up sets of the first lift",
+      "A1 · Smith Bulgarian split squat — 4 × 8 per leg, heavier than Full body A",
+      "A2 · Dumbbell bench press — 4 × 8",
+      "B1 · Box step-up (18 in) — 3 × 10 per leg",
+      "B2 · Chest-supported row — 3 × 10",
+      "C · Seated calf raise (bent knee / soleus) — 4 × 15",
+      "C · Tibialis raise — 3 × 20",
+      "C · Copenhagen plank — 3 × 20–30 s per side",
+      "C · Cable or band external rotation — 3 × 15 per side",
+    ],
+  },
   {
     key: "S-HAM",
     category: "strength",
+    retired: true,
     name: "Legs — hamstring and posterior chain",
     legacyTitle: "Strength A — RDL + posterior chain",
     compactDescriptor: "RDL",
@@ -580,6 +631,7 @@ export const workoutLibrary = [
   {
     key: "S-QUAD",
     category: "strength",
+    retired: true,
     name: "Legs — quad and single-leg",
     legacyTitle: "Strength B — Bulgarian split squat + hips and core",
     compactDescriptor: "split squat",
@@ -599,6 +651,7 @@ export const workoutLibrary = [
   {
     key: "S-BACK",
     category: "strength",
+    retired: true,
     name: "Back and biceps",
     compactDescriptor: "pull",
     focus: "Lats, mid-back, biceps, grip.",
@@ -616,6 +669,7 @@ export const workoutLibrary = [
   {
     key: "S-PUSH",
     category: "strength",
+    retired: true,
     name: "Chest and shoulders",
     compactDescriptor: "press",
     focus: "Chest, delts, rotator cuff, anti-extension core.",
@@ -853,6 +907,7 @@ export const strengthTemplates = workoutLibrary
     title: entry.legacyTitle ?? entry.name,
     focus: entry.focus,
     exercises: entry.exercises,
+    retired: Boolean(entry.retired),
   }));
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -873,8 +928,8 @@ export const weeklyRules = {
   /** Categories that occupy a slot in the 2-per-day cap. Mobility rides free. */
   realCategories: ["swim", "bike", "run", "strength", "cardio"],
 
+  /** Strength is counted per era below, because its shape changed mid-block. */
   counts: {
-    strength: { min: 3, max: 3, label: "strength sessions" },
     swim: { min: 3, max: 5, label: "swims" },
     bike: { min: 2, max: 3, label: "bike sessions" },
     run: { min: 2, max: 4, label: "runs" },
@@ -888,15 +943,35 @@ export const weeklyRules = {
   /** Not a hard failure — a warning, because it is a judgement call, not a bug. */
   warnRealPerWeek: 13,
 
-  /** Both leg days every week; the upper day alternates across a 2-week cycle. */
-  strengthComposition: {
-    lower: ["S-HAM", "S-QUAD"],
-    upper: ["S-BACK", "S-PUSH"],
-    travel: ["S-TRAVEL"],
-  },
+  /**
+   * Weeks 2–4 ran three split days: both leg days plus an upper day that
+   * alternated across a 2-week cycle. Three sessions did not fit the weekday
+   * mornings, so from Week 5 it is two ~45 min full-body sessions. Each era sets
+   * the weekly count and the slots a normal week has to fill — any key in a slot
+   * satisfies it. A travel circuit anywhere in the week stands in for the slots.
+   */
+  strengthEras: [
+    { fromWeek: 2, count: 3, slots: [["S-HAM"], ["S-QUAD"], ["S-BACK", "S-PUSH"]] },
+    { fromWeek: 5, count: 2, slots: [["S-FULL-A"], ["S-FULL-B"]] },
+  ],
+  travelStrength: ["S-TRAVEL"],
+
+  /** Strength sessions that leave the legs heavy enough to matter for tomorrow's run. */
+  legDayTypes: ["S-HAM", "S-QUAD", "S-FULL-A", "S-FULL-B"],
 
   /** Sessions that leave the lower legs sore enough to matter the next day. */
   hardRunTypes: ["R-TEMPO", "R-LONG"],
+
+  /**
+   * From Week 5, Saturday and Sunday belong to riding, hiking and skiing. Only the
+   * flex slot, the long run (which floats between the two days), mobility and a
+   * locked race may sit there. A travel week that cannot keep this declares
+   * `relaxed: ["weekend"]`.
+   */
+  flexWeekends: {
+    fromWeek: 5,
+    allowedTypes: ["R-LONG"],
+  },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -997,11 +1072,11 @@ function bike(duration, title, note, extra = {}) {
   return { title, duration, categories: ["bike"], note, ...stamp, ...rest };
 }
 
-function strength(key, note, duration = "45–55 min") {
+function strength(key, note, duration) {
   const template = resolveType(key);
   return {
     title: template.legacyTitle ?? template.name,
-    duration,
+    duration: duration ?? template.defaultDuration ?? "45–55 min",
     categories: ["strength"],
     note,
     libraryKey: template.key,
@@ -1042,6 +1117,15 @@ function cardio(duration, title, note, extra = {}) {
 function hike(duration, title, note, extra = {}) {
   const [stamp, rest] = typeStamp({ type: "C-HIKE", ...extra }, "cardio", title);
   return { title, duration, categories: ["cardio"], note, ...stamp, ...rest };
+}
+
+/**
+ * The weekend flex slot: a long ride, a hike or a ski day — whichever the weather
+ * and the weekend allow. It counts as both bike and cardio, so any of them
+ * satisfies the week, and it is the one session the weekend rule always allows.
+ */
+function flex(duration, note, title = "Weekend flex — ride, hike or ski") {
+  return hike(duration, title, note, { categories: ["cardio", "bike"], flex: true });
 }
 
 // Reusable notes that repeat across the block.
@@ -1273,7 +1357,7 @@ export const planWeeks = [
     phase: "build1",
     theme: "Third run, paddles in",
     focus:
-      "Two changes at once, both small: a third run added as three short runs rather than one long one, and small paddles introduced with a hard yardage cap.",
+      "Two training changes, both small: a third run added as three short runs rather than one long one, and small paddles introduced with a hard yardage cap. Two structural ones too — strength drops to two full-body sessions from here on, and the weekend is cleared down to the flex slot and the long run. Sunday is the flight to New York.",
     days: {
       "2026-10-19": [
         swim(
@@ -1281,7 +1365,7 @@ export const planWeeks = [
           "Swim — threshold 4 × 300",
           "Warm-up 400. Drill 400 as 8 × 50, each drill twice: 6-1-6 / breaststroke timing / front scull / single-arm. Fins throughout; snorkel off for 6-1-6 and breaststroke timing. Main: 4 × 300 at CSS on 6:45. Cool-down 300. The longest threshold reps yet. Pace the first 100 of each 300 deliberately slow — going out hard is what has been capping these.",
         ),
-        strength("A", "Standard Strength A."),
+        strength("S-FULL-A", "First full-body session — the hamstring day and the pulling day merged into one, run as supersets so it fits in about 45 minutes. Start the RDL at last Monday's load and the pull-ups at last week's reps; the only new thing today is the pairing. If time is tight, trim the C block, never the tibialis raises."),
       ],
       "2026-10-20": [
         run("25–28 min", "Easy run — 4 km", "Short and easy. Three runs this week, all short — frequency is the adaptation we want, not distance."),
@@ -1298,7 +1382,7 @@ export const planWeeks = [
       ],
       "2026-10-22": [
         run("28–30 min", "Easy run — 4 km + strides", "Second short run. Finish with 6 × 20 s strides on grass."),
-        strength("B", "Standard Strength B."),
+        strength("S-FULL-B", "Second full-body session — the quad day and the pressing day merged. Run first, lift after. The split squat stays heavier than Monday's; the seated calf raise is the soleus and gets the bigger calf dose of the week."),
       ],
       "2026-10-23": [
         swim(
@@ -1306,15 +1390,14 @@ export const planWeeks = [
           "Swim — long aerobic 1,800",
           "Warm-up 300. Main: 1,800 continuous, then 6 × 100 at CSS on 2:20. Cool-down 300. Biggest swim week so far — roughly {{WEEK_YARDS}} yd. If the shoulders are tired, drop the 6 × 100 rather than the continuous swim.",
         ),
-        strength("S-BACK", "Pulling day. Do this after the long swim, not before — a fatigued lat rows fine but swims badly. If the pull-ups are gone by now, switch to lat pull-downs and chase the same rep target."),
-        mobility("15 min", MOBILITY_CORE),
+        mobility("15 min", `${MOBILITY_CORE} Friday used to carry the upper-body lift as well; with strength down to two sessions, that time is simply back.`),
       ],
       "2026-10-24": [
-        hike("2.5–3.5 hr", "Weekend aerobic — long ride or hike", "Pack 15 lb if hiking.", { categories: ["cardio", "bike"] }),
+        run("35–38 min", "Long run — 5 km", "Third run of the week and the longest of the three, but still short and easy. On Saturday this week because tomorrow is the flight — normally the long run floats between Saturday and Sunday around whatever the flex slot is doing. Run it before the ride or hike, not after."),
+        flex("1.5–2.5 hr", "Shorter than usual — you fly tomorrow and the long run is already in the legs. A relaxed ride or hike, or skip it entirely if packing eats the afternoon. Pack 15 lb if hiking."),
       ],
       "2026-10-25": [
-        run("35–38 min", "Easy run — 5 km", "Third run of the week, easy. Longest of the three but still short."),
-        mobility("20 min", "Mobility plus foot intrinsics. Pack for New York — running shoes, bands, goggles."),
+        mobility("20 min", "Flight to New York. Mobility plus foot intrinsics before you leave, calf raises and ankle circles in the terminal. Pack running shoes, bands, goggles and a swim cap.", "Travel mobility"),
       ],
     },
   },
@@ -1324,50 +1407,58 @@ export const planWeeks = [
     week: 6,
     start: "2026-10-26",
     phase: "build1",
-    theme: "New York — swims front-loaded",
+    theme: "New York — city week",
     focus:
-      "Two big Seattle swims Monday and Tuesday carry the whole week's yardage before the evening flight, then New York becomes a run-led block. The 6,000 yd streak survives on two sessions.",
-    travel: "Seattle Mon–Tue · New York from Tue Oct 27 (lands 11 pm) through the following Tue",
-    // No pool and no bike in New York — the two front-loaded Seattle swims carry the week.
+      "The whole week is in New York. Two morning swims at the Chinatown YMCA hold the 6,000 yd floor, two band circuits stand in for the full-body lifts, and running carries the rest — three runs, long run Saturday. Sunday is marathon day and the weekend flex slot.",
+    travel: "New York all week (arrived Sun Oct 25, staying near Attorney St on the Lower East Side) · flight home Tue Nov 3",
+    // Pool: Chinatown YMCA, 273 Bowery — 25 yd, ~14 min walk. Two day-pass swims hold
+    // the yardage floor; a third would cost a third pass. No bike beyond the Citi Bike flex day.
     relaxed: ["bike", "swim"],
     days: {
       "2026-10-26": [
         swim(
-          3200,
-          "Swim — big front-load #1",
-          "Warm-up 500. Drill 400 as 8 × 50, each drill twice: front scull / single-arm / closed-fist / catch-up. Snorkel and fins throughout. Main: 3 rounds of 6 × 100 at CSS on 2:15, 1 min between rounds (1,800 total). Cool-down 500. Long session, but you have five days out of the water coming — bank it.",
+          3000,
+          "Swim — threshold 3 × (6 × 100), Chinatown YMCA",
+          "Warm-up 500. Drill 400 as 8 × 50, each drill twice: front scull / single-arm / closed-fist / catch-up. Snorkel and fins if you packed them. Main: 3 rounds of 6 × 100 at CSS on 2:15, 1 min between rounds (1,800 total). Cool-down 300. Chinatown YMCA, 273 Bowery at E Houston — 25 yd, about a 14-minute walk. Go 6:30–9 am, when five lanes are open; lessons cut it to three from 9 to 11. Call 212-912-2460 first to confirm the day-pass price and that it includes lap swim, and bring a home YMCA card if you have one. Backup: Asphalt Green Battery Park City, $35 at the desk, five lanes 7–9 am.",
         ),
-        strength("A", "Full session before travel."),
+        circuit(
+          "40 min",
+          "Travel circuit A — hinge + pull, the stand-in for Full body A. 3 rounds: single-leg RDL 10/leg, split squat 10/leg, band row 15, band pull-apart 15, straight-leg calf raise 20, tibialis raise 20, dead bug 10/side. If the day pass covers the Y weight room, do it there after the swim with dumbbells; otherwise bands at the apartment.",
+        ),
       ],
       "2026-10-27": [
-        swim(
-          3200,
-          "Swim — big front-load #2",
-          "Warm-up 400. Drill 400. Main: 1,600 continuous aerobic, then 8 × 50 on 1:05. Cool-down 400. Morning session — flight is this evening. Two 3,000+ swims back to back keeps the weekly streak intact at {{WEEK_YARDS}} yd.",
-        ),
-        cardio("25 min", "Easy shakeout walk", "Not a run — you already have a 3,000 yd swim in the legs today and a flight tonight. Twenty-five minutes of brisk walking to move blood through the calves before you sit for six hours. Run volume this week is capped at 14 km and all of it happens in New York."),
+        run("30 min", "Easy run — 4 km", "First New York run, two days after the flight. The East River esplanade is a few blocks east of Attorney St — flat and paved, so keep it easy and the cadence high."),
+        mobility("15 min", "Travel mobility: hips, calves, thoracic spine. Flights make the ankles stiff — knee-to-wall check."),
       ],
       "2026-10-28": [
-        run("30 min", "Easy run — 4 km", "First New York morning after a late landing. Keep it short and easy — this is travel recovery, not training."),
-        mobility("15 min", "Travel mobility: hips, calves, thoracic spine. Long flights make the ankles stiff."),
+        circuit(
+          "40 min",
+          "Travel circuit B — single-leg + press, the stand-in for Full body B. 3 rounds: rear-foot-elevated split squat 10/leg (back foot on a chair or bed), step-up 10/leg, push-up 12–15, band row 15, bent-knee calf raise 25 (the soleus dose, hold a bag for load), Copenhagen plank 20 s/side, banded lateral walk 15/side.",
+        ),
+        mobility("15 min", MOBILITY_CORE),
       ],
       "2026-10-29": [
-        run("30–32 min", "Easy run — 4 km", "New York running is the best part of this trip. Central Park reservoir loop is 2.5 km of soft cinder — ideal surface for your shins."),
-        circuit(
-          "45 min",
-          "Gym-optional: 3 rounds of banded RDL 15, split squat 10/leg, banded lateral walk 15/side, Copenhagen plank 20 s/side, calf raise 20, tibialis raise 20, dead bug 10/side.",
+        swim(
+          3200,
+          "Swim — long aerobic 1,600, Chinatown YMCA",
+          "Warm-up 400. Drill 400. Main: 1,600 continuous aerobic, then 8 × 50 on 1:05. Cool-down 400. Morning again — lessons cut the Y to three lanes from 4 to 7:30 pm on Thursdays. Two swims at {{WEEK_YARDS}} yd keep the weekly streak intact; the next swim is Wednesday in Seattle.",
         ),
+        run("30–32 min", "Easy run — 4 km", "Swim in the morning, run later. If you are uptown anyway, the Central Park reservoir loop is 2.5 km of soft cinder, the best surface in Manhattan for your shins. Otherwise the esplanade again."),
       ],
       "2026-10-30": [
-        circuit("40 min", "Second travel circuit of the week. Hotel room or hotel gym, bands only. 3 rounds of banded RDL 15, split squat 10/leg, banded lateral walk 15/side, Copenhagen plank 20 s/side, calf raise 20, tibialis raise 20, dead bug 10/side. Five days without a pool or a bike means strength is the one quality you can actually hold here — do not skip it."),
-        mobility("25 min", "Full mobility: hips, calves, thoracic spine, foot intrinsics. Knee-to-wall check — travel weeks are when ankle range quietly disappears."),
+        mobility("25 min", "Rest day: no training, just walk the city. Full mobility: hips, calves, thoracic spine, foot intrinsics. Fresh legs for tomorrow's long run.", "Rest + mobility"),
       ],
       "2026-10-31": [
-        run("42–48 min", "Long run — 6 km", "Longest run of the week. Central Park bridle path or the reservoir — stay on the soft surfaces, avoid the paved loop."),
+        run("42–48 min", "Long run — 6 km", "Longest run of the week. Central Park fills up with marathon-weekend setup, so stay downtown — East River esplanade, easy pace, cadence 175–180. Sunday is the flex slot, so it does not float this week."),
         mobility("15 min", MOBILITY_CORE),
       ],
       "2026-11-01": [
-        mobility("20 min", "Easy 30–40 min walk plus mobility and foot intrinsics. Deliberately not a run — three runs and 14 km is the cap this week, and you already hit it.", "Walk + mobility"),
+        flex(
+          "1–2 hr",
+          "Marathon Sunday. Walk up to First Avenue to watch the race come through, or take a Citi Bike up the Hudson River Greenway — easy either way. No run: three runs and 14 km is this week's cap, and you already hit it.",
+          "Weekend flex — Citi Bike or long walk",
+        ),
+        mobility("15 min", "Mobility plus foot intrinsics."),
       ],
     },
   },
@@ -1379,12 +1470,12 @@ export const planWeeks = [
     phase: "build1",
     theme: "Back-loaded return",
     focus:
-      "New York Monday and Tuesday, then three swims in the three days after the flight home. Running takes a planned down week to absorb the travel and the swim cluster. No paddles this week — six days out of the water first.",
+      "New York Monday and Tuesday, then three swims in the three days after the flight home. Running takes a planned down week to absorb the travel and the swim cluster. No paddles this week — five days out of the water first.",
     travel: "New York Mon–Tue (flight home Tue Nov 3, 4 pm) · Seattle Wed onward",
     days: {
       "2026-11-02": [
         run("30–32 min", "Easy run — 4 km", "Last full New York morning."),
-        circuit("40 min", "Same circuit as last Thursday, 3 rounds. Travel strength is about frequency, not load."),
+        circuit("40 min", "Travel circuit A again, 3 rounds — same as last Monday. Travel strength is about frequency, not load."),
       ],
       "2026-11-03": [
         mobility("20 min", "Travel day — mobility only, no run. Calf raises in the terminal, ankle circles on the plane. This is a planned down week: 3 runs and 12 km total.", "Travel mobility"),
@@ -1393,7 +1484,7 @@ export const planWeeks = [
         swim(
           1800,
           "Swim — easy re-entry",
-          "Warm-up 300. Drill 500 as 10 × 50, each drill twice: 6-1-6 / breaststroke timing / front scull / single-arm / closed-fist — rebuild the feel before asking for pace. Fins throughout; snorkel off for 6-1-6 and breaststroke timing. Main 8 × 100 on 2:30 aerobic. Cool-down 200. NO PADDLES this week; six days out of the water means the shoulders get eased back in.",
+          "Warm-up 300. Drill 500 as 10 × 50, each drill twice: 6-1-6 / breaststroke timing / front scull / single-arm / closed-fist — rebuild the feel before asking for pace. Fins throughout; snorkel off for 6-1-6 and breaststroke timing. Main 8 × 100 on 2:30 aerobic. Cool-down 200. NO PADDLES this week; five days out of the water means the shoulders get eased back in.",
         ),
         bike("40 min", "Easy spin", "Zone 2, legs turning over after travel."),
         mobility("15 min", MOBILITY_CORE),
@@ -1404,7 +1495,7 @@ export const planWeeks = [
           "Swim — technique + threshold",
           "Warm-up 300. Drill 500 as 10 × 50, each drill twice: catch-up / 6-1-6 / 3/5/3 breathing / left-breathing single-arm / breathe-3. Fins throughout; snorkel off for everything except catch-up. This is the ladder's graduation test — five weeks after the left side sank in the Oct 2 long swim, breathe-3 reappears, but only as a 50 with rest on either end. The question to answer honestly: do the hips stay up for a full 50? If yes, the ladder worked and Week 10 puts it back inside continuous swimming. If no, drop back to left-breathing single-arm and there is no cost to doing so. Main 12 × 50 on 1:15 aerobic, every third one fast. Then 6 × 100 at CSS on 2:15 — this is the week's threshold work, moved here off the old Friday slot so the weekend stays free. Then 4 × 50 breaststroke. Cool-down 200.",
         ),
-        strength("A", "First proper lift in a week. Back the loads off about 10% — you have been doing bands."),
+        strength("S-FULL-A", "First full-gym lift since New York. Back the loads off about 10% on the RDL and pull-ups — a week of travel strength is not the same stimulus — and build back from there."),
       ],
       "2026-11-06": [
         swim(
@@ -1415,11 +1506,10 @@ export const planWeeks = [
         run("22–25 min", "Easy run — 3 km", "Down-week running. Deliberately short."),
       ],
       "2026-11-07": [
-        bike("75 min", "Endurance ride", "Z2, indoors or out depending on weather. Winter is arriving; start getting comfortable on the spin bike."),
+        flex("1.5–2.5 hr", "First free weekend after the trip — ride, hike or ski, all easy. It is the week's second ride either way. Down week, so keep it conversational."),
       ],
       "2026-11-08": [
-        run("34–38 min", "Long run — 5 km", "Easy long run to close a down week. Soft surface. Next week the long run steps up to race distance."),
-        strength("S-PUSH", "Upper day, and the first one since New York. After two weeks of bands your pressing strength will feel low — start conservative and rebuild. Nothing here touches the legs, so it sits safely on the same day as the long run."),
+        run("34–38 min", "Long run — 5 km", "Easy long run to close a down week. Soft surface. Sunday by default, Saturday if the flex slot wants Sunday. Next week the long run steps up to race distance."),
         mobility("20 min", "Mobility plus foot intrinsics."),
       ],
     },
@@ -1440,10 +1530,10 @@ export const planWeeks = [
           "Swim — CSS RETEST (400 + 200 TT)",
           "Same protocol as Week 1. Warm-up 400, build 4 × 50, 400 all-out, 5 min rest, 200 all-out, cool-down 400. Recalculate CSS and reset every send-off in the second half of the block. Seven weeks of threshold work should show up here — 4–6 s/100 faster is a good outcome, which from the Week 1 baseline of 1:53 means landing between 1:49 and 1:47. CSS is hypersensitive to the 400: hold the 200 at 3:20, take eight seconds off the 400, and you are already at 1:49. Run it identically to Week 1 or the comparison means nothing, and give both efforts everything — an easy 200 flatters the number.",
         ),
-        strength("A", "Standard Strength A."),
+        strength("S-FULL-A", "Full body A on retest day — swim first, lift after, and the order matters: the CSS number is the one that cannot be redone."),
       ],
       "2026-11-10": [
-        run("22–25 min", "Easy run — 3 km", "Easy. The long run is Sunday and it is the big one this week."),
+        run("22–25 min", "Easy run — 3 km", "Easy. The long run is this weekend and it is the big one this week."),
         swim(1400, "Technique swim (short)", TECH_SWIM_NOTE),
         mobility("15 min", MOBILITY_CORE),
       ],
@@ -1457,7 +1547,7 @@ export const planWeeks = [
       ],
       "2026-11-12": [
         run("32–35 min", "Quality run — 6 × 1 min (≈5 km)", "Warm-up 10 min easy. Then 6 × 1 min at 5k effort with 2 min easy jog between. Cool-down 10 min. Short reps on a track or soft trail — first real intensity of the block, and it stays short on purpose."),
-        strength("B", "Standard Strength B."),
+        strength("S-FULL-B", "Run first, lift after — the intervals want fresh legs, the lift does not mind tired ones. Friday is a swim day, so there is a clear day before the long run either way it floats."),
       ],
       "2026-11-13": [
         swim(
@@ -1465,15 +1555,13 @@ export const planWeeks = [
           "Swim — long aerobic 1,800",
           "Warm-up 300. Main: 1,800 continuous at the NEW aerobic pace from Monday's retest, then 6 × 100 at the new CSS on the new send-off. Cool-down 300.",
         ),
-        strength("S-BACK", "Pulling day. Rows and pull-downs after a long aerobic swim — the lats are warm, so quality is usually good here. Keep the seated row strict; no torso swing."),
         mobility("15 min", MOBILITY_CORE),
       ],
       "2026-11-14": [
-        hike("45–50 min", "Stairmaster + 20 lb pack", "Biweekly Rainier maintenance, now at 20 lb."),
-        bike("40 min", "Spin bike — Z2", "Second ride of the week, easy Z2 at 130–145 bpm. Off Tuesday now — it was sitting the day before the FTP retest, which is the one place an easy ride is not free. Pure aerobic volume, not a workout, so swap it for an outdoor ride with your partner if the weather allows."),
+        flex("2–3 hr", "Your pick of ride, hike or ski, and it counts as the week's second ride either way. If it is a hike, carry 20 lb — that is the fortnight's Rainier pack work, done outdoors instead of on the stairmaster. The long run floats: take it today and the flex slot tomorrow if the weather says so."),
       ],
       "2026-11-15": [
-        run("50–55 min", "Long run — 8 km", "Race distance for the first time. Easy pace throughout, soft surface, cadence 175–180. If the shins are tight the next morning and still tight 48 hours later, next week's long run gets cut."),
+        run("50–55 min", "Long run — 8 km", "Race distance for the first time. Easy pace throughout, soft surface, cadence 175–180. Sunday by default, Saturday if the flex slot wants Sunday. If the shins are tight the next morning and still tight 48 hours later, next week's long run gets cut."),
         mobility("20 min", "Thorough post-long-run mobility plus foot intrinsics."),
       ],
     },
@@ -1494,10 +1582,10 @@ export const planWeeks = [
           "Swim — threshold 6 × 200",
           "Warm-up 400. Drill 400 as 8 × 50, each drill twice: sighting / breaststroke timing / stroke-count ladder / front scull. Fins throughout; snorkel off for sighting and breaststroke timing. Main: 6 × 200 at the new CSS on 4:25 (adjust to the retest). Cool-down 300. 1,200 yd of threshold — the biggest threshold block of the block.",
         ),
-        strength("A", "Standard Strength A. This is a big week; if you are flat, cut a set rather than skipping."),
+        strength("S-FULL-A", "Full body A. This is a big week; if you are flat, cut a set rather than skipping."),
       ],
       "2026-11-17": [
-        run("22–25 min", "Easy run — 3 km", "Easy. Save it for Sunday."),
+        run("22–25 min", "Easy run — 3 km", "Easy. Save it for the weekend."),
         swim(1400, "Technique swim (short)", TECH_SWIM_NOTE),
         mobility("15 min", MOBILITY_CORE),
       ],
@@ -1511,7 +1599,7 @@ export const planWeeks = [
       ],
       "2026-11-19": [
         run("35 min", "Quality run — 4 × 3 min (≈5 km)", "Warm-up 10 min. Then 4 × 3 min at 5-mile race effort (roughly 4:55–5:10/km) with 2 min easy between. Cool-down 10 min. First taste of race pace."),
-        strength("B", "Standard Strength B."),
+        strength("S-FULL-B", "Full body B, after the run. Peak week — hold the loads where they were rather than chasing a PR, so the 10 km long run gets the legs."),
       ],
       "2026-11-20": [
         swim(
@@ -1519,11 +1607,10 @@ export const planWeeks = [
           "Swim — long aerobic 2,000",
           "Warm-up 300. Main: 2,000 continuous, then 6 × 100 at CSS. Cool-down 300. Two thousand yards without stopping. Compare the HR drift to the Week 1 1,000 — this is the headline number for whether the plateau broke.",
         ),
-        strength("S-PUSH", "Upper day in the peak week. Everything else this week is loaded, so hold the loads where they were rather than chasing a PR — the point is to keep the pressing pattern alive, not to add fatigue before a 10 km long run on Sunday."),
         mobility("15 min", MOBILITY_CORE),
       ],
       "2026-11-21": [
-        hike("2.5–3 hr", "Weekend aerobic — ride or hike", "Keep it aerobic. Big week, so err easy.", { categories: ["cardio", "bike"] }),
+        flex("2–3 hr", "Ride, hike or ski — keep it aerobic. Big week, so err easy and short, and if the long run is today, the flex slot moves to Sunday."),
       ],
       "2026-11-22": [
         run("62–68 min", "Long run — 10 km", "Peak long run, comfortably over race distance. Easy pace, soft surface. This is the run that makes Dec 5 feel short — and the last long one before the race."),
@@ -1548,7 +1635,7 @@ export const planWeeks = [
           "Swim — threshold 3 × 400",
           "Warm-up 400. Drill 400 as 8 × 50, each drill twice: stroke-count ladder / front scull / 6-1-6 / closed-fist. Fins throughout; snorkel off for 6-1-6. Main: 3 × 400 at CSS on 8:45. Cool-down 400. Longest threshold reps of the block — essentially a rehearsal for the 70.3 swim distance, broken.",
         ),
-        strength("A", "Standard Strength A."),
+        strength("S-FULL-A", "Full body A, last lift in your home gym before Edmonton."),
       ],
       "2026-11-24": [
         run("28–30 min", "Easy run — 4 km", "Last Seattle run before the flight. Soft surface."),
@@ -1566,7 +1653,7 @@ export const planWeeks = [
       ],
       "2026-11-26": [
         run("28–30 min", "Easy run — 4 km", "Indoor track or treadmill. Edmonton in late November is icy and dark — this is the week to accept the treadmill rather than risk a fall."),
-        strength("B", "Standard Strength B."),
+        strength("S-FULL-B", "Full body B in the Edmonton gym. Same equipment, so nothing needs substituting — find the Smith machine and the box before you start."),
       ],
       "2026-11-27": [
         swim(
@@ -1577,11 +1664,10 @@ export const planWeeks = [
         bike("50 min", "Spin bike — Z2", "Easy aerobic hour on the spin bike."),
       ],
       "2026-11-28": [
-        hike("40 min", "Stairmaster + 20 lb pack", "Biweekly Rainier maintenance."),
-        strength("S-PUSH", "Upper day, in the Edmonton gym. Every weekday this week is already at the two-session cap, so the pressing day lands here — it is the one strength session that does nothing to the legs, which is what makes it safe the day before a 7 km long run."),
+        flex("1.5–2.5 hr", "Edmonton edition: a cross-country ski if there is snow, a long winter walk with 20 lb in the pack (the fortnight's Rainier work), or a long indoor spin if it is brutal out. Counts as a ride either way."),
       ],
       "2026-11-29": [
-        run("45–50 min", "Long run — 7 km", "Down-week long run, shorter than last week on purpose. Indoor track if the footing is bad."),
+        run("45–50 min", "Long run — 7 km", "Down-week long run, shorter than last week on purpose. Indoor track if the footing is bad. Floats to Saturday if the flex slot wants Sunday."),
         mobility("20 min", "Mobility plus foot intrinsics."),
       ],
     },
@@ -1594,9 +1680,9 @@ export const planWeeks = [
     phase: "build2",
     theme: "Race week — run-only taper",
     focus:
-      "The legs get fresh; nothing else changes. Swimming, biking, and strength carry on as normal because the race is 40 minutes long and is not the point of the block. Running drops in volume but keeps a little intensity so the legs stay sharp.",
+      "The legs get fresh; nothing else changes much. Swimming and biking carry on as normal and strength keeps one full session on Monday, because the race is 40 minutes long and is not the point of the block. Running drops in volume but keeps a little intensity so the legs stay sharp.",
     travel: "Edmonton Mon–Tue (home Dec 1) · RACE Sat Dec 5",
-    // Race week. Leg strength drops to one session and the bike stays easy — both deliberate.
+    // Race week. Strength drops to one session and the bike stays easy — both deliberate.
     relaxed: ["strength", "bike"],
     days: {
       "2026-11-30": [
@@ -1605,7 +1691,7 @@ export const planWeeks = [
           "Swim — threshold 10 × 100 (Edmonton)",
           "Warm-up 400. Drill 300 as 6 × 50, each drill twice: 6-1-6 / closed-fist / sighting. Fins throughout; snorkel off for 6-1-6 and sighting. Main: 10 × 100 at CSS on 2:10 — the tightest send-off yet. Cool-down 300.",
         ),
-        strength("A", "Last full Strength A before the race. Normal loads — a 5 mile race does not need a strength taper."),
+        strength("S-FULL-A", "The only lift of race week, and a full one. Normal loads — a 5 mile race does not need a strength taper, it just needs Monday to be the last time the legs are loaded."),
       ],
       "2026-12-01": [
         run("25 min", "Easy run — 4 km", "Travel day back to Seattle. Easy shakeout, whenever it fits."),
@@ -1629,7 +1715,6 @@ export const planWeeks = [
           "Swim — easy aerobic",
           "Warm-up 300. Main 1,000 easy continuous. 4 × 50 breaststroke. Cool-down 200. Genuinely easy — you race tomorrow.",
         ),
-        strength("S-PUSH", "Upper day the day before a race, deliberately. Nothing here loads the legs, so it costs you nothing on Saturday — but skip the last set of everything and leave the gym feeling like you could have done more. If in doubt, skip it entirely; the race matters more than one session."),
         mobility("20 min", "Mobility and foot intrinsics. Lay out race kit; run in the orthotics you have trained in, not new ones."),
       ],
       "2026-12-05": [
@@ -1650,8 +1735,9 @@ export const planWeeks = [
     focus:
       "Three Seattle swims Monday through Wednesday morning protect the 6,000 yd streak before the 4:30 pm flight. Orlando and Miami are run- and bodyweight-led with a wedding in the middle, so mornings are the only reliable window.",
     travel: "Seattle Mon–Wed (flight Wed Dec 9, 4:30 pm) · Orlando Dec 10–11 (wedding) · Miami Dec 12–13",
-    // Wedding weekend with no pool, no bike and no real gym from Wednesday evening.
-    relaxed: ["strength", "bike"],
+    // Wedding weekend with no pool, no bike and no real gym from Wednesday evening,
+    // and a Miami weekend rather than a home one, so the flex-weekend rule cannot apply.
+    relaxed: ["strength", "bike", "weekend"],
     days: {
       "2026-12-07": [
         swim(
@@ -1716,11 +1802,10 @@ export const planWeeks = [
           "Swim — threshold 5 × 200",
           "Warm-up 400. Drill 300 as 6 × 50, each drill twice: breaststroke timing / stroke-count ladder / front scull. Fins throughout; snorkel off for breaststroke timing. Main: 5 × 200 at CSS on 4:25. Cool-down 300. Back in a pool after four days off — ease into the first 200.",
         ),
-        strength("A", "First full lift since race week. Back the loads off slightly and rebuild."),
+        strength("S-FULL-A", "First full lift since race week. Back the loads off slightly and rebuild."),
       ],
       "2026-12-15": [
         run("35 min", "Easy run — 5 km", "North Carolina. Explore — trails if there are any nearby."),
-        strength("S-BACK", "Upper day. The North Carolina gym has full equipment, so nothing needs substituting. Pulling pairs well with an easy run and keeps Friday's Strength B on fresh legs."),
         mobility("15 min", MOBILITY_CORE),
       ],
       "2026-12-16": [
@@ -1742,10 +1827,10 @@ export const planWeeks = [
           "Swim — long aerobic 1,600",
           "Warm-up 300. Main: 1,600 continuous, then 4 × 100 at CSS. Cool-down 300. Home pool.",
         ),
-        strength("B", "Standard Strength B."),
+        strength("S-FULL-B", "Full body B, back in the home gym. It sits on Friday this week because Thursday is the travel day — so keep the long run on Sunday rather than floating it to Saturday, the day after a leg session."),
       ],
       "2026-12-19": [
-        hike("2–3 hr", "Weekend aerobic — ride, hike, or stairs", "Winter options: spin bike endurance, a shorter hike, or 45 min on the stairmaster with 20 lb.", { categories: ["cardio", "bike"] }),
+        flex("2–3 hr", "Winter options: a ride if the roads are dry, a shorter hike with 20 lb, the first ski day of the season if the passes have opened, or a long spin indoors."),
       ],
       "2026-12-20": [
         run("50–55 min", "Long run — 8 km", "Back to race distance, easy. The run base is worth keeping through the holidays rather than rebuilding in January."),
@@ -1763,6 +1848,9 @@ export const planWeeks = [
     focus:
       "Two Seattle days, then Edmonton through New Year. Gym holiday hours are the real risk here, not motivation — check them on arrival and move sessions rather than dropping them. Christmas Day is a genuine rest day.",
     travel: "Seattle Mon–Tue · Edmonton Dec 23 – Dec 31 · full gym access",
+    // Holiday week: every weekday already carries two sessions and Christmas is off,
+    // so the weekend flex slot is the only ride. One bike is the honest number.
+    relaxed: ["bike"],
     days: {
       "2026-12-21": [
         swim(
@@ -1770,7 +1858,7 @@ export const planWeeks = [
           "Swim — threshold 4 × 300",
           "Warm-up 400. Drill 400 as 8 × 50, each drill twice: stroke-count ladder / front scull / 6-1-6 / closed-fist. Fins throughout; snorkel off for 6-1-6. Main: 4 × 300 at CSS on 6:30 — tighter than Week 5's version of this set. Cool-down 300.",
         ),
-        strength("A", "Standard Strength A."),
+        strength("S-FULL-A", "Full body A, last lift in the home gym this year."),
       ],
       "2026-12-22": [
         run("35 min", "Easy run — 5 km", "Last Seattle run of the year. Soft surface."),
@@ -1791,19 +1879,17 @@ export const planWeeks = [
           "Swim — speed",
           "Warm-up 300. Drill 400 as 8 × 50, each drill twice: sighting / breaststroke timing / stroke-count ladder / front scull. Fins throughout; snorkel off for sighting and breaststroke timing. Main: 24 × 50 on 1:05 alternating. 4 × 50 breaststroke. Cool-down 300. Christmas Eve — likely reduced pool hours, so go early.",
         ),
-        strength("S-QUAD", "Leg day on Christmas Eve, which puts it three clear days before Sunday's long run — close the gym out early if you need to, but do not push it later into the week or it lands too close to that run. Standard Strength B: Bulgarian split squats, step-ups, Copenhagen planks."),
+        strength("S-FULL-B", "Full body B on Christmas Eve, which puts it three clear days before the long run — close the gym out early if you need to, but do not push it later into the week or it lands too close to that run."),
         mobility("15 min", MOBILITY_CORE),
       ],
       "2026-12-25": [
         mobility("20–30 min", "Christmas Day. Rest, stretch, walk if you feel like it. Nothing structured — this is the one fully off day in the block and taking it properly is part of the plan.", "Rest day — walk and stretch"),
       ],
       "2026-12-26": [
-        bike("50 min", "Spin bike — Z2", "Boxing Day ride, all indoors — Edmonton in late December is not outdoor riding weather. Fifty minutes steady at 130–145 bpm, and an easy one to swap for a ski or a walk with your partner if that is the better use of the morning."),
-        strength("S-BACK", "Upper day, and the last pulling session of the block. It sits on Saturday because every weekday this week already carries a swim, and pulling is the one strength session that leaves the legs completely alone the day before an 8 km long run. If the gym closes early, cut to two sets of everything and still do the pull-ups."),
+        flex("1.5–2.5 hr", "Boxing Day. A cross-country ski or a winter walk with your partner if there is snow and daylight, or a long indoor spin at 130–145 bpm if there is not — Edmonton in late December is not outdoor riding weather. Counts as the week's ride either way."),
       ],
       "2026-12-27": [
-        run("50–55 min", "Long run — 8 km", "Indoor track if the footing is bad, outside if it is clear and you are dressed for it."),
-        bike("30 min", "Spin bike — easy Z2", "Easy spin after the long run, same day on purpose: thirty minutes of light pedalling flushes the calves better than sitting still, and it keeps the hard days hard and the easy days easy. Keep it genuinely easy — if it feels like work, stop."),
+        run("50–55 min", "Long run — 8 km", "Indoor track if the footing is bad, outside if it is clear and you are dressed for it. Floats to Saturday if Sunday is the better day to be out."),
         mobility("20 min", "Mobility plus foot intrinsics."),
       ],
     },
@@ -1828,7 +1914,7 @@ export const planWeeks = [
           "Swim — FINAL CSS TEST (400 + 200 TT)",
           "Same protocol as Weeks 1 and 8. Warm-up 400, build 4 × 50, 400 all-out, 5 min rest, 200 all-out, cool-down 400. This is the block's headline number. Compare all three tests side by side — Week 1, Week 8, and today.",
         ),
-        strength("A", "Last Strength A of the year. Log the RDL and split squat loads next to the Week 1 numbers."),
+        strength("S-FULL-A", "Last full-body session of the year. Log the RDL and split squat loads next to the Week 1 numbers."),
       ],
       "2026-12-29": [
         run("35–40 min", "Easy run — 5 km", "Easy. Indoor track if needed."),

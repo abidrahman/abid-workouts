@@ -452,6 +452,8 @@ st = wb.create_sheet("Strength")
 title_block(st, "Strength templates + load log", "Log the weight you actually used so progression is visible.", 8)
 r = 4
 for t in D["strengthTemplates"]:
+    if t.get("retired"):
+        continue
     st.cell(row=r, column=1, value=t["title"]).font = SUB_FONT
     st.cell(row=r + 1, column=1, value=t.get("focus", "")).font = Font(name=FONT, size=9, italic=True, color="5A6B60")
     hr = r + 2
