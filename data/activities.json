@@ -1,5 +1,23 @@
 [
   {
+    "id": "20642345986",
+    "name": "Evening Ride",
+    "type": "Ride",
+    "startTime": "2026-10-18T19:12:33Z",
+    "duration": 395,
+    "distance": 1596.6,
+    "elevationGain": 7
+  },
+  {
+    "id": "20642134373",
+    "name": "Evening Ride",
+    "type": "Ride",
+    "startTime": "2026-10-18T18:14:04Z",
+    "duration": 1224,
+    "distance": 7241,
+    "elevationGain": 14
+  },
+  {
     "id": "20638877285",
     "name": "Morning Ride",
     "type": "Ride",
@@ -1780,23 +1798,5 @@
     "duration": 2064,
     "distance": 9901,
     "elevationGain": 58
-  },
-  {
-    "id": "18830689602",
-    "name": "Afternoon Ride",
-    "type": "Ride",
-    "startTime": "2026-06-07T14:38:50Z",
-    "duration": 4164,
-    "distance": 18455,
-    "elevationGain": 164
-  },
-  {
-    "id": "18815609911",
-    "name": "Morning Hike",
-    "type": "Hike",
-    "startTime": "2026-06-06T09:53:58Z",
-    "duration": 13843,
-    "distance": 13621.9,
-    "elevationGain": 1000
   }
 ]
