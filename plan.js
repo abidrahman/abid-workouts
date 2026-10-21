@@ -1375,8 +1375,8 @@ export const planWeeks = [
       "2026-10-21": [
         swim(
           2300,
-          "Swim — speed 24 × 50 + first paddles",
-          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: closed-fist / catch-up / 6-1-6 / breaststroke timing. Fins throughout; snorkel off for 6-1-6 and breaststroke timing. PADDLES: 400 pull with small paddles and buoy, easy, holding the catch — stop immediately if the shoulder complains. Main: 24 × 50 on 1:05, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 200.",
+          "Swim — speed 20 × 50 + first paddles",
+          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: closed-fist / catch-up / 6-1-6 / breaststroke timing. Fins throughout; snorkel off for 6-1-6 and breaststroke timing. Pull 200 with small paddles and buoy, easy, holding the catch — first time on paddles, so 200 is plenty; stop immediately if the shoulder complains. Main: 20 × 50 on 1:05, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 200.",
         ),
         bike("55 min", "Spin bike — threshold 4 × 8 min", "4 × 8 min at 177–186 W (95–100% FTP), 3 min easy between. 155–165 bpm. First time at threshold rather than sweet spot — the difference is only about 15 W but it is the difference between repeatable and not, so start at 177 W and only drift up if the fourth interval still looks safe."),
       ],
@@ -1540,8 +1540,8 @@ export const planWeeks = [
       "2026-11-11": [
         swim(
           2300,
-          "Swim — speed 6 × (4 × 50)",
-          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: stroke-count ladder / front scull / 6-1-6 / closed-fist. Fins throughout; snorkel off for 6-1-6. Paddles 400 pull. Main: 6 rounds of 4 × 50 on 1:00, 45 s between rounds. Then 4 × 50 breaststroke. Cool-down 200. Tighter send-off than Week 5 — this is where density shows up.",
+          "Swim — speed 5 × (4 × 50)",
+          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: stroke-count ladder / front scull / 6-1-6 / closed-fist. Fins throughout; snorkel off for 6-1-6. Pull 200 with small paddles and buoy, easy, holding the catch. Main: 5 rounds of 4 × 50 on 1:00, 45 s between rounds. Then 4 × 50 breaststroke. Cool-down 200. Tighter send-off than Week 5 — this is where density shows up.",
         ),
         bike("60 min", "Spin bike — 20 min FTP RETEST", "Same protocol as Week 2: 15 min warm-up with 3 × 1 min builds, 20 min all-out, 10 min easy. Same Keiser, because the number only compares to itself. Six weeks of sweet spot from a base this low usually returns 5–10%, so 195 W is a good outcome and 205 W a strong one. The one thing to do differently: pace it evenly. Last time you opened at 205 and finished at 180, which is why 186 W was probably a slight underestimate — open at your target instead of at what feels good in minute two, and let the last five minutes be the ones that hurt. Re-cut every bike watt target in the second half of the block off whatever this gives."),
       ],
@@ -1592,8 +1592,8 @@ export const planWeeks = [
       "2026-11-18": [
         swim(
           2600,
-          "Swim — speed 30 × 50",
-          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: 6-1-6 / closed-fist / sighting / breaststroke timing. Fins throughout; snorkel off for 6-1-6, sighting and breaststroke timing. Paddles 400. Main: 30 × 50 on 1:05, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 200. Long 50s set — the goal is that number 30 looks like number 1.",
+          "Swim — speed 24 × 50",
+          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: 6-1-6 / closed-fist / sighting / breaststroke timing. Fins throughout; snorkel off for 6-1-6, sighting and breaststroke timing. Pull 300 with small paddles and buoy, easy, holding the catch. Main: 24 × 50 on 1:05, alternating aerobic and fast. Then 4 × 50 breaststroke. Cool-down 200. Long 50s set — the goal is that number 24 looks like number 1.",
         ),
         bike("60 min", "Spin bike — sweet spot 4 × 12 min", "4 × 12 min at the NEW sweet-spot watts from Wednesday's retest, 4 min easy. Long sweet-spot blocks are the most useful 70.3 preparation you can do indoors."),
       ],
