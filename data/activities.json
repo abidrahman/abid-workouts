@@ -1,5 +1,23 @@
 [
   {
+    "id": "20697180841",
+    "name": "Afternoon Weight Training",
+    "type": "WeightTraining",
+    "startTime": "2026-10-22T17:40:13Z",
+    "duration": 3142,
+    "distance": 0,
+    "elevationGain": 0
+  },
+  {
+    "id": "20697180842",
+    "name": "Afternoon Swim",
+    "type": "Swim",
+    "startTime": "2026-10-22T15:30:55Z",
+    "duration": 1662,
+    "distance": 1097.3,
+    "elevationGain": 0
+  },
+  {
     "id": "20680393063",
     "name": "Afternoon Ride",
     "type": "Ride",
@@ -1780,23 +1798,5 @@
     "duration": 4473,
     "distance": 17795,
     "elevationGain": 132
-  },
-  {
-    "id": "18884511122",
-    "name": "Afternoon Weight Training",
-    "type": "WeightTraining",
-    "startTime": "2026-06-11T15:57:48Z",
-    "duration": 3019,
-    "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "18872354997",
-    "name": "Afternoon Workout",
-    "type": "Workout",
-    "startTime": "2026-06-10T17:19:57Z",
-    "duration": 2452,
-    "distance": 0,
-    "elevationGain": 0
   }
 ]
