@@ -1,5 +1,14 @@
 [
   {
+    "id": "20712799540",
+    "name": "Morning Workout",
+    "type": "Workout",
+    "startTime": "2026-10-24T05:49:38Z",
+    "duration": 1547,
+    "distance": 0,
+    "elevationGain": 0
+  },
+  {
     "id": "20706260135",
     "name": "Afternoon Swim",
     "type": "Swim",
@@ -1788,15 +1797,6 @@
     "startTime": "2026-06-12T17:11:25Z",
     "duration": 1638,
     "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "18896498270",
-    "name": "Afternoon Swim",
-    "type": "Swim",
-    "startTime": "2026-06-12T15:58:16Z",
-    "duration": 2192,
-    "distance": 1600.2,
     "elevationGain": 0
   }
 ]
