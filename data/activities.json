@@ -1,5 +1,14 @@
 [
   {
+    "id": "20729357867",
+    "name": "Lunch Run",
+    "type": "Run",
+    "startTime": "2026-10-25T12:28:14Z",
+    "duration": 2308,
+    "distance": 6235.2,
+    "elevationGain": 23
+  },
+  {
     "id": "20712799540",
     "name": "Morning Workout",
     "type": "Workout",
@@ -1789,14 +1798,5 @@
     "duration": 3372,
     "distance": 21839,
     "elevationGain": 87
-  },
-  {
-    "id": "18896852995",
-    "name": "Afternoon Weight Training",
-    "type": "WeightTraining",
-    "startTime": "2026-06-12T17:11:25Z",
-    "duration": 1638,
-    "distance": 0,
-    "elevationGain": 0
   }
 ]
