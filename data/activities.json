@@ -1,5 +1,23 @@
 [
   {
+    "id": "20752394216",
+    "name": "Morning Ride",
+    "type": "Ride",
+    "startTime": "2026-10-27T10:45:37Z",
+    "duration": 2669,
+    "distance": 8221.7,
+    "elevationGain": 82
+  },
+  {
+    "id": "20751782039",
+    "name": "Morning Run",
+    "type": "Run",
+    "startTime": "2026-10-27T09:50:14Z",
+    "duration": 2580,
+    "distance": 6833,
+    "elevationGain": 38
+  },
+  {
     "id": "20740590660",
     "name": "Lunch Swim",
     "type": "Swim",
@@ -1780,23 +1798,5 @@
     "duration": 1979,
     "distance": 0,
     "elevationGain": 0
-  },
-  {
-    "id": "18930303296",
-    "name": "Morning Swim",
-    "type": "Swim",
-    "startTime": "2026-06-15T07:17:14Z",
-    "duration": 2279,
-    "distance": 1645.9,
-    "elevationGain": 0
-  },
-  {
-    "id": "18924057301",
-    "name": "Afternoon Hike",
-    "type": "Hike",
-    "startTime": "2026-06-14T14:08:33Z",
-    "duration": 10175,
-    "distance": 10142,
-    "elevationGain": 725
   }
 ]
