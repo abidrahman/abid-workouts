@@ -1,5 +1,14 @@
 [
   {
+    "id": "20767567878",
+    "name": "Morning Weight Training",
+    "type": "WeightTraining",
+    "startTime": "2026-10-28T10:55:38Z",
+    "duration": 609,
+    "distance": 0,
+    "elevationGain": 0
+  },
+  {
     "id": "20752394216",
     "name": "Morning Ride",
     "type": "Ride",
@@ -1789,14 +1798,5 @@
     "duration": 3779,
     "distance": 22014,
     "elevationGain": 85
-  },
-  {
-    "id": "18938248923",
-    "name": "Night Weight Training",
-    "type": "WeightTraining",
-    "startTime": "2026-06-15T21:19:38Z",
-    "duration": 1979,
-    "distance": 0,
-    "elevationGain": 0
   }
 ]
