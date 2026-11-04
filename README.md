@@ -10,7 +10,7 @@ The priorities, in order:
    Critical Swim Speed, adding a 4th weekly session, and holding a 6,000 yd/wk floor
    through every travel week. Volume ramps 6,200 → 9,500 yd/wk.
 2. **Run** — rebuild from ~5 km/wk to an 8 km race (Redmond Reindeer Romp 5 mile,
-   Fri Dec 4) without re-triggering shin splints or CECS. Re-cut on Nov 4 to two runs
+   Sat Dec 5) without re-triggering shin splints or CECS. Re-cut on Nov 4 to two runs
    and 3–6 mi a week, alongside a calorie deficit aimed at ~15 lb.
 3. **Strength + mobility** — two ~45 min full-body sessions a week (Mon + Thu) aimed at
    the posterior chain, single-leg strength, and the soleus/tibialis work that keeps the

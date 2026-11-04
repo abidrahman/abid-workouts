@@ -13,7 +13,7 @@
  *      spread between sprint and continuous pace is far too wide. Fix = fixed
  *      send-offs instead of "rest until ready", real threshold volume, and a 4th
  *      weekly session. Volume goes 6,200 -> 9,500 yd/wk.
- *   2. Run — rebuild from ~5 km/wk to a 5-mile race (Fri Dec 4) without waking up the
+ *   2. Run — rebuild from ~5 km/wk to a 5-mile race (Sat Dec 5) without waking up the
  *      shins. MRIs were clean; CECS + shin splint history is the constraint.
  *      Volume/frequency spikes are the primary trigger, hard surfaces secondary.
  *      Single run per week until the custom orthotics arrive (~Oct 5–11).
@@ -32,7 +32,7 @@
  *   - Swim: unchanged. Mon + Wed + Fri alone clear 6,000 yd, so the Tuesday technique
  *     swim is the first thing to drop on a bad week and the streak still holds.
  *   - Run: two runs a week, 3–6 mi total — a Thursday run with a partner (her tempo is
- *     your steady) and an easy weekend long run. Race moves to Fri Dec 4. No ramp
+ *     your steady) and an easy weekend long run. Race stays Sat Dec 5. No ramp
  *     beyond that until January.
  *   - Bike: 1–2 indoor rides plus the weekend flex slot. FTP retest moves to January —
  *     a test inside a calorie deficit would underread it.
@@ -50,7 +50,7 @@ export const blockMeta = {
   name: "Fall 2026 Base",
   startDateKey: "2026-09-21",
   endDateKey: "2026-12-31",
-  raceDateKey: "2026-12-04",
+  raceDateKey: "2026-12-05",
   raceName: "Redmond Reindeer Romp 5 mile",
   bodyWeightKg: 72.6,
 };
@@ -223,7 +223,7 @@ export const summaryCards = [
   {
     label: "Race",
     value: "5 mile",
-    detail: "Redmond Reindeer Romp · Fri Dec 4 · no heavy prep, just arrive with quiet shins",
+    detail: "Redmond Reindeer Romp · Sat Dec 5 · no heavy prep, just arrive with quiet shins",
   },
   {
     label: "Run rule",
@@ -259,7 +259,7 @@ export const phases = [
     date: "Nov 9 – Dec 6",
     title: "Build II — hold the swim, lighten everything else",
     detail:
-      "Re-cut on Nov 4 because the original load was costing missed sessions. Swimming stays as written, with the CSS retest on Nov 9. Running holds at two runs and 3–6 mi a week — a partner run and an easy long run topping out at 6 km — into the Fri Dec 4 race. One indoor ride plus the flex slot; the FTP retest moves to January. All of it sits on a ~400–500 kcal/day deficit.",
+      "Re-cut on Nov 4 because the original load was costing missed sessions. Swimming stays as written, with the CSS retest on Nov 9. Running holds at two runs and 3–6 mi a week — a partner run and an easy long run topping out at 6 km — into the Sat Dec 5 race. One indoor ride plus the flex slot; the FTP retest moves to January. All of it sits on a ~400–500 kcal/day deficit.",
   },
   {
     date: "Dec 7 – Dec 20",
@@ -546,7 +546,7 @@ export const runRamp = [
   { week: "Week 8", dates: "Nov 9–15", runs: "2", volume: "9 km", longRun: "5 km", note: "Thursday partner run (her tempo, your steady) plus an easy weekend long run. ~5.5 mi." },
   { week: "Week 9", dates: "Nov 16–22", runs: "2", volume: "10 km", longRun: "6 km", note: "Longest run before the race. ~6 mi — the top of the weekly range." },
   { week: "Week 10", dates: "Nov 23–29", runs: "2", volume: "10 km", longRun: "6 km", note: "Edmonton. Indoor track or treadmill; partner is not there, so Thursday is easy." },
-  { week: "Week 11", dates: "Nov 30–Dec 6", runs: "1 + race", volume: "11 km", longRun: "8 km race", note: "Tuesday shakeout with strides, then race Fri Dec 4. Your cardio will carry the last 3 km." },
+  { week: "Week 11", dates: "Nov 30–Dec 6", runs: "1 + race", volume: "11 km", longRun: "8 km race", note: "Tuesday shakeout with strides, then race Sat Dec 5. Your cardio will carry the last 3 km." },
   { week: "Week 12", dates: "Dec 7–13", runs: "2", volume: "9 km", longRun: "5 km", note: "Florida. Easy mornings in Orlando and Miami, nothing structured." },
   { week: "Week 13", dates: "Dec 14–20", runs: "2", volume: "10 km", longRun: "6 km", note: "North Carolina, then home. Hold — no ramp until January." },
   { week: "Week 14", dates: "Dec 21–27", runs: "2", volume: "10 km", longRun: "6 km", note: "Edmonton. Holiday gym hours — check before planning." },
@@ -1687,7 +1687,7 @@ export const planWeeks = [
         flex("1–2 hr", "Optional. Edmonton edition: a cross-country ski if there is snow, a winter walk with 20 lb in the pack, or an indoor spin if it is brutal out."),
       ],
       "2026-11-29": [
-        run("38–42 min", "Long run — 6 km", "Last long run before Friday's race. Easy. Indoor track if the footing is bad. Floats to Saturday if the flex slot wants Sunday."),
+        run("38–42 min", "Long run — 6 km", "Last long run before Saturday's race. Easy. Indoor track if the footing is bad. Floats to Saturday if the flex slot wants Sunday."),
         mobility("20 min", "Mobility plus foot intrinsics."),
       ],
     },
@@ -1698,10 +1698,10 @@ export const planWeeks = [
     week: 11,
     start: "2026-11-30",
     phase: "build2",
-    theme: "Race week — Fri Dec 4",
+    theme: "Race week — Sat Dec 5",
     focus:
-      "One shakeout run and the race. Swimming carries on — three swims still clear 6,000 yd — and strength keeps Monday's full-body session only. Eat at maintenance Wednesday and Thursday; the deficit pauses for race week's back half.",
-    travel: "Edmonton Mon–Tue (home Dec 1) · RACE Fri Dec 4",
+      "One shakeout run and the race. Swimming carries on Mon/Wed/Thu — three swims still clear 6,000 yd — Friday is a rest day, and strength keeps Monday's full-body session only. Eat at maintenance Thursday and Friday; the deficit pauses for race week's back half.",
+    travel: "Edmonton Mon–Tue (home Dec 1) · RACE Sat Dec 5",
     // Race week. Strength drops to one session and the bike stays easy — both deliberate.
     relaxed: ["strength", "bike"],
     days: {
@@ -1723,25 +1723,26 @@ export const planWeeks = [
           "Swim — speed",
           "Warm-up 300. Drill 400 as 8 × 50, each drill twice: breaststroke timing / stroke-count ladder / front scull / 6-1-6. Fins throughout; snorkel off for breaststroke timing and 6-1-6. Main: 16 × 50 on 1:05 alternating. 4 × 50 breaststroke. Cool-down 300.",
         ),
-        bike("30–40 min", "Spin bike — easy Z2", "Easy spin only. No intensity with a race on Friday."),
+        bike("30–40 min", "Spin bike — easy Z2", "Easy spin only. No intensity with a race on Saturday."),
       ],
       "2026-12-03": [
         swim(
           2200,
           "Swim — easy aerobic",
-          "Warm-up 300. Drill 300 as 6 × 50: 6-1-6 / breaststroke timing / front scull. Main 1,200 easy continuous — bilateral where it feels good. 4 × 50 breaststroke. Cool-down 200. Genuinely easy — you race tomorrow. This brings the week to 6,200 yd.",
+          "Warm-up 300. Drill 300 as 6 × 50: 6-1-6 / breaststroke timing / front scull. Main 1,200 easy continuous — bilateral where it feels good. 4 × 50 breaststroke.           Cool-down 200. Genuinely easy — you race Saturday. This brings the week to 6,200 yd.",
         ),
-        mobility("20 min", "Mobility and foot intrinsics. Lay out race kit; run in the orthotics you have trained in, not new ones."),
+                  mobility("15 min", MOBILITY_CORE),
       ],
       "2026-12-04": [
-        run("50–60 min", "RACE — Redmond Reindeer Romp 5 mile (8 km)", "Warm-up 1 km easy with 3 strides. Race: first mile at about 8:00/mi (5:00/km) and let it come down from there — your cardio is far ahead of your legs, so the classic error is a 7:00 first mile. Target 38–41 min. If the shins speak up, run it as a steady effort and enjoy the morning; it is not the point of the block. Cool-down 1 km walk/jog. Your partner runs the half the same morning.", { rescheduleLocked: true }),
+                  mobility("20 min", "Rest day before the race. Light mobility and foot intrinsics, a short walk if you like. Lay out race kit; run in the orthotics you have trained in, not new ones. Eat normally with a carb-forward dinner.", "Pre-race rest + mobility"),
       ],
       "2026-12-05": [
-        flex("1–2 hr", "Optional and easy — an easy spin or a walk. Off your feet is fine too."),
+                  run("50–60 min", "RACE — Redmond Reindeer Romp 5 mile (8 km)", "Warm-up 1 km easy with 3 strides. Race: first mile at about 8:00/mi (5:00/km) and let it come down from there — your cardio is far ahead of your legs, so the classic error is a 7:00 first mile. Target 38–41 min. If the shins speak up, run it as a steady effort and enjoy the morning; it is not the point of the block. Cool-down 1 km walk/jog. Your partner runs the half the same morning.", { rescheduleLocked: true }),
       ],
       "2026-12-06": [
-        mobility("25 min", "Thorough post-race mobility. Calves and shins will be the sorest — be gentle, and do not stretch into compartment pain."),
-      ],
+                  flex("45–90 min", "Optional and easy — an easy spin or a walk. Off your feet is fine too."),
+                  mobility("25 min", "Thorough post-race mobility. Calves and shins will be the sorest — be gentle, and do not stretch into compartment pain."),
+                ],
     },
   },
 
@@ -1764,7 +1765,7 @@ export const planWeeks = [
           "Swim — threshold 8 × 150",
           "Warm-up 400. Drill 400 as 8 × 50, each drill twice: closed-fist / sighting / breaststroke timing / stroke-count ladder. Fins throughout; snorkel off for sighting and breaststroke timing. Main: 8 × 150 at CSS on 3:20. Cool-down 400.",
         ),
-        strength("S-FULL-A", "Full body A, three days after the race — normal loads if the legs feel normal. The only full lift before the trip."),
+        strength("S-FULL-A", "Full body A, two days after the race — normal loads if the legs feel normal. The only full lift before the trip."),
       ],
       "2026-12-08": [
         swim(
