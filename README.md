@@ -10,12 +10,13 @@ The priorities, in order:
    Critical Swim Speed, adding a 4th weekly session, and holding a 6,000 yd/wk floor
    through every travel week. Volume ramps 6,200 → 9,500 yd/wk.
 2. **Run** — rebuild from ~5 km/wk to an 8 km race (Redmond Reindeer Romp 5 mile,
-   Dec 5) without re-triggering shin splints or CECS. One run per week until the
-   custom orthotics arrive, then a capped ramp.
+   Fri Dec 4) without re-triggering shin splints or CECS. Re-cut on Nov 4 to two runs
+   and 3–6 mi a week, alongside a calorie deficit aimed at ~15 lb.
 3. **Strength + mobility** — two ~45 min full-body sessions a week (Mon + Thu) aimed at
    the posterior chain, single-leg strength, and the soleus/tibialis work that keeps the
    lower legs quiet.
-4. **Bike** — 2–3 sessions a week, moving indoors to the Keiser M3i as winter lands.
+4. **Bike** — 1–3 sessions a week (flex slot included), moving indoors to the Keiser
+   M3i as winter lands.
 
 From Week 5, weekends stay open: a flex slot for riding, hiking or skiing, plus the
 long run, which floats between Saturday and Sunday.
