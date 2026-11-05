@@ -1,5 +1,23 @@
 [
   {
+    "id": "20864964694",
+    "name": "Evening Run",
+    "type": "Run",
+    "startTime": "2026-11-04T18:30:50Z",
+    "duration": 1800,
+    "distance": 3812.5,
+    "elevationGain": 0
+  },
+  {
+    "id": "20864711306",
+    "name": "Afternoon Ride",
+    "type": "Ride",
+    "startTime": "2026-11-04T17:50:51Z",
+    "duration": 1309,
+    "distance": 0,
+    "elevationGain": 0
+  },
+  {
     "id": "20831577624",
     "name": "Lunch Run",
     "type": "Run",
@@ -1778,24 +1796,6 @@
     "type": "WeightTraining",
     "startTime": "2026-06-18T18:18:02Z",
     "duration": 1921,
-    "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "18978456366",
-    "name": "Afternoon Ride",
-    "type": "Ride",
-    "startTime": "2026-06-18T15:55:01Z",
-    "duration": 4641,
-    "distance": 26561.7,
-    "elevationGain": 238
-  },
-  {
-    "id": "18966326621",
-    "name": "Evening Workout",
-    "type": "Workout",
-    "startTime": "2026-06-17T19:22:49Z",
-    "duration": 1966,
     "distance": 0,
     "elevationGain": 0
   }
