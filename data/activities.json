@@ -1,5 +1,14 @@
 [
   {
+    "id": "20875459638",
+    "name": "Morning Swim",
+    "type": "Swim",
+    "startTime": "2026-11-05T10:27:05Z",
+    "duration": 2270,
+    "distance": 1828.8,
+    "elevationGain": 0
+  },
+  {
     "id": "20864964694",
     "name": "Evening Run",
     "type": "Run",
@@ -1788,15 +1797,6 @@
     "startTime": "2026-06-19T14:06:24Z",
     "duration": 2319,
     "distance": 1828.8,
-    "elevationGain": 0
-  },
-  {
-    "id": "18978982997",
-    "name": "Evening Weight Training",
-    "type": "WeightTraining",
-    "startTime": "2026-06-18T18:18:02Z",
-    "duration": 1921,
-    "distance": 0,
     "elevationGain": 0
   }
 ]
