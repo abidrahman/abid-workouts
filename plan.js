@@ -79,7 +79,7 @@ export const swimTests = [
     t400: "7:06",
     t200: "3:20",
     css: "1:53",
-    note: "First CSS test. The 400/200 ratio is 2.13, inside the normal 2.10–2.20 band, so the number is internally consistent. What the ratio cannot detect is both swims being submaximal together, and that now looks like what happened: on Oct 5 the warm-up 400 came in at 7:07.5 and the 5 × 200 that followed averaged 1:47.6/100 without fading. Treat 1:53 as a soft floor rather than a true threshold until Nov 9 re-measures it.",
+    note: "First CSS test. The 400/200 ratio is 2.13, inside the normal 2.10–2.20 band, so the number is internally consistent. What the ratio cannot detect is both swims being submaximal together, and that now looks like what happened: on Oct 5 the warm-up 400 came in at 7:07.5 and the 5 × 200 that followed averaged 1:47.6/100 without fading. Treat 1:53 as a soft floor rather than a true threshold until Nov 10 re-measures it.",
   },
 ];
 
@@ -100,7 +100,7 @@ export const swimTests = [
  */
 export const swimTestTarget = {
   week: 8,
-  date: "2026-11-09",
+  date: "2026-11-10",
   rows: [
     { label: "Sep 21 baseline", t400: "7:06", t200: "3:20", css: "1:53" },
     { label: "Floor — an honest test, no fitness gained", t400: "7:00", t200: "3:18", css: "1:51" },
@@ -259,7 +259,7 @@ export const phases = [
     date: "Nov 9 – Dec 6",
     title: "Build II — hold the swim, lighten everything else",
     detail:
-      "Re-cut on Nov 4 because the original load was costing missed sessions. Swimming stays as written, with the CSS retest on Nov 9. Running holds at two runs and 3–6 mi a week — a partner run and an easy long run topping out at 6 km — into the Sat Dec 5 race. One indoor ride plus the flex slot; the FTP retest moves to January. All of it sits on a ~400–500 kcal/day deficit.",
+      "Re-cut on Nov 4 because the original load was costing missed sessions. Swimming stays as written, with the CSS retest on Nov 10. Running holds at two runs and 3–6 mi a week — a partner run and an easy long run topping out at 6 km — into the Sat Dec 5 race. One indoor ride plus the flex slot; the FTP retest moves to January. All of it sits on a ~400–500 kcal/day deficit.",
   },
   {
     date: "Dec 7 – Dec 20",
@@ -1570,25 +1570,25 @@ export const planWeeks = [
     phase: "build2",
     theme: "Retest + settle in",
     focus:
-      "First full week of the lighter plan. Retest CSS on Monday — eat normally the day before, since a deficit day blunts a time trial — and keep everything else easy to repeat: two runs, one indoor ride, two lifts. The FTP retest has moved to January.",
+      "First full week of the lighter plan. Retest CSS on Tuesday — eat normally the day before, since a deficit day blunts a time trial — and keep everything else easy to repeat: two runs, one indoor ride, two lifts. The FTP retest has moved to January.",
     days: {
       "2026-11-09": [
+        swim(1400, "Technique swim (short)", `Swapped with Tuesday's retest on Nov 9: Sunday's 1,000 kcal indoor ride plus 9+ hours of sleep says the tank is low, and the retest resets every send-off for the rest of the block, so it gets the fresher day. Keep this one genuinely easy and eat at maintenance today, carbs included. ${TECH_SWIM_NOTE}`),
+        mobility("15 min", MOBILITY_CORE),
+      ],
+      "2026-11-10": [
         swim(
           1600,
           "Swim — CSS RETEST (400 + 200 TT)",
-          "Same protocol as Week 1. Warm-up 400, build 4 × 50, 400 all-out, 5 min rest, 200 all-out, cool-down 400. Recalculate CSS and reset every send-off in the second half of the block. Seven weeks of threshold work should show up here — 4–6 s/100 faster is a good outcome, which from the Week 1 baseline of 1:53 means landing between 1:49 and 1:47. CSS is hypersensitive to the 400: hold the 200 at 3:20, take eight seconds off the 400, and you are already at 1:49. Run it identically to Week 1 or the comparison means nothing, and give both efforts everything — an easy 200 flatters the number. Eat at maintenance on Sunday and have carbs before this one; the deficit can wait a day.",
-        ),
-        strength("S-FULL-A", "Full body A on retest day — swim first, lift after, and the order matters: the CSS number is the one that cannot be redone."),
-      ],
-      "2026-11-10": [
-        swim(1400, "Technique swim (short)", TECH_SWIM_NOTE),
-        mobility("15 min", MOBILITY_CORE),
-      ],
+          "Same protocol as Week 1. Warm-up 400, build 4 × 50, 400 all-out, 5 min rest, 200 all-out, cool-down 400. Recalculate CSS and reset every send-off in the second half of the block. Seven weeks of threshold work should show up here — 4–6 s/100 faster is a good outcome, which from the Week 1 baseline of 1:53 means landing between 1:49 and 1:47. CSS is hypersensitive to the 400: hold the 200 at 3:20, take eight seconds off the 400, and you are already at 1:49. Run it identically to Week 1 or the comparison means nothing, and give both efforts everything — an easy 200 flatters the number.           Eat at maintenance on Monday and have carbs before this one; the deficit can wait a day. Moved from Monday after the big Sunday ride.",
+                  ),
+                  strength("S-FULL-A", "Full body A on retest day — swim first, lift after, and the order matters: the CSS number is the one that cannot be redone."),
+                ],
       "2026-11-11": [
         swim(
           2300,
           "Swim — speed 5 × (4 × 50)",
-          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: stroke-count ladder / front scull / 6-3-6 / closed-fist. Fins throughout; snorkel off for 6-3-6. Then 4 × 25 left-only freestyle with fins, 20 s rest — the left-side bridge after the Nov 5 test. Pull 200 with small paddles and buoy, easy, holding the catch. Main: 5 rounds of 4 × 50 on 1:00, 45 s between rounds. Then 4 × 50 breaststroke. Cool-down 200. Tighter send-off than Week 5 — this is where density shows up.",
+          "Warm-up 300. Drill 400 as 8 × 50, each drill twice: stroke-count ladder / front scull / 6-3-6 / closed-fist. Fins throughout; snorkel off for 6-3-6. Then 4 × 25 left-only freestyle with fins, 20 s rest — the left-side bridge after the Nov 5 test. Pull 200 with small paddles and buoy, easy, holding the catch. Main: 5 rounds of 4 × 50 on 1:00, 45 s between rounds. Then 4 × 50 breaststroke. Cool-down 200. Tighter send-off than Week 5 — this is where density shows up. It now falls the day after the retest, so if the first round feels flat, cut the main set to 4 rounds.",
         ),
         bike("45 min", "Spin bike — Z2", "Zone 2, 104–140 W or 130–145 bpm. This was the FTP retest slot; the test moves to the first week of January, because a 20 min max ridden in a calorie deficit reads low."),
       ],
@@ -1600,7 +1600,7 @@ export const planWeeks = [
         swim(
           3000,
           "Swim — long aerobic 1,800",
-          "Warm-up 300. Main: 1,800 continuous at the NEW aerobic pace from Monday's retest, then 6 × 100 at the new CSS on the new send-off. Cool-down 300.",
+          "Warm-up 300. Main: 1,800 continuous at the NEW aerobic pace from Tuesday's retest, then 6 × 100 at the new CSS on the new send-off. Cool-down 300.",
         ),
         mobility("15 min", MOBILITY_CORE),
       ],
