@@ -208,7 +208,7 @@ wk.conditional_formatting.add(
 # ------------------------------------------------------------------ Swim
 sw = wb.create_sheet("Swim")
 title_block(sw, "Swim — the engine of this block",
-            "CSS drives every send-off. Retest Sep 21, Nov 9, Dec 28 and update the yellow cells.", 6)
+            "CSS drives every send-off. Retest Sep 21, Nov 10, Dec 28 and update the yellow cells.", 6)
 
 sw["A4"] = "CSS test log"
 sw["A4"].font = SUB_FONT
@@ -216,7 +216,7 @@ for i, h in enumerate(["Date", "400 yd time", "200 yd time", "CSS /100 yd (sec)"
     sw.cell(row=5, column=i, value=h)
 style_header(sw, 5, 6)
 tests_by_date = {t["date"]: t for t in D.get("swimTests", [])}
-css_dates = sorted(set(list(tests_by_date) + ["2026-09-21", "2026-11-09", "2026-12-28"]))
+css_dates = sorted(set(list(tests_by_date) + ["2026-09-21", "2026-11-10", "2026-12-28"]))
 r = 6
 for d in css_dates:
     t = tests_by_date.get(d)
