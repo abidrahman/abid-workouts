@@ -1,5 +1,32 @@
 [
   {
+    "id": "21053298290",
+    "name": "Afternoon Run",
+    "type": "Run",
+    "startTime": "2026-11-19T16:06:37Z",
+    "duration": 1441,
+    "distance": 3222,
+    "elevationGain": 0
+  },
+  {
+    "id": "21053298316",
+    "name": "Afternoon Weight Training",
+    "type": "WeightTraining",
+    "startTime": "2026-11-19T15:46:04Z",
+    "duration": 1189,
+    "distance": 0,
+    "elevationGain": 0
+  },
+  {
+    "id": "21052921749",
+    "name": "Afternoon Ride",
+    "type": "Ride",
+    "startTime": "2026-11-19T14:58:15Z",
+    "duration": 2770,
+    "distance": 0,
+    "elevationGain": 0
+  },
+  {
     "id": "21040468579",
     "name": "Afternoon Swim",
     "type": "Swim",
@@ -1771,32 +1798,5 @@
     "duration": 16312,
     "distance": 14524.3,
     "elevationGain": 1184
-  },
-  {
-    "id": "19182832685",
-    "name": "Afternoon Ride",
-    "type": "Ride",
-    "startTime": "2026-07-04T13:32:38Z",
-    "duration": 8044,
-    "distance": 37513,
-    "elevationGain": 221
-  },
-  {
-    "id": "19165493183",
-    "name": "Morning Weight Training",
-    "type": "WeightTraining",
-    "startTime": "2026-07-03T08:55:17Z",
-    "duration": 2270,
-    "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "19165075919",
-    "name": "Morning Swim",
-    "type": "Swim",
-    "startTime": "2026-07-03T08:03:07Z",
-    "duration": 2533,
-    "distance": 1897.4,
-    "elevationGain": 0
   }
 ]
