@@ -1,5 +1,14 @@
 [
   {
+    "id": "21089307452",
+    "name": "Afternoon Weight Training",
+    "type": "WeightTraining",
+    "startTime": "2026-11-22T13:40:48Z",
+    "duration": 1895,
+    "distance": 0,
+    "elevationGain": 0
+  },
+  {
     "id": "21073707719",
     "name": "Morning Workout",
     "type": "Workout",
@@ -1787,15 +1796,6 @@
     "type": "Workout",
     "startTime": "2026-07-07T17:24:42Z",
     "duration": 2229,
-    "distance": 0,
-    "elevationGain": 0
-  },
-  {
-    "id": "19222086738",
-    "name": "Afternoon Weight Training",
-    "type": "WeightTraining",
-    "startTime": "2026-07-07T16:35:05Z",
-    "duration": 2899,
     "distance": 0,
     "elevationGain": 0
   }
